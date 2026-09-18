@@ -47,7 +47,7 @@ export function createLoginPanel(onSwitch: (mode: AuthMode) => void): HTMLElemen
     "Login",
   ]);
 
-  const form = el("form", { class: "auth-dialog__form", novalidate: "true" }, [
+  const form = el("form", { class: "auth-dialog__form", novalidate: "" }, [
     emailField,
     passwordField,
     forgotLink,
@@ -111,7 +111,7 @@ export function createRegisterPanel(onSwitch: (mode: AuthMode) => void): HTMLEle
     "Create Account",
   ]);
 
-  const form = el("form", { class: "auth-dialog__form", novalidate: "true" }, [
+  const form = el("form", { class: "auth-dialog__form", novalidate: "" }, [
     usernameField,
     emailField,
     passwordField,
