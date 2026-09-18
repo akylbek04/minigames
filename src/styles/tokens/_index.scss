@@ -1,0 +1,11 @@
+@use "colors" as colors;
+@use "sizes" as sizes;
+@use "typography" as typography;
+@use "shadows" as shadows;
+
+:root {
+  @include colors.emit-colors;
+  @include sizes.emit-sizes;
+  @include typography.emit-typography;
+  @include shadows.emit-shadows;
+}

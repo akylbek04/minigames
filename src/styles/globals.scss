@@ -1,3 +1,5 @@
+@use "tokens/index";
+
 * {
   box-sizing: border-box;
 }
@@ -6,4 +8,33 @@ html,
 body {
   margin: 0;
   padding: 0;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-on-bg);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-medium);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
 }
