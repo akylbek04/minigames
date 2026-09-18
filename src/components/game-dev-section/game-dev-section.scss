@@ -1,0 +1,64 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.game-dev__inner {
+  @include mix.container;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+  padding-block: var(--size-6);
+
+  @include bp.tablet-up {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
+
+.game-dev__illustration {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: var(--corner-large);
+
+  @include bp.tablet-up {
+    width: 45%;
+    height: auto;
+  }
+}
+
+.game-dev__card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--size-4);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-large);
+}
+
+.game-dev__title {
+  color: var(--color-on-primary);
+  font-size: var(--font-size-headline-medium);
+  font-weight: var(--font-weight-extra-bold);
+}
+
+.game-dev__text {
+  margin-top: var(--size-2);
+  color: var(--color-on-bg);
+}
+
+.game-dev__cta {
+  margin-top: var(--size-3);
+}
+
+.game-dev__contact {
+  margin-top: var(--size-2);
+  color: var(--color-on-bg-low);
+  font-size: var(--font-size-body-small);
+
+  a {
+    color: var(--color-tertiary);
+  }
+}
