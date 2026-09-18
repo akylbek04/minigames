@@ -65,8 +65,8 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: var(--size-4);
+  height: var(--size-4);
   color: var(--color-on-primary);
   font-size: var(--font-size-label-medium);
   font-weight: var(--font-weight-bold);
@@ -103,8 +103,8 @@
 
 .leaderboard__streak-icon svg {
   display: block;
-  width: 14px;
-  height: 14px;
+  width: var(--icon-size-small);
+  height: var(--icon-size-small);
 }
 
 .leaderboard__badge {

@@ -29,16 +29,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: var(--size-5);
+  height: var(--size-5);
   color: var(--color-on-primary);
   background-color: var(--color-white);
   border: 2px solid var(--color-on-primary);
   border-radius: var(--corner-full);
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: var(--icon-size-medium);
+    height: var(--icon-size-medium);
   }
 
   &--filled {
@@ -58,6 +58,7 @@
 .carousel__card {
   container-type: inline-size;
   flex: none;
+  // deliberately under the 288px container-query threshold below (image-only cards)
   width: 150px;
   overflow: hidden;
   border-radius: var(--corner-medium);
@@ -65,6 +66,7 @@
   aspect-ratio: 3 / 4;
 
   @include bp.tablet-up {
+    // deliberately over the 288px container-query threshold (shows info overlay)
     width: 320px;
   }
 }
@@ -122,6 +124,6 @@
 
 .carousel__card-icon svg {
   display: block;
-  width: 14px;
-  height: 14px;
+  width: var(--icon-size-small);
+  height: var(--icon-size-small);
 }

@@ -33,6 +33,12 @@ $button-padding: (
   "icon": 8px,
 );
 
+$icon-sizes: (
+  "small": 16px,
+  "medium": 20px,
+  "large": 24px,
+);
+
 @mixin emit-sizes {
   @each $name, $value in $sizes {
     --size-#{$name}: #{$value};
@@ -42,5 +48,8 @@ $button-padding: (
   }
   @each $name, $value in $button-padding {
     --btn-padding-#{$name}: #{$value};
+  }
+  @each $name, $value in $icon-sizes {
+    --icon-size-#{$name}: #{$value};
   }
 }

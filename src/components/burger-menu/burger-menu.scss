@@ -6,8 +6,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: var(--size-5);
+  height: var(--size-5);
   padding: 0;
   color: var(--color-on-primary);
   background-color: var(--color-white);
@@ -31,8 +31,8 @@
     transform 0.2s ease;
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: var(--icon-size-medium);
+    height: var(--icon-size-medium);
   }
 
   &--close {
@@ -113,8 +113,8 @@
 
 .mobile-menu__logo-icon svg {
   display: block;
-  width: 32px;
-  height: 32px;
+  width: var(--size-4);
+  height: var(--size-4);
 }
 
 .mobile-menu__close {
@@ -123,15 +123,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: var(--size-5);
+  height: var(--size-5);
   color: var(--color-white);
   background-color: var(--color-bg-footer-low);
   border-radius: var(--corner-small);
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: var(--icon-size-medium);
+    height: var(--icon-size-medium);
   }
 
   &:hover {
