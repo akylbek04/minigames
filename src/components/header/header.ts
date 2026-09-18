@@ -8,10 +8,10 @@ const NAV_LINKS = ["Home", "Library", "Tournaments", "Community"];
 
 export interface HeaderCallbacks {
   onOpenAuth: (mode: AuthMode) => void;
-  onOpenMenu: () => void;
+  menuToggle: HTMLElement;
 }
 
-export function createHeader({ onOpenAuth, onOpenMenu }: HeaderCallbacks): HTMLElement {
+export function createHeader({ onOpenAuth, menuToggle }: HeaderCallbacks): HTMLElement {
   const nav = el("nav", { class: "header__nav", "aria-label": "Main" }, [
     el(
       "ul",
@@ -42,18 +42,6 @@ export function createHeader({ onOpenAuth, onOpenMenu }: HeaderCallbacks): HTMLE
   ]);
   signUpButton.addEventListener("click", () => onOpenAuth("register"));
 
-  const burgerButton = el(
-    "button",
-    {
-      type: "button",
-      class: "header__burger",
-      "aria-label": "Open menu",
-      "aria-expanded": "false",
-    },
-    [icon(icons.burger)],
-  );
-  burgerButton.addEventListener("click", onOpenMenu);
-
   const logo = el("a", { href: "/", class: "header__logo" }, [
     icon(icons.logoMark, "header__logo-icon"),
     el("span", {}, ["MiniGames"]),
@@ -63,7 +51,7 @@ export function createHeader({ onOpenAuth, onOpenMenu }: HeaderCallbacks): HTMLE
     el("div", { class: "header__inner" }, [
       logo,
       nav,
-      el("div", { class: "header__actions" }, [loginButton, signUpButton, burgerButton]),
+      el("div", { class: "header__actions" }, [loginButton, signUpButton, menuToggle]),
     ]),
   ]);
 }
