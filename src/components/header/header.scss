@@ -84,26 +84,3 @@
     display: inline-flex;
   }
 }
-
-.header__burger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  color: var(--color-on-primary);
-  background-color: var(--color-white);
-  border: 2px solid var(--color-on-primary);
-  border-radius: var(--corner-small);
-  cursor: pointer;
-
-  @include bp.desktop-up {
-    display: none;
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-}

@@ -1,5 +1,6 @@
 import "../styles/globals.scss";
 import { createHeader } from "../components/header/header";
+import { createBurgerMenu } from "../components/burger-menu/burger-menu";
 import { createHero } from "../components/hero/hero";
 import { createCarousel } from "../components/carousel/carousel";
 import { createLeaderboard } from "../components/leaderboard/leaderboard";
@@ -9,11 +10,16 @@ import { createFooter } from "../components/footer/footer";
 const app = document.createElement("div");
 app.id = "app";
 
+const burgerMenu = createBurgerMenu({
+  onOpenAuth: () => {},
+});
+
 app.append(
   createHeader({
     onOpenAuth: () => {},
-    onOpenMenu: () => {},
+    menuToggle: burgerMenu.toggleButton,
   }),
+  burgerMenu.dialog,
   createHero(),
   createCarousel(),
   createLeaderboard(),
