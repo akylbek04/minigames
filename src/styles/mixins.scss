@@ -17,6 +17,23 @@
   border: 0;
 }
 
+@mixin section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-headline-medium);
+  font-weight: var(--font-weight-extra-bold);
+
+  &::before {
+    content: "";
+    width: 4px;
+    height: 1em;
+    background-color: var(--color-primary);
+    border-radius: var(--corner-full);
+  }
+}
+
 @mixin reset-button {
   padding: 0;
   cursor: pointer;
