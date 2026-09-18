@@ -1,0 +1,132 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.leaderboard__inner {
+  @include mix.container;
+
+  padding-block: var(--size-6);
+}
+
+.leaderboard__title {
+  @include mix.section-title;
+
+  margin-bottom: var(--size-3);
+}
+
+.leaderboard__table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-medium);
+}
+
+.leaderboard__table thead {
+  background-color: var(--color-tertiary);
+  color: var(--color-white);
+}
+
+.leaderboard__table th {
+  padding: var(--size-2);
+  font-size: var(--font-size-label-large);
+  font-weight: var(--font-weight-bold);
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.leaderboard__table td {
+  padding: var(--size-2);
+  border-top: 1px solid var(--color-outline);
+  font-size: var(--font-size-body-small);
+}
+
+.leaderboard__row:nth-child(even) {
+  background-color: var(--color-surface-low);
+}
+
+.leaderboard__rank {
+  color: var(--color-on-bg-low);
+  font-weight: var(--font-weight-bold);
+}
+
+.leaderboard__row:first-child .leaderboard__rank {
+  color: var(--color-primary-high);
+}
+
+.leaderboard__player {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  font-weight: var(--font-weight-bold);
+}
+
+.leaderboard__avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--color-on-primary);
+  font-size: var(--font-size-label-medium);
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--corner-full);
+
+  &--1 {
+    background-color: var(--color-avatar-random-3);
+  }
+
+  &--2 {
+    background-color: var(--color-avatar-random-2);
+  }
+
+  &--3 {
+    background-color: var(--color-avatar-random-1);
+  }
+
+  &--4 {
+    background-color: var(--color-avatar-random-4);
+  }
+
+  &--5 {
+    background-color: var(--color-avatar-random-5);
+  }
+}
+
+.leaderboard__streak {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-05);
+  color: var(--color-like);
+  font-weight: var(--font-weight-bold);
+}
+
+.leaderboard__streak-icon svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.leaderboard__badge {
+  display: inline-block;
+  padding: var(--size-05) var(--size-1);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--corner-full);
+  font-size: var(--font-size-label-medium);
+}
+
+.leaderboard__col-games {
+  display: none;
+
+  @include bp.tablet-up {
+    display: table-cell;
+  }
+}
+
+.leaderboard__col-favorite {
+  display: none;
+
+  @include bp.desktop-up {
+    display: table-cell;
+  }
+}
