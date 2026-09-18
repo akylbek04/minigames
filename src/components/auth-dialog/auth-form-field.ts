@@ -30,7 +30,7 @@ export function createField({
     placeholder,
     autocomplete,
     class: "auth-dialog__input",
-    required: "true",
+    required: "",
   });
 
   const wrapper = el("div", { class: "auth-dialog__input-wrapper" }, [
