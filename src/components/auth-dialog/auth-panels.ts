@@ -26,7 +26,7 @@ export function createLoginPanel(onSwitch: (mode: AuthMode) => void): HTMLElemen
     type: "email",
     placeholder: "e.g. alex@minigames.com",
     autocomplete: "email",
-    iconMarkup: icons.mail,
+    iconName: "mail",
   });
 
   const passwordField = createField({
@@ -35,7 +35,7 @@ export function createLoginPanel(onSwitch: (mode: AuthMode) => void): HTMLElemen
     type: "password",
     placeholder: "Enter your password",
     autocomplete: "current-password",
-    iconMarkup: icons.lock,
+    iconName: "lock",
     passwordToggle: true,
   });
 
@@ -75,7 +75,7 @@ export function createRegisterPanel(onSwitch: (mode: AuthMode) => void): HTMLEle
     type: "text",
     placeholder: "e.g. CozyGamer_99",
     autocomplete: "username",
-    iconMarkup: icons.user,
+    iconName: "person",
   });
 
   const emailField = createField({
@@ -84,7 +84,7 @@ export function createRegisterPanel(onSwitch: (mode: AuthMode) => void): HTMLEle
     type: "email",
     placeholder: "your.email@domain.com",
     autocomplete: "email",
-    iconMarkup: icons.mail,
+    iconName: "mail",
   });
 
   const passwordField = createField({
@@ -93,7 +93,7 @@ export function createRegisterPanel(onSwitch: (mode: AuthMode) => void): HTMLEle
     type: "password",
     placeholder: "Min. 8 characters",
     autocomplete: "new-password",
-    iconMarkup: icons.lock,
+    iconName: "lock",
     passwordToggle: true,
   });
 
@@ -103,7 +103,7 @@ export function createRegisterPanel(onSwitch: (mode: AuthMode) => void): HTMLEle
     type: "password",
     placeholder: "Repeat your password",
     autocomplete: "new-password",
-    iconMarkup: icons.lock,
+    iconName: "lock",
     passwordToggle: true,
   });
 

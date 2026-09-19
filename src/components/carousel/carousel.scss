@@ -35,11 +35,7 @@
   background-color: var(--color-white);
   border: 2px solid var(--color-on-primary);
   border-radius: var(--corner-full);
-
-  svg {
-    width: var(--icon-size-medium);
-    height: var(--icon-size-medium);
-  }
+  font-size: var(--icon-size-medium);
 
   &--filled {
     background-color: var(--color-primary);
@@ -122,8 +118,6 @@
   color: var(--color-like);
 }
 
-.carousel__card-icon svg {
-  display: block;
-  width: var(--icon-size-small);
-  height: var(--icon-size-small);
+.carousel__card-icon {
+  font-size: var(--icon-size-small);
 }

@@ -100,11 +100,7 @@
   color: var(--color-white);
   background-color: var(--color-bg-footer-low);
   border-radius: var(--corner-full);
-
-  svg {
-    width: var(--icon-size-small);
-    height: var(--icon-size-small);
-  }
+  font-size: var(--icon-size-small);
 
   &:hover {
     background-color: var(--color-bg-footer-lowest);

@@ -1,6 +1,5 @@
 import { el } from "../../utils/dom";
-import { icon } from "../../utils/icon";
-import { icons } from "../icons/icons";
+import { materialIcon } from "../../utils/icon";
 import { formatCompactNumber } from "../../utils/format";
 import { featuredGames } from "../../assets/data/featured-games";
 import type { Game } from "../../types/game";
@@ -17,11 +16,11 @@ function createCard(game: Game): HTMLElement {
     el("p", { class: "carousel__card-title" }, [game.name]),
     el("div", { class: "carousel__card-stats" }, [
       el("span", { class: "carousel__card-rating" }, [
-        icon(icons.star, "carousel__card-icon"),
+        materialIcon("star", "carousel__card-icon icon--filled"),
         String(game.rating),
       ]),
       el("span", { class: "carousel__card-likes" }, [
-        icon(icons.heart, "carousel__card-icon"),
+        materialIcon("favorite", "carousel__card-icon icon--filled"),
         formatCompactNumber(game.likesCount),
       ]),
     ]),
@@ -36,7 +35,7 @@ export function createCarousel(): HTMLElement {
   const prevButton = el(
     "button",
     { type: "button", class: "carousel__arrow", "aria-label": "Previous games" },
-    [icon(icons.chevronLeft)],
+    [materialIcon("chevron_left")],
   );
   const nextButton = el(
     "button",
@@ -45,7 +44,7 @@ export function createCarousel(): HTMLElement {
       class: "carousel__arrow carousel__arrow--filled",
       "aria-label": "Next games",
     },
-    [icon(icons.chevronRight)],
+    [materialIcon("chevron_right")],
   );
 
   const header = el("div", { class: "carousel__header" }, [

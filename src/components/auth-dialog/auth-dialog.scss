@@ -130,11 +130,7 @@
   left: var(--size-2);
   display: flex;
   color: var(--color-on-bg-low);
-
-  svg {
-    width: var(--icon-size-medium);
-    height: var(--icon-size-medium);
-  }
+  font-size: var(--icon-size-medium);
 }
 
 .auth-dialog__input {
@@ -164,11 +160,7 @@
   right: var(--size-2);
   display: flex;
   color: var(--color-on-bg-low);
-
-  svg {
-    width: var(--icon-size-medium);
-    height: var(--icon-size-medium);
-  }
+  font-size: var(--icon-size-medium);
 }
 
 .auth-dialog__hint {
