@@ -2,7 +2,6 @@
 @use "../../styles/mixins" as mix;
 
 .auth-dialog {
-  position: relative;
   width: min(92vw, 380px);
   max-height: calc(100vh - var(--size-4));
   margin: auto;
@@ -38,31 +37,6 @@
   @starting-style {
     opacity: 0;
     transform: scale(0.96);
-  }
-}
-
-.auth-dialog__close {
-  @include mix.reset-button;
-
-  position: absolute;
-  top: var(--size-2);
-  right: var(--size-2);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-4);
-  height: var(--size-4);
-  color: var(--color-on-bg-low);
-  border-radius: var(--corner-full);
-
-  svg {
-    width: var(--icon-size-small);
-    height: var(--icon-size-small);
-  }
-
-  &:hover {
-    color: var(--color-on-primary);
-    background-color: var(--color-surface);
   }
 }
 

@@ -1,7 +1,5 @@
 import { el } from "../../utils/dom";
-import { icon } from "../../utils/icon";
-import { icons } from "../icons/icons";
-import { closeDialogAnimated } from "../../utils/animated-dialog";
+import { closeDialogAnimated, openDialogAnimated } from "../../utils/animated-dialog";
 import { createLoginPanel, createRegisterPanel } from "./auth-panels";
 import type { AuthMode } from "../../types/auth";
 import "./auth-dialog.scss";
@@ -22,14 +20,8 @@ export function createAuthDialog(): AuthDialog {
 
   const panels = el("div", { class: "auth-dialog__panels" });
 
-  const closeButton = el(
-    "button",
-    { type: "button", class: "auth-dialog__close", "aria-label": "Close" },
-    [icon(icons.close)],
-  );
-
   const dialog = el("dialog", { class: "auth-dialog", "aria-label": "Sign in or sign up" });
-  dialog.append(closeButton, tabs, panels);
+  dialog.append(tabs, panels);
 
   function close(): void {
     closeDialogAnimated(dialog);
@@ -62,7 +54,6 @@ export function createAuthDialog(): AuthDialog {
 
   loginTab.addEventListener("click", () => switchTo("login", true));
   registerTab.addEventListener("click", () => switchTo("register", true));
-  closeButton.addEventListener("click", close);
 
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) {
@@ -77,7 +68,7 @@ export function createAuthDialog(): AuthDialog {
 
   function open(mode: AuthMode): void {
     switchTo(mode, false);
-    dialog.showModal();
+    openDialogAnimated(dialog);
   }
 
   return { dialog, open };
