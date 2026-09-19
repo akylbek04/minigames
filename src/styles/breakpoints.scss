@@ -1,5 +1,8 @@
 $breakpoint-tablet: 768px;
-$breakpoint-desktop: 1920px;
+// Figma is pixel-perfect-checked at 375/768/1920, but the desktop header/nav
+// (burger hidden, full nav shown) must switch well before 1920 to match real
+// desktop viewports — 1024 is the conventional tablet/desktop split.
+$breakpoint-desktop: 1024px;
 
 @mixin tablet-up {
   @media (min-width: $breakpoint-tablet) {

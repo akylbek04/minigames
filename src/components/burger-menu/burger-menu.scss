@@ -56,7 +56,7 @@
 .mobile-menu {
   position: fixed;
   inset: 0;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: var(--size-4);
   width: 100%;
@@ -76,8 +76,14 @@
     overlay 0.25s ease allow-discrete,
     display 0.25s ease allow-discrete;
 
+  &[open] {
+    display: flex;
+  }
+
   @include bp.desktop-up {
-    display: none;
+    &[open] {
+      display: none;
+    }
   }
 
   &::backdrop {
