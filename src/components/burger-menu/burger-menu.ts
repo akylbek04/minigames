@@ -1,7 +1,7 @@
 import { el } from "../../utils/dom";
 import { icon } from "../../utils/icon";
 import { icons } from "../icons/icons";
-import { closeDialogAnimated } from "../../utils/animated-dialog";
+import { closeDialogAnimated, openDialogAnimated } from "../../utils/animated-dialog";
 import type { AuthMode } from "../../types/auth";
 import "./burger-menu.scss";
 
@@ -89,7 +89,7 @@ export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMen
   );
 
   function open(): void {
-    dialog.showModal();
+    openDialogAnimated(dialog);
     toggleButton.setAttribute("aria-expanded", "true");
     toggleButton.setAttribute("aria-label", "Close menu");
   }
