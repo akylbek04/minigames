@@ -101,10 +101,8 @@
   font-weight: var(--font-weight-bold);
 }
 
-.leaderboard__streak-icon svg {
-  display: block;
-  width: var(--icon-size-small);
-  height: var(--icon-size-small);
+.leaderboard__streak-icon {
+  font-size: var(--icon-size-small);
 }
 
 .leaderboard__badge {

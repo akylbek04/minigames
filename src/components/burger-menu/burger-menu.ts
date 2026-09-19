@@ -1,5 +1,5 @@
 import { el } from "../../utils/dom";
-import { icon } from "../../utils/icon";
+import { icon, materialIcon } from "../../utils/icon";
 import { icons } from "../icons/icons";
 import { closeDialogAnimated, openDialogAnimated } from "../../utils/animated-dialog";
 import type { AuthMode } from "../../types/auth";
@@ -27,15 +27,15 @@ export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMen
       "aria-controls": "mobile-menu",
     },
     [
-      icon(icons.burger, "header__burger-icon header__burger-icon--burger"),
-      icon(icons.close, "header__burger-icon header__burger-icon--close"),
+      materialIcon("menu", "header__burger-icon header__burger-icon--burger"),
+      materialIcon("close", "header__burger-icon header__burger-icon--close"),
     ],
   );
 
   const closeButton = el(
     "button",
     { type: "button", class: "mobile-menu__close", "aria-label": "Close menu" },
-    [icon(icons.close)],
+    [materialIcon("close")],
   );
 
   const topBar = el("div", { class: "mobile-menu__topbar" }, [

@@ -1,6 +1,5 @@
 import { el } from "../../utils/dom";
-import { icon } from "../../utils/icon";
-import { icons } from "../icons/icons";
+import { materialIcon } from "../../utils/icon";
 import illustration from "../../assets/images/game-dev-illustration.png";
 import "./game-dev-section.scss";
 
@@ -14,7 +13,7 @@ export function createGameDevSection(): HTMLElement {
   const submitButton = el(
     "button",
     { type: "button", class: "btn btn--filled btn--large game-dev__cta" },
-    [icon(icons.upload), "Submit Form"],
+    [materialIcon("upload"), "Submit Form"],
   );
 
   const card = el("div", { class: "game-dev__card" }, [

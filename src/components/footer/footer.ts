@@ -1,14 +1,14 @@
 import { el } from "../../utils/dom";
-import { icon } from "../../utils/icon";
+import { icon, materialIcon } from "../../utils/icon";
 import { icons } from "../icons/icons";
 import "./footer.scss";
 
 const EXPLORE_LINKS = ["Home", "Library", "Categories", "Tournaments"];
 const COMPANY_LINKS = ["About Us", "Contact", "Privacy Policy", "Terms of Service"];
 const SOCIAL_ICONS = [
-  { icon: icons.share, label: "Share" },
-  { icon: icons.comment, label: "Community chat" },
-  { icon: icons.rss, label: "RSS feed" },
+  { name: "share", label: "Share" },
+  { name: "chat_bubble", label: "Community chat" },
+  { name: "rss_feed", label: "RSS feed" },
 ];
 
 function createLinkList(title: string, links: string[]): HTMLElement {
@@ -41,7 +41,7 @@ export function createFooter(): HTMLElement {
       SOCIAL_ICONS.map((item) =>
         el("li", {}, [
           el("a", { href: "/", class: "footer__social-link", "aria-label": item.label }, [
-            icon(item.icon),
+            materialIcon(item.name),
           ]),
         ]),
       ),

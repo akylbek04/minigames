@@ -1,6 +1,5 @@
 import { el } from "../../utils/dom";
-import { icon } from "../../utils/icon";
-import { icons } from "../icons/icons";
+import { materialIcon } from "../../utils/icon";
 import { leaderboard } from "../../assets/data/leaderboard";
 import type { LeaderboardEntry } from "../../types/leaderboard";
 import "./leaderboard.scss";
@@ -27,7 +26,7 @@ function createRow(entry: LeaderboardEntry, index: number): HTMLElement {
   ]);
 
   const streak = el("span", { class: "leaderboard__streak" }, [
-    icon(icons.fire, "leaderboard__streak-icon"),
+    materialIcon("local_fire_department", "leaderboard__streak-icon icon--filled"),
     `${entry.streakDays} days`,
   ]);
 

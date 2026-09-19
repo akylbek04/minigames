@@ -1,6 +1,5 @@
 import { el } from "../../utils/dom";
-import { icon } from "../../utils/icon";
-import { icons } from "../icons/icons";
+import { materialIcon } from "../../utils/icon";
 
 export interface FieldOptions {
   id: string;
@@ -8,7 +7,7 @@ export interface FieldOptions {
   type: string;
   placeholder: string;
   autocomplete: string;
-  iconMarkup: string;
+  iconName: string;
   hint?: string;
   passwordToggle?: boolean;
 }
@@ -19,7 +18,7 @@ export function createField({
   type,
   placeholder,
   autocomplete,
-  iconMarkup,
+  iconName,
   hint,
   passwordToggle,
 }: FieldOptions): HTMLElement {
@@ -34,12 +33,12 @@ export function createField({
   });
 
   const wrapper = el("div", { class: "auth-dialog__input-wrapper" }, [
-    icon(iconMarkup, "auth-dialog__input-icon"),
+    materialIcon(iconName, "auth-dialog__input-icon"),
     input,
   ]);
 
   if (passwordToggle) {
-    const visibilityIcon = icon(icons.eye);
+    const visibilityIcon = materialIcon("visibility");
     const toggle = el(
       "button",
       { type: "button", class: "auth-dialog__toggle-visibility", "aria-label": "Show password" },
@@ -48,7 +47,7 @@ export function createField({
     toggle.addEventListener("click", () => {
       const isShowing = input.type === "text";
       input.type = isShowing ? "password" : "text";
-      visibilityIcon.innerHTML = isShowing ? icons.eye : icons.eyeOff;
+      visibilityIcon.textContent = isShowing ? "visibility" : "visibility_off";
       toggle.setAttribute("aria-label", isShowing ? "Show password" : "Hide password");
     });
     wrapper.append(toggle);
