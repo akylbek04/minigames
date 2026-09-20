@@ -1,6 +1,7 @@
 import { el } from "../../utils/dom";
 import { icon } from "../../utils/icon";
 import { icons } from "../icons/icons";
+import { assetUrl } from "../../utils/asset-url";
 import "./footer.scss";
 
 const EXPLORE_LINKS = ["Home", "Library", "Categories", "Tournaments"];
@@ -42,7 +43,7 @@ function createCommunityColumn(): HTMLElement {
 export function createFooter(): HTMLElement {
   const brand = el("div", { class: "footer__brand" }, [
     el("a", { href: "/", class: "footer__logo" }, [
-      el("img", { src: "/favicon.svg", alt: "", class: "footer__logo-icon" }),
+      el("img", { src: assetUrl("/favicon.svg"), alt: "", class: "footer__logo-icon" }),
       el("span", {}, ["MiniGames"]),
     ]),
     el("p", { class: "footer__tagline" }, [

@@ -1,4 +1,5 @@
 import { el } from "../../utils/dom";
+import { assetUrl } from "../../utils/asset-url";
 import type { AuthMode } from "../../types/auth";
 import "./header.scss";
 
@@ -41,7 +42,7 @@ export function createHeader({ onOpenAuth, menuToggle }: HeaderCallbacks): HTMLE
   signUpButton.addEventListener("click", () => onOpenAuth("register"));
 
   const logo = el("a", { href: "/", class: "header__logo" }, [
-    el("img", { src: "/favicon.svg", alt: "", class: "header__logo-icon" }),
+    el("img", { src: assetUrl("/favicon.svg"), alt: "", class: "header__logo-icon" }),
     el("span", {}, ["MiniGames"]),
   ]);
 
