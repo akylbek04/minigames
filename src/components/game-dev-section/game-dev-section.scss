@@ -1,64 +1,187 @@
 @use "../../styles/breakpoints" as bp;
 @use "../../styles/mixins" as mix;
 
+.game-dev {
+  border-bottom: 1px solid var(--color-on-primary);
+}
+
 .game-dev__inner {
   @include mix.container;
 
   display: flex;
   flex-direction: column;
-  gap: var(--size-3);
-  padding-block: var(--size-6);
+  align-items: stretch;
+  gap: var(--size-2);
+  padding-block: var(--size-2);
+  padding-inline: var(--size-2);
 
   @include bp.tablet-up {
-    flex-direction: row;
-    align-items: stretch;
+    gap: var(--size-3);
+    padding-block: var(--size-3);
+    padding-inline: var(--size-5);
+  }
+
+  @include bp.desktop-up {
+    // Grid with minmax(0, Nfr) tracks (680:958, matching the mockup's
+    // illustration/card widths at 1920px) instead of flexbox: a flex
+    // item's default automatic minimum size is based on its content,
+    // which can quietly stop it from shrinking below that even with
+    // flex-basis: 0 and min-width: 0 set on the item itself (this is what
+    // was happening to the card). minmax(0, ...) forces the *track*
+    // itself down to 0, guaranteeing both columns actually shrink
+    // together at every width.
+    display: grid;
+    grid-template-columns: minmax(0, 680fr) minmax(0, 958fr);
+    align-items: center;
+    gap: var(--size-5);
+    padding-block: var(--size-5);
+    padding-inline: var(--size-15);
   }
 }
 
 .game-dev__illustration {
+  display: block;
   width: 100%;
-  height: 240px;
+  height: 227px;
   object-fit: cover;
-  border-radius: var(--corner-large);
+  border-radius: var(--corner-extra-large);
 
   @include bp.tablet-up {
-    width: 45%;
+    height: 300px;
+  }
+
+  @include bp.desktop-up {
+    // Fills its grid column (see .game-dev__inner); aspect-ratio keeps its
+    // proportions (narrower, taller than the card) consistent as it scales.
+    width: 100%;
     height: auto;
+    aspect-ratio: 680 / 480;
+    // a barely visible tilt, per the mockup
+    transform: rotate(0.24deg);
   }
 }
 
 .game-dev__card {
-  display: flex;
   flex: 1;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  padding: var(--size-4);
+  padding: var(--size-3);
+  background-color: var(--color-white);
   border: 2px solid var(--color-on-primary);
-  border-radius: var(--corner-large);
+  border-radius: var(--corner-extra-large);
+  // soft layered shadow (unlike the hard offset shadows used elsewhere) - no
+  // matching token, this style is unique to this section
+  box-shadow:
+    0 14px 30px -10px rgba(0, 0, 0, 0.0784),
+    0 2px 8px -4px rgba(0, 0, 0, 0.0392);
+
+  @include bp.tablet-up {
+    padding: var(--size-4);
+  }
+
+  @include bp.desktop-up {
+    // Fills its grid column (see .game-dev__inner). aspect-ratio (958:344,
+    // its own target proportions) replaces content-driven "hug" height: both
+    // this and the illustration's width are simple linear fractions of the
+    // same grid row, so for any shrink factor k, illustration height = k *
+    // 480 and card height = k * 344 - since 480 > 344, the card is
+    // guaranteed shorter than the illustration at every width, not only at
+    // 1920px.
+    //
+    // container-type turns the card itself into a query container, so its
+    // padding/gaps/font-sizes below can be expressed in cqw (1cqw = 1% of
+    // the card's own width) and genuinely shrink as the card does, instead
+    // of needing overflow/scroll as a fallback for content that doesn't fit.
+    container-type: inline-size;
+    // 4.175cqw = 40px (size-5) at the 958px reference width; floors at 16px.
+    padding: clamp(16px, 4.175cqw, 40px);
+    aspect-ratio: 958 / 344;
+  }
+}
+
+.game-dev__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+
+  @include bp.desktop-up {
+    // 2.5cqw = 24px (size-3) at the 958px reference width.
+    gap: clamp(10px, 2.5cqw, 24px);
+  }
 }
 
 .game-dev__title {
   color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
   font-size: var(--font-size-headline-medium);
-  font-weight: var(--font-weight-extra-bold);
+  line-height: 1.2;
+
+  @include bp.desktop-up {
+    // 3.34cqw = 32px (headline-large) at the 958px reference width.
+    font-size: clamp(18px, 3.34cqw, var(--font-size-headline-large));
+  }
 }
 
 .game-dev__text {
-  margin-top: var(--size-2);
   color: var(--color-on-bg);
+  font-size: var(--font-size-label-medium);
+  line-height: 1.5;
+
+  @include bp.tablet-up {
+    font-size: var(--font-size-body-small);
+  }
+
+  @include bp.desktop-up {
+    // 1.88cqw = 18px (body-large) at the 958px reference width.
+    font-size: clamp(12px, 1.88cqw, var(--font-size-body-large));
+  }
 }
 
 .game-dev__cta {
-  margin-top: var(--size-3);
+  align-self: flex-start;
+  gap: var(--size-1);
+  padding: var(--btn-padding-small);
+  border-radius: var(--corner-medium);
+  // soft shadow, per the mockup, distinct from the flat buttons elsewhere
+  box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.102);
+  font-size: var(--font-size-label-medium);
+
+  @include bp.tablet-up {
+    padding: var(--btn-padding-medium);
+    font-size: var(--font-size-body-small);
+  }
+
+  @include bp.desktop-up {
+    // 1.67cqw = 16px, 2.5cqw = 24px (btn-padding-large) at the 958px
+    // reference width - kept as separate longhands since block/inline
+    // scale from different base pixel values.
+    padding-block: clamp(8px, 1.67cqw, 16px);
+    padding-inline: clamp(12px, 2.5cqw, 24px);
+    font-size: clamp(12px, 1.88cqw, var(--font-size-body-large));
+  }
+}
+
+.game-dev__cta-icon {
+  display: inline-flex;
+
+  svg {
+    width: var(--icon-size-small);
+    height: var(--icon-size-small);
+  }
+
+  @include bp.desktop-up {
+    svg {
+      // 2.5cqw = 24px (icon-size-large) at the 958px reference width.
+      width: clamp(14px, 2.5cqw, var(--icon-size-large));
+      height: clamp(14px, 2.5cqw, var(--icon-size-large));
+    }
+  }
 }
 
 .game-dev__contact {
-  margin-top: var(--size-2);
   color: var(--color-on-bg-low);
-  font-size: var(--font-size-body-small);
+  font-size: var(--font-size-label-medium);
 
-  a {
-    color: var(--color-tertiary);
+  @include bp.desktop-up {
+    // 1.46cqw = 14px (body-small) at the 958px reference width.
+    font-size: clamp(10px, 1.46cqw, var(--font-size-body-small));
   }
 }
