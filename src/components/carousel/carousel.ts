@@ -1,9 +1,11 @@
 import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
 import { formatCompactNumber } from "../../utils/format";
-import { featuredGames } from "../../assets/data/featured-games";
+import featuredGamesData from "../../assets/data/featured-games.json";
 import type { Game } from "../../types/game";
 import "./carousel.scss";
+
+const featuredGames = featuredGamesData.data as Game[];
 
 type CardRole = "edge" | "medium" | "wide";
 
