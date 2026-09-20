@@ -40,6 +40,17 @@ button {
   font-family: inherit;
 }
 
+// Scrollbar hidden everywhere (page and any internally-scrolling element,
+// e.g. the auth dialog on short viewports) - scrolling itself still works,
+// only the visual bar is gone.
+:root {
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
 .material-symbols-outlined {
   display: inline-block;
   font-family: "Material Symbols Outlined";
