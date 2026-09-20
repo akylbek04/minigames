@@ -1,0 +1,115 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.header {
+  background-color: var(--color-bg);
+  border-bottom: 2px solid var(--color-on-primary);
+}
+
+.header__inner {
+  @include mix.container;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--size-2);
+  padding-inline: var(--size-2);
+
+  @include bp.tablet-up {
+    padding-inline: var(--size-5);
+    height: 72px;
+  }
+
+  @include bp.desktop-up {
+    padding-block: var(--size-3);
+    padding-inline: var(--size-10);
+    height: auto;
+  }
+}
+
+.header__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  text-decoration: none;
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-headline-small);
+  letter-spacing: -0.005em;
+
+  @include bp.desktop-up {
+    font-size: var(--font-size-headline-medium);
+  }
+}
+
+.header__logo-icon {
+  display: block;
+  width: var(--size-4);
+  height: var(--size-4);
+}
+
+.header__nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4);
+}
+
+.header__nav {
+  display: none;
+
+  @include bp.desktop-up {
+    display: block;
+  }
+}
+
+.header__nav-list {
+  display: flex;
+  gap: var(--size-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.header__nav-link {
+  text-decoration: none;
+  color: var(--color-on-bg);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-body-medium);
+  line-height: 1;
+
+  &:hover {
+    color: var(--color-on-primary);
+  }
+
+  &[aria-current="page"] {
+    color: var(--color-on-primary);
+    font-weight: var(--font-weight-bold);
+  }
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2);
+}
+
+.header__login {
+  display: none;
+
+  @include bp.desktop-up {
+    display: inline-flex;
+  }
+}
+
+.header__signup {
+  display: none;
+
+  @include bp.tablet-up {
+    display: inline-flex;
+    padding: var(--btn-padding-small);
+  }
+
+  @include bp.desktop-up {
+    padding: var(--btn-padding-medium);
+  }
+}

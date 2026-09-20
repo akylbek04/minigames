@@ -1,0 +1,263 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.footer {
+  background-color: var(--color-bg-footer);
+  color: var(--color-on-bg-footer);
+}
+
+.footer__inner {
+  @include mix.container;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+  padding-block: var(--size-4);
+  padding-inline: var(--size-2);
+
+  @include bp.tablet-up {
+    gap: var(--size-5);
+    padding: var(--size-5);
+  }
+
+  @include bp.desktop-up {
+    gap: var(--size-8);
+    padding-block: var(--size-5);
+    padding-inline: var(--size-15);
+  }
+}
+
+.footer__top {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+
+  @include bp.desktop-up {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+// Logo + tagline are a single visual group only at desktop (positioned as
+// one side of the top row's space-between); at tablet/mobile they're just
+// flat, equally-gapped children of .footer__top alongside the columns.
+.footer__brand {
+  display: contents;
+
+  @include bp.desktop-up {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-3);
+    width: 400px;
+  }
+}
+
+.footer__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  color: var(--color-white);
+  text-decoration: none;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-headline-small);
+  letter-spacing: -0.005em;
+
+  @include bp.desktop-up {
+    font-size: var(--font-size-headline-medium);
+    letter-spacing: normal;
+  }
+}
+
+.footer__logo-icon {
+  display: block;
+  width: var(--size-4);
+  height: var(--size-4);
+}
+
+.footer__tagline {
+  color: var(--color-on-bg-footer);
+  font-size: var(--font-size-body-small);
+  line-height: 1.5;
+}
+
+.footer__columns {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--size-5);
+
+  @include bp.tablet-up {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  @include bp.desktop-up {
+    gap: var(--size-10);
+  }
+}
+
+.footer__column--community {
+  grid-column: 1 / -1;
+
+  @include bp.tablet-up {
+    grid-column: auto;
+  }
+}
+
+.footer__heading {
+  color: var(--color-white);
+  font-size: var(--font-size-label-extra-large);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+.footer__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+  margin: var(--size-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer__link {
+  color: var(--color-on-bg-footer);
+  text-decoration: none;
+  font-size: var(--font-size-body-small);
+  line-height: 1;
+
+  &:hover {
+    color: var(--color-primary);
+  }
+}
+
+.footer__socials {
+  display: flex;
+  gap: var(--size-2);
+  margin: var(--size-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer__social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-4);
+  height: var(--size-4);
+  color: var(--color-white);
+  background-color: var(--color-bg-footer-low);
+  border-radius: var(--corner-full);
+  font-size: var(--icon-size-small);
+
+  svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+  }
+
+  &:hover {
+    background-color: var(--color-bg-footer-lowest);
+  }
+
+  @include bp.desktop-up {
+    width: var(--size-5);
+    height: var(--size-5);
+    font-size: var(--icon-size-medium);
+  }
+}
+
+.footer__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+
+  @include bp.tablet-up {
+    gap: var(--size-2);
+  }
+
+  @include bp.desktop-up {
+    gap: var(--size-3);
+  }
+}
+
+.footer__divider {
+  width: 100%;
+  height: 0;
+  margin: 0;
+  border: none;
+  border-top: 1px solid var(--color-bg-footer-low);
+}
+
+.footer__legal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+  color: var(--color-on-bg-footer);
+  font-size: var(--font-size-label-medium);
+
+  @include bp.tablet-up {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    // space-between already distributes all the spacing between the four
+    // items (three once .footer__credits unwraps its own two children in);
+    // an additional gap here would double up on top of that.
+    gap: 0;
+    font-size: var(--font-size-body-small);
+  }
+}
+
+.footer__copyright {
+  font-size: inherit;
+}
+
+.footer__credits {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2);
+
+  @include bp.tablet-up {
+    display: contents;
+  }
+}
+
+.footer__bottom-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-1);
+  color: var(--color-on-bg-footer);
+  text-decoration: none;
+  font-size: inherit;
+
+  &:hover {
+    color: var(--color-primary);
+  }
+}
+
+.footer__bottom-link-icon {
+  display: inline-flex;
+  flex: none;
+
+  svg {
+    display: block;
+    width: var(--icon-size-medium);
+    height: var(--icon-size-medium);
+  }
+
+  @include bp.desktop-up {
+    svg {
+      width: var(--icon-size-large);
+      height: var(--icon-size-large);
+    }
+  }
+}
+
+.footer__love {
+  display: none;
+  font-size: inherit;
+
+  @include bp.tablet-up {
+    display: block;
+  }
+}

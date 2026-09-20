@@ -1,0 +1,56 @@
+@use "breakpoints" as bp;
+
+@mixin container {
+  width: 100%;
+  max-width: 1920px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 5rem);
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@mixin section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-headline-medium);
+  line-height: 1;
+
+  &::before {
+    content: "";
+    width: var(--size-1);
+    height: var(--size-3);
+    background-color: var(--color-primary);
+    border: 1.5px solid var(--color-on-primary);
+    border-radius: var(--corner-extra-small);
+  }
+
+  @include bp.desktop-up {
+    font-size: var(--font-size-headline-large);
+
+    &::before {
+      height: var(--size-4);
+    }
+  }
+}
+
+@mixin reset-button {
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+}

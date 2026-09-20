@@ -1,0 +1,71 @@
+@use "tokens/index";
+@use "components/buttons";
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-on-bg);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-body-medium);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+// Scrollbar hidden everywhere (page and any internally-scrolling element,
+// e.g. the auth dialog on short viewports) - scrolling itself still works,
+// only the visual bar is gone.
+:root {
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.material-symbols-outlined {
+  display: inline-block;
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+
+  &.icon--filled {
+    font-variation-settings: "FILL" 1;
+  }
+}

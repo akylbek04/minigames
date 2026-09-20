@@ -1,0 +1,222 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.carousel__inner {
+  @include mix.container;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+  padding-block: var(--size-2);
+  padding-inline: var(--size-2);
+
+  @include bp.tablet-up {
+    gap: var(--size-3);
+    padding-block: var(--size-3);
+    padding-inline: var(--size-5);
+  }
+
+  @include bp.desktop-up {
+    gap: var(--size-5);
+    padding-block: var(--size-5);
+    padding-inline: var(--size-15);
+  }
+}
+
+.carousel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.carousel__title {
+  @include mix.section-title;
+}
+
+.carousel__nav {
+  display: none;
+  gap: var(--size-2);
+
+  @include bp.tablet-up {
+    display: flex;
+  }
+}
+
+.carousel__arrow {
+  @include mix.reset-button;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-5);
+  height: var(--size-5);
+  color: var(--color-on-primary);
+  background-color: var(--color-white);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+  font-size: var(--icon-size-medium);
+
+  &--filled {
+    background-color: var(--color-primary);
+  }
+
+  @include bp.desktop-up {
+    width: var(--size-6);
+    height: var(--size-6);
+    font-size: var(--icon-size-large);
+  }
+}
+
+.carousel__track {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--size-05);
+  height: 206px;
+  margin: 0;
+  padding-inline: var(--size-05);
+  list-style: none;
+
+  @include bp.tablet-up {
+    gap: var(--size-1);
+    height: 288px;
+    padding-inline: var(--size-1);
+  }
+
+  @include bp.desktop-up {
+    height: 388px;
+  }
+}
+
+.carousel__card {
+  container-type: inline-size;
+  // flex-basis 0 + min-width 0 makes each card's share of the row a pure
+  // ratio of the flex-grow values below, so widths scale continuously with
+  // the viewport instead of jumping between fixed px at each breakpoint.
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  height: 200px;
+  background-color: var(--color-white);
+  // 2.5px is an explicit Figma value between the 2px/3px border tokens
+  border: 2.5px solid var(--color-on-primary);
+  border-radius: var(--corner-large);
+  box-shadow: var(--shadow-level-1);
+
+  @include bp.tablet-up {
+    height: 280px;
+  }
+
+  @include bp.desktop-up {
+    height: 384px;
+    border-radius: var(--corner-extra-large);
+  }
+}
+
+// Cards that only appear at desktop, flanking the row to hint it scrolls.
+.carousel__card--edge {
+  display: none;
+
+  @include bp.desktop-up {
+    display: block;
+    flex: 120 1 0%;
+  }
+}
+
+// The other flanking pair: narrow at mobile/tablet, a mid-size card at desktop.
+.carousel__card--medium {
+  flex: 56 1 0%;
+
+  @include bp.tablet-up {
+    flex: 105 1 0%;
+  }
+
+  @include bp.desktop-up {
+    // 320, not the mockup's literal 288, so the computed width clears the
+    // RSS-QS-1-4-4 288px info-overlay threshold with margin: a real 1920px
+    // browser window renders ~1903px wide once the scrollbar is subtracted
+    // (see common-layout-requirements.md), which would otherwise push a
+    // literal 288 ratio just under the threshold and hide the overlay.
+    flex: 320 1 0%;
+  }
+}
+
+// The featured card, always centered and widest. A floor of 288px keeps its
+// info overlay visible per RSS-QS-1-4-4 even on the narrowest mobile widths,
+// where its proportional flex share alone would otherwise dip just under it.
+.carousel__card--wide {
+  flex: 218 1 0%;
+  min-width: 288px;
+
+  @include bp.tablet-up {
+    flex: 448 1 0%;
+  }
+
+  @include bp.desktop-up {
+    flex: 816 1 0%;
+  }
+}
+
+.carousel__card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel__card-info {
+  display: none;
+  position: absolute;
+  inset: auto 0 0 0;
+  flex-direction: column;
+  gap: var(--size-1);
+  padding: var(--size-2);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.4) 17.31%,
+    rgba(0, 0, 0, 0.85) 46.15%
+  );
+}
+
+// RSS-QS-1-4-4: cards rendered narrower than 288px show only the image.
+@container (min-width: 288px) {
+  .carousel__card-info {
+    display: flex;
+  }
+}
+
+.carousel__card-title {
+  overflow: hidden;
+  color: var(--color-white);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-body-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.carousel__card-stats {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-white);
+  font-size: var(--font-size-label-large);
+  font-weight: var(--font-weight-bold);
+}
+
+.carousel__card-rating,
+.carousel__card-likes {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-05);
+}
+
+.carousel__card-rating {
+  color: var(--color-primary);
+}
+
+.carousel__card-likes {
+  color: var(--color-like);
+}
+
+.carousel__card-icon {
+  font-size: var(--icon-size-small);
+}

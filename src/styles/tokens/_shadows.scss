@@ -1,0 +1,11 @@
+$shadows: (
+  "level-1": 4px 4px 0 0 var(--color-on-primary),
+  "level-2": 6px 6px 0 0 var(--color-on-primary),
+  "level-3": 8px 8px 0 0 var(--color-on-primary),
+);
+
+@mixin emit-shadows {
+  @each $name, $value in $shadows {
+    --shadow-#{$name}: #{$value};
+  }
+}

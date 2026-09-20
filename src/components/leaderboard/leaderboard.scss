@@ -1,0 +1,304 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.leaderboard__inner {
+  @include mix.container;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+  padding-block: var(--size-2);
+  padding-inline: var(--size-2);
+
+  @include bp.tablet-up {
+    gap: var(--size-3);
+    padding-block: var(--size-3);
+    padding-inline: var(--size-5);
+  }
+
+  @include bp.desktop-up {
+    gap: var(--size-5);
+    padding-block: var(--size-5);
+    padding-inline: var(--size-15);
+  }
+}
+
+.leaderboard__title {
+  @include mix.section-title;
+}
+
+.leaderboard__table {
+  width: 100%;
+  table-layout: fixed;
+  // border-collapse: collapse renders the table's own outer border
+  // incorrectly at the rounded corners in most browsers; separate + zero
+  // spacing keeps the same cell layout (we only ever set border-bottom on
+  // cells, so nothing doubles up) while letting the outer border/radius
+  // render correctly.
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  background-color: var(--color-white);
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-body-small);
+  // 2.5px is an explicit Figma value between the 2px/3px border tokens
+  border: 2.5px solid var(--color-on-primary);
+  border-radius: var(--corner-large);
+  box-shadow: var(--shadow-level-1);
+
+  @include bp.desktop-up {
+    font-size: var(--font-size-body-medium);
+    box-shadow: var(--shadow-level-2);
+  }
+}
+
+.leaderboard__table thead {
+  background-color: var(--color-tertiary);
+  color: var(--color-white);
+  border-bottom: 1.5px solid var(--color-on-primary);
+}
+
+.leaderboard__table th,
+.leaderboard__table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.leaderboard__table th {
+  padding: var(--size-2);
+  color: var(--color-white);
+  font-weight: var(--font-weight-extra-bold);
+  text-transform: uppercase;
+
+  @include bp.desktop-up {
+    padding: var(--size-3);
+  }
+}
+
+.leaderboard__table td {
+  padding: var(--size-2);
+  border-bottom: 1px solid var(--color-outline);
+
+  @include bp.desktop-up {
+    padding-inline: var(--size-3);
+  }
+}
+
+.leaderboard__row:nth-child(odd) {
+  background-color: var(--color-bg);
+}
+
+// Desktop shows all 5 players; tablet and mobile show only the top 3.
+.leaderboard__row--extra {
+  display: none;
+
+  @include bp.desktop-up {
+    display: table-row;
+  }
+}
+
+.leaderboard__col-rank {
+  width: 40px;
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-extra-bold);
+
+  @include bp.tablet-up {
+    width: 80px;
+  }
+
+  .leaderboard__row:first-child & {
+    color: var(--color-tertiary);
+
+    @include bp.desktop-up {
+      color: var(--color-primary);
+    }
+  }
+}
+
+.leaderboard__table .leaderboard__col-player {
+  width: 97px;
+
+  @include bp.tablet-up {
+    width: 160px;
+  }
+
+  @include bp.desktop-up {
+    width: auto;
+  }
+}
+
+// The "Player" header label stays centered with the rest; only the row
+// content (avatar + username) is left-aligned.
+.leaderboard__table td.leaderboard__col-player {
+  text-align: left;
+}
+
+.leaderboard__player {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  // 6px is an explicit Figma value; no token lands between size-05(4px) and size-1(8px)
+  gap: 6px;
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
+
+  @include bp.tablet-up {
+    gap: var(--size-1);
+  }
+
+  @include bp.desktop-up {
+    // 12px is an explicit Figma value between size-1(8px) and size-2(16px)
+    gap: 12px;
+  }
+}
+
+.leaderboard__username {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboard__avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-3);
+  height: var(--size-3);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-label-small);
+  font-weight: var(--font-weight-bold);
+  border: 1px solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+
+  @include bp.tablet-up {
+    // 28px is an explicit Figma value between size-3(24px) and size-4(32px)
+    width: 28px;
+    height: 28px;
+  }
+
+  @include bp.desktop-up {
+    width: var(--size-5);
+    height: var(--size-5);
+    font-size: var(--font-size-label-large);
+    border-width: 1.5px;
+  }
+
+  &--1 {
+    background-color: var(--color-avatar-random-3);
+  }
+
+  &--2 {
+    background-color: var(--color-avatar-random-2);
+  }
+
+  &--3 {
+    background-color: var(--color-avatar-random-1);
+  }
+
+  &--4 {
+    background-color: var(--color-avatar-random-4);
+  }
+
+  &--5 {
+    background-color: var(--color-avatar-random-5);
+  }
+}
+
+.leaderboard__col-games {
+  display: none;
+  color: var(--color-on-primary);
+  // SemiBold 600 has no matching weight token; loaded explicitly for this column
+  font-weight: 600;
+
+  @include bp.tablet-up {
+    display: table-cell;
+    width: 110px;
+  }
+
+  @include bp.desktop-up {
+    width: auto;
+  }
+}
+
+.leaderboard__col-score {
+  width: 80px;
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
+
+  @include bp.tablet-up {
+    width: 110px;
+  }
+
+  @include bp.desktop-up {
+    width: auto;
+  }
+}
+
+.leaderboard__score-compact {
+  @include bp.tablet-up {
+    display: none;
+  }
+}
+
+.leaderboard__score-full {
+  display: none;
+
+  @include bp.tablet-up {
+    display: inline;
+  }
+}
+
+.leaderboard__col-streak {
+  width: 70px;
+  font-weight: var(--font-weight-bold);
+
+  @include bp.tablet-up {
+    width: 110px;
+  }
+
+  @include bp.desktop-up {
+    width: auto;
+  }
+}
+
+.leaderboard__streak {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-05);
+  color: var(--color-on-primary);
+}
+
+.leaderboard__streak-compact {
+  @include bp.desktop-up {
+    display: none;
+  }
+}
+
+.leaderboard__streak-full {
+  display: none;
+
+  @include bp.desktop-up {
+    display: inline;
+  }
+}
+
+.leaderboard__col-favorite {
+  display: none;
+
+  @include bp.desktop-up {
+    display: table-cell;
+    width: auto;
+  }
+}
+
+.leaderboard__badge {
+  display: inline-block;
+  padding: var(--size-05) 12px;
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-label-medium);
+  background-color: var(--color-bg);
+  border: 1.5px solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+}
