@@ -12,7 +12,7 @@ export function createHero(): HTMLElement {
     "Discover hundreds of curated casual mini-games. Play instantly in your browser — puzzle, match 3, farm, and board classics.",
   ]);
 
-  const cta = el("button", { type: "button", class: "btn btn--filled btn--large hero__cta" }, [
+  const cta = el("button", { type: "button", class: "btn btn--filled hero__cta" }, [
     "Browse Library",
   ]);
 
