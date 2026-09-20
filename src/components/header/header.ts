@@ -1,6 +1,4 @@
 import { el } from "../../utils/dom";
-import { icon } from "../../utils/icon";
-import { icons } from "../icons/icons";
 import type { AuthMode } from "../../types/auth";
 import "./header.scss";
 
@@ -43,15 +41,16 @@ export function createHeader({ onOpenAuth, menuToggle }: HeaderCallbacks): HTMLE
   signUpButton.addEventListener("click", () => onOpenAuth("register"));
 
   const logo = el("a", { href: "/", class: "header__logo" }, [
-    icon(icons.logoMark, "header__logo-icon"),
+    el("img", { src: "/favicon.svg", alt: "", class: "header__logo-icon" }),
     el("span", {}, ["MiniGames"]),
   ]);
 
+  const navActions = el("div", { class: "header__nav-actions" }, [
+    nav,
+    el("div", { class: "header__actions" }, [loginButton, signUpButton, menuToggle]),
+  ]);
+
   return el("header", { class: "header" }, [
-    el("div", { class: "header__inner" }, [
-      logo,
-      nav,
-      el("div", { class: "header__actions" }, [loginButton, signUpButton, menuToggle]),
-    ]),
+    el("div", { class: "header__inner" }, [logo, navActions]),
   ]);
 }
