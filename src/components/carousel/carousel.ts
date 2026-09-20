@@ -5,7 +5,21 @@ import { featuredGames } from "../../assets/data/featured-games";
 import type { Game } from "../../types/game";
 import "./carousel.scss";
 
-function createCard(game: Game): HTMLElement {
+type CardRole = "edge" | "medium" | "wide";
+
+// Fixed showcase order matching the mockup's five-card desktop row; tablet and
+// mobile hide the two "edge" cards via CSS, leaving the middle three.
+const CAROUSEL_CARDS: { slug: string; role: CardRole }[] = [
+  { slug: "tailside-cozy-cafe-sim", role: "edge" },
+  { slug: "islanders-new-shores", role: "medium" },
+  { slug: "vacation-cafe-simulator", role: "wide" },
+  { slug: "winter-burrow", role: "medium" },
+  { slug: "shelve-the-potions", role: "edge" },
+];
+
+const gameBySlug = new Map(featuredGames.map((game) => [game.slug, game]));
+
+function createCard(game: Game, role: CardRole): HTMLElement {
   const image = el("img", {
     src: game.cardImage,
     alt: game.name,
@@ -26,7 +40,7 @@ function createCard(game: Game): HTMLElement {
     ]),
   ]);
 
-  return el("li", { class: "carousel__card" }, [image, info]);
+  return el("li", { class: `carousel__card carousel__card--${role}` }, [image, info]);
 }
 
 export function createCarousel(): HTMLElement {
@@ -35,7 +49,7 @@ export function createCarousel(): HTMLElement {
   const prevButton = el(
     "button",
     { type: "button", class: "carousel__arrow", "aria-label": "Previous games" },
-    [materialIcon("chevron_left")],
+    [materialIcon("arrow_back")],
   );
   const nextButton = el(
     "button",
@@ -44,7 +58,7 @@ export function createCarousel(): HTMLElement {
       class: "carousel__arrow carousel__arrow--filled",
       "aria-label": "Next games",
     },
-    [materialIcon("chevron_right")],
+    [materialIcon("arrow_forward")],
   );
 
   const header = el("div", { class: "carousel__header" }, [
@@ -55,7 +69,7 @@ export function createCarousel(): HTMLElement {
   const track = el(
     "ul",
     { class: "carousel__track" },
-    featuredGames.map((game) => createCard(game)),
+    CAROUSEL_CARDS.map(({ slug, role }) => createCard(gameBySlug.get(slug)!, role)),
   );
 
   return el("section", { class: "carousel", "aria-label": "New Games" }, [
