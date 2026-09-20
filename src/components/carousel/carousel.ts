@@ -1,6 +1,7 @@
 import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
 import { formatCompactNumber } from "../../utils/format";
+import { assetUrl } from "../../utils/asset-url";
 import featuredGamesData from "../../assets/data/featured-games.json";
 import type { Game } from "../../types/game";
 import "./carousel.scss";
@@ -23,7 +24,7 @@ const gameBySlug = new Map(featuredGames.map((game) => [game.slug, game]));
 
 function createCard(game: Game, role: CardRole): HTMLElement {
   const image = el("img", {
-    src: game.cardImage,
+    src: assetUrl(game.cardImage),
     alt: game.name,
     class: "carousel__card-image",
   });
