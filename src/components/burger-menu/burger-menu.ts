@@ -1,6 +1,5 @@
 import { el } from "../../utils/dom";
-import { icon, materialIcon } from "../../utils/icon";
-import { icons } from "../icons/icons";
+import { materialIcon } from "../../utils/icon";
 import { closeDialogAnimated, openDialogAnimated } from "../../utils/animated-dialog";
 import type { AuthMode } from "../../types/auth";
 import "./burger-menu.scss";
@@ -40,7 +39,7 @@ export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMen
 
   const topBar = el("div", { class: "mobile-menu__topbar" }, [
     el("a", { href: "/", class: "mobile-menu__logo" }, [
-      icon(icons.logoMark, "mobile-menu__logo-icon"),
+      el("img", { src: "/favicon.svg", alt: "", class: "mobile-menu__logo-icon" }),
       el("span", {}, ["MiniGames"]),
     ]),
     closeButton,
