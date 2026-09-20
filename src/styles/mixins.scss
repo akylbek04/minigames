@@ -1,3 +1,5 @@
+@use "breakpoints" as bp;
+
 @mixin container {
   width: 100%;
   max-width: 1920px;
@@ -22,15 +24,25 @@
   align-items: center;
   gap: var(--size-1);
   color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
   font-size: var(--font-size-headline-medium);
-  font-weight: var(--font-weight-extra-bold);
+  line-height: 1;
 
   &::before {
     content: "";
-    width: 4px;
-    height: 1em;
+    width: var(--size-1);
+    height: var(--size-3);
     background-color: var(--color-primary);
-    border-radius: var(--corner-full);
+    border: 1.5px solid var(--color-on-primary);
+    border-radius: var(--corner-extra-small);
+  }
+
+  @include bp.desktop-up {
+    font-size: var(--font-size-headline-large);
+
+    &::before {
+      height: var(--size-4);
+    }
   }
 }
 

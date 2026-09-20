@@ -30,30 +30,7 @@
 }
 
 .carousel__title {
-  display: flex;
-  align-items: center;
-  gap: var(--size-1);
-  color: var(--color-on-primary);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-headline-medium);
-  line-height: 1;
-
-  &::before {
-    content: "";
-    width: var(--size-1);
-    height: var(--size-3);
-    background-color: var(--color-primary);
-    border: 1.5px solid var(--color-on-primary);
-    border-radius: var(--corner-extra-small);
-  }
-
-  @include bp.desktop-up {
-    font-size: var(--font-size-headline-large);
-
-    &::before {
-      height: var(--size-4);
-    }
-  }
+  @include mix.section-title;
 }
 
 .carousel__nav {
