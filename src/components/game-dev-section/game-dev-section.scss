@@ -163,6 +163,7 @@
   display: inline-flex;
 
   svg {
+    display: block;
     width: var(--icon-size-small);
     height: var(--icon-size-small);
   }
