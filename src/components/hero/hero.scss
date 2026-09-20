@@ -2,42 +2,113 @@
 @use "../../styles/mixins" as mix;
 
 .hero {
-  background-image:
-    linear-gradient(0deg, rgba(36, 33, 69, 0.45), rgba(36, 33, 69, 0.45)),
-    url("../../assets/images/hero-bg.jpg");
-  background-position: center;
-  background-size: cover;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 2px solid var(--color-on-primary);
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  // Two independently-opaque layers (solid tint, then the illustration) so the
+  // art reads as a faint texture rather than a prominent photo.
+  &::before {
+    background-color: var(--color-bg-footer);
+    opacity: 0.65;
+  }
+
+  &::after {
+    background-image: url("../../assets/images/hero_section.png");
+    background-position: center;
+    background-size: cover;
+    opacity: 0.2;
+  }
 }
 
 .hero__inner {
   @include mix.container;
 
-  padding-block: var(--size-6);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding-block: var(--size-8);
+  padding-inline: var(--size-2);
+
+  @include bp.tablet-up {
+    padding-block: var(--size-9);
+    padding-inline: var(--size-5);
+  }
+
+  @include bp.desktop-up {
+    padding-block: var(--size-14);
+    padding-inline: var(--size-15);
+  }
 }
 
 .hero__card {
-  max-width: 560px;
-  padding: var(--size-4);
-  background-color: var(--color-surface-low);
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+  width: 100%;
+  padding: var(--size-3);
+  background-color: var(--color-bg);
   border: 2px solid var(--color-on-primary);
-  border-radius: var(--corner-large);
-  box-shadow: var(--shadow-level-3);
+  border-radius: var(--corner-medium);
+  box-shadow: var(--shadow-level-1);
+
+  @include bp.tablet-up {
+    width: 480px;
+    // 2.5px is an explicit Figma value between the 2px/3px border tokens
+    border-width: 2.5px;
+    border-radius: var(--corner-large);
+    box-shadow: var(--shadow-level-2);
+  }
+
+  @include bp.desktop-up {
+    width: 640px;
+    gap: var(--size-3);
+    padding: var(--size-6);
+    border-width: 3px;
+    border-radius: var(--corner-extra-large);
+    box-shadow: var(--shadow-level-3);
+  }
 }
 
 .hero__title {
   color: var(--color-on-primary);
-  font-size: var(--font-size-headline-large);
-  font-weight: var(--font-weight-extra-bold);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-display-small);
+  line-height: 1.2;
+
+  @include bp.tablet-up {
+    font-size: var(--font-size-display-medium);
+    line-height: 1.15;
+  }
 
   @include bp.desktop-up {
-    font-size: var(--font-size-display-medium);
+    font-size: var(--font-size-display-large);
+    line-height: 1.1;
   }
 }
 
 .hero__text {
-  margin-top: var(--size-2);
   color: var(--color-on-bg);
-  font-size: var(--font-size-body-medium);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-label-medium);
+  line-height: 1.4;
+
+  @include bp.tablet-up {
+    font-size: var(--font-size-body-small);
+  }
+
+  @include bp.desktop-up {
+    font-size: var(--font-size-body-large);
+    line-height: 1.5;
+  }
 }
 
 .hero__text--long {
@@ -55,5 +126,18 @@
 }
 
 .hero__cta {
-  margin-top: var(--size-3);
+  align-self: flex-start;
+  padding: var(--btn-padding-small);
+  font-size: var(--font-size-label-medium);
+
+  @include bp.tablet-up {
+    padding: var(--btn-padding-medium);
+    font-size: var(--font-size-body-small);
+    letter-spacing: 0.005em;
+  }
+
+  @include bp.desktop-up {
+    padding: var(--btn-padding-large);
+    font-size: var(--font-size-body-large);
+  }
 }
