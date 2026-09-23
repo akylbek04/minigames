@@ -8,6 +8,8 @@ import "./carousel.scss";
 
 const featuredGames = (allGamesData.data as Game[]).filter((game) => game.featured);
 
+const AUTOPLAY_DELAY = 4000;
+
 // A card's role comes from its circular distance to the active card; CSS
 // sizes each role per breakpoint (edge cards only show on desktop) and
 // animates the change, so cards grow toward the center and shrink away.
@@ -86,15 +88,32 @@ export function createCarousel(): HTMLElement {
     }
   }
 
+  // Autoplay: one step right to left every 4s.
+  let timerId: number | undefined;
+
+  function startTimer(): void {
+    clearTimeout(timerId);
+    timerId = setTimeout(() => {
+      step(1);
+      startTimer();
+    }, AUTOPLAY_DELAY);
+  }
+
   function step(direction: 1 | -1): void {
     activeIndex = (activeIndex + direction + slots.length) % slots.length;
     render();
   }
 
-  prevButton.addEventListener("click", () => step(-1));
-  nextButton.addEventListener("click", () => step(1));
+  function stepAndRestart(direction: 1 | -1): void {
+    step(direction);
+    startTimer();
+  }
+
+  prevButton.addEventListener("click", () => stepAndRestart(-1));
+  nextButton.addEventListener("click", () => stepAndRestart(1));
 
   render();
+  startTimer();
 
   return el("section", { class: "carousel", "aria-label": "New Games" }, [
     el("div", { class: "carousel__inner" }, [header, track]),
