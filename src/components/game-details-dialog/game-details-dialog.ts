@@ -5,6 +5,7 @@ import { closeDialogAnimated, openDialogAnimated } from "../../utils/animated-di
 import gameData from "../../assets/data/game-tukoni-forest-keepers.json";
 import type { GameDetails } from "../../types/game-details";
 import { createGameInfo } from "./game-info";
+import { createTopRecords } from "./top-records";
 import "./game-details-dialog.scss";
 
 // Story 2 always shows the same static game, whichever card opened it.
@@ -35,7 +36,10 @@ export function createGameDetailsDialog(): GameDetailsDialog {
       closeButton,
     ]);
 
-    const body = el("div", { class: "game-details__body" }, [createGameInfo(game)]);
+    const body = el("div", { class: "game-details__body" }, [
+      createGameInfo(game),
+      createTopRecords(game.topRecords),
+    ]);
 
     return [hero, body];
   }

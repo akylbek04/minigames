@@ -193,3 +193,63 @@
     @include mix.visually-hidden;
   }
 }
+
+.game-details__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+}
+
+.game-details__section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-body-medium);
+  font-weight: var(--font-weight-bold);
+}
+
+.game-details__trophy {
+  color: var(--color-primary-high);
+  font-size: var(--icon-size-large);
+}
+
+.game-details__records {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.game-details__record {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  padding: var(--size-2);
+  color: var(--color-on-primary);
+  background-color: var(--color-white);
+  border-radius: var(--corner-small);
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-bold);
+
+  @include bp.tablet-up {
+    gap: var(--size-2);
+  }
+}
+
+.game-details__record-player {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.game-details__record-date {
+  color: var(--color-on-bg-low);
+  font-size: var(--font-size-label-medium);
+  font-weight: var(--font-weight-regular);
+  white-space: nowrap;
+}
