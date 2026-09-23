@@ -1,5 +1,6 @@
 import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
+import { formatRelativeTime } from "../../utils/format";
 import type { GameComment } from "../../types/game-details";
 
 // Submitting is out of scope until Story 3, so the form never sends.
@@ -37,6 +38,54 @@ function createCommentForm(): HTMLFormElement {
   return form;
 }
 
+const AVATAR_COLOR_COUNT = 5;
+
+// Stable per author, so the same person always gets the same avatar color.
+function avatarColor(name: string): number {
+  return (
+    ([...name].reduce((sum, char) => sum + (char.codePointAt(0) ?? 0), 0) % AVATAR_COLOR_COUNT) + 1
+  );
+}
+
+// Liking only toggles this button's own state for now; counts stay as loaded.
+function createLikeButton(comment: GameComment): HTMLButtonElement {
+  const button = el(
+    "button",
+    {
+      type: "button",
+      class: "game-details__like",
+      "aria-pressed": String(comment.isLikedByCurrentUser),
+      "aria-label": `Like comment by ${comment.authorName}, ${comment.likesCount} likes`,
+    },
+    [materialIcon("favorite", "game-details__like-icon"), String(comment.likesCount)],
+  );
+  button.addEventListener("click", () => {
+    button.setAttribute("aria-pressed", String(button.getAttribute("aria-pressed") !== "true"));
+  });
+  return button;
+}
+
+function createComment(comment: GameComment): HTMLElement {
+  return el("article", { class: "game-details__comment" }, [
+    el("header", { class: "game-details__comment-header" }, [
+      el(
+        "span",
+        {
+          class: `game-details__avatar game-details__avatar--${avatarColor(comment.authorName)}`,
+          "aria-hidden": "true",
+        },
+        [comment.authorName.charAt(0)],
+      ),
+      el("span", { class: "game-details__comment-author" }, [comment.authorName]),
+      el("time", { class: "game-details__comment-date", datetime: comment.createdAt }, [
+        formatRelativeTime(comment.createdAt),
+      ]),
+    ]),
+    el("p", { class: "game-details__comment-text" }, [comment.text]),
+    createLikeButton(comment),
+  ]);
+}
+
 export function createComments(comments: GameComment[]): HTMLElement {
   return el(
     "section",
@@ -46,6 +95,11 @@ export function createComments(comments: GameComment[]): HTMLElement {
         `Comments (${comments.length})`,
       ]),
       createCommentForm(),
+      el(
+        "ul",
+        { class: "game-details__comments" },
+        comments.map((comment) => el("li", {}, [createComment(comment)])),
+      ),
     ],
   );
 }
