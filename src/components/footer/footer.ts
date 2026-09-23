@@ -2,23 +2,37 @@ import { el } from "../../utils/dom";
 import { icon } from "../../utils/icon";
 import { icons } from "../icons/icons";
 import { assetUrl } from "../../utils/asset-url";
+import { createPageLink, type Page } from "../../utils/navigation";
 import "./footer.scss";
 
-const EXPLORE_LINKS = ["Home", "Library", "Categories", "Tournaments"];
-const COMPANY_LINKS = ["About Us", "Contact", "Privacy Policy", "Terms of Service"];
+// Only Library has a page of its own besides Home; every other link leads Home.
+const EXPLORE_LINKS: { label: string; page: Page }[] = [
+  { label: "Home", page: "home" },
+  { label: "Library", page: "library" },
+  { label: "Categories", page: "home" },
+  { label: "Tournaments", page: "home" },
+];
+const COMPANY_LINKS: { label: string; page: Page }[] = [
+  { label: "About Us", page: "home" },
+  { label: "Contact", page: "home" },
+  { label: "Privacy Policy", page: "home" },
+  { label: "Terms of Service", page: "home" },
+];
 const SOCIAL_ICONS = [
   { markup: icons.share, label: "Share" },
   { markup: icons.chat, label: "Community chat" },
   { markup: icons.rssFeed, label: "RSS feed" },
 ];
 
-function createLinkColumn(title: string, links: string[]): HTMLElement {
+function createLinkColumn(title: string, links: { label: string; page: Page }[]): HTMLElement {
   return el("div", { class: "footer__column" }, [
     el("h3", { class: "footer__heading" }, [title]),
     el(
       "ul",
       { class: "footer__list" },
-      links.map((label) => el("li", {}, [el("a", { href: "/", class: "footer__link" }, [label])])),
+      links.map(({ label, page }) =>
+        el("li", {}, [createPageLink({ page }, { class: "footer__link" }, [label])]),
+      ),
     ),
   ]);
 }
@@ -31,9 +45,11 @@ function createCommunityColumn(): HTMLElement {
       { class: "footer__socials" },
       SOCIAL_ICONS.map((item) =>
         el("li", {}, [
-          el("a", { href: "/", class: "footer__social-link", "aria-label": item.label }, [
-            icon(item.markup),
-          ]),
+          createPageLink(
+            { page: "home" },
+            { class: "footer__social-link", "aria-label": item.label },
+            [icon(item.markup)],
+          ),
         ]),
       ),
     ),
@@ -42,7 +58,7 @@ function createCommunityColumn(): HTMLElement {
 
 export function createFooter(): HTMLElement {
   const brand = el("div", { class: "footer__brand" }, [
-    el("a", { href: "/", class: "footer__logo" }, [
+    createPageLink({ page: "home" }, { class: "footer__logo" }, [
       el("img", { src: assetUrl("/favicon.svg"), alt: "", class: "footer__logo-icon" }),
       el("span", {}, ["MiniGames"]),
     ]),

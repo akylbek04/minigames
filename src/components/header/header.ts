@@ -1,9 +1,8 @@
 import { el } from "../../utils/dom";
 import { assetUrl } from "../../utils/asset-url";
+import { MAIN_NAV_LINKS, createPageLink } from "../../utils/navigation";
 import type { AuthMode } from "../../types/auth";
 import "./header.scss";
-
-const NAV_LINKS = ["Home", "Library", "Tournaments", "Community"];
 
 export interface HeaderCallbacks {
   onOpenAuth: (mode: AuthMode) => void;
@@ -15,18 +14,8 @@ export function createHeader({ onOpenAuth, menuToggle }: HeaderCallbacks): HTMLE
     el(
       "ul",
       { class: "header__nav-list" },
-      NAV_LINKS.map((label, index) =>
-        el("li", {}, [
-          el(
-            "a",
-            {
-              href: "/",
-              class: "header__nav-link",
-              ...(index === 0 && { "aria-current": "page" }),
-            },
-            [label],
-          ),
-        ]),
+      MAIN_NAV_LINKS.map(({ label, ...options }) =>
+        el("li", {}, [createPageLink(options, { class: "header__nav-link" }, [label])]),
       ),
     ),
   ]);
@@ -41,7 +30,7 @@ export function createHeader({ onOpenAuth, menuToggle }: HeaderCallbacks): HTMLE
   ]);
   signUpButton.addEventListener("click", () => onOpenAuth("register"));
 
-  const logo = el("a", { href: "/", class: "header__logo" }, [
+  const logo = createPageLink({ page: "home" }, { class: "header__logo" }, [
     el("img", { src: assetUrl("/favicon.svg"), alt: "", class: "header__logo-icon" }),
     el("span", {}, ["MiniGames"]),
   ]);
