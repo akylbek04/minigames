@@ -76,7 +76,7 @@ function createComment(comment: GameComment): HTMLElement {
         },
         [comment.authorName.charAt(0)],
       ),
-      el("span", { class: "game-details__comment-author" }, [comment.authorName]),
+      el("h4", { class: "game-details__comment-author" }, [comment.authorName]),
       el("time", { class: "game-details__comment-date", datetime: comment.createdAt }, [
         formatRelativeTime(comment.createdAt),
       ]),
