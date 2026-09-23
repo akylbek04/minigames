@@ -1,0 +1,77 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.game-details {
+  @include mix.modal-dialog;
+
+  width: 100%;
+  max-width: none;
+  max-height: calc(100dvh - var(--size-4));
+  margin: auto;
+  padding: 0;
+  overflow-y: auto;
+  color: var(--color-on-bg);
+  background-color: var(--color-bg);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-extra-large);
+  box-shadow: var(--shadow-level-3);
+
+  @include bp.tablet-up {
+    // RSS-QS-2-2-4: 600px wide from tablet up, full width on mobile.
+    width: 600px;
+  }
+}
+
+.game-details__hero {
+  position: relative;
+}
+
+.game-details__hero-image {
+  width: 100%;
+  // 220px is the Figma hero height at every breakpoint
+  height: 220px;
+  object-fit: cover;
+}
+
+.game-details__close {
+  @include mix.reset-button;
+
+  position: absolute;
+  top: var(--size-2);
+  right: var(--size-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-5);
+  height: var(--size-5);
+  color: var(--color-on-primary);
+  background-color: var(--color-white);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+  box-shadow: var(--shadow-level-1);
+  font-size: var(--icon-size-large);
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--color-surface);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+  }
+}
+
+.game-details__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+  padding: var(--size-3);
+}
+
+.game-details__title {
+  color: var(--color-on-primary);
+  font-size: var(--font-size-display-medium);
+  font-weight: var(--font-weight-extra-bold);
+  line-height: 1.2;
+}
