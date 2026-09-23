@@ -54,3 +54,29 @@
   font: inherit;
   color: inherit;
 }
+
+// Shared by the modal dialogs: dimmed backdrop plus a fade/scale in and out
+// driven by utils/animated-dialog.ts's "is-closing" class.
+@mixin modal-dialog {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    overlay 0.2s ease allow-discrete,
+    display 0.2s ease allow-discrete;
+
+  &::backdrop {
+    background-color: color-mix(in srgb, var(--color-on-primary) 55%, transparent);
+  }
+
+  &.is-closing {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
