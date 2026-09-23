@@ -65,13 +65,131 @@
 .game-details__body {
   display: flex;
   flex-direction: column;
-  gap: var(--size-3);
+  gap: var(--size-4);
   padding: var(--size-3);
+}
+
+.game-details__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+}
+
+.game-details__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+
+  @include bp.tablet-up {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
 .game-details__title {
   color: var(--color-on-primary);
   font-size: var(--font-size-display-medium);
-  font-weight: var(--font-weight-extra-bold);
+  font-weight: var(--font-weight-bold);
   line-height: 1.2;
+}
+
+.game-details__stats {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--size-2);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-label-large);
+  font-weight: var(--font-weight-bold);
+}
+
+.game-details__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-05);
+}
+
+.game-details__stat-icon {
+  font-size: var(--icon-size-medium);
+
+  &--rating {
+    color: var(--color-primary);
+  }
+
+  &--likes {
+    color: var(--color-like);
+  }
+}
+
+.game-details__description {
+  margin-top: calc(-1 * var(--size-1));
+}
+
+.game-details__specs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--size-2);
+  margin: 0;
+
+  @include bp.tablet-up {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.game-details__spec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-05);
+  padding: var(--size-1) var(--size-2);
+  background-color: var(--color-white);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-small);
+  box-shadow: var(--shadow-level-1);
+}
+
+.game-details__spec-term {
+  color: var(--color-on-bg-low);
+  font-size: var(--font-size-label-medium);
+}
+
+.game-details__spec-value {
+  margin: 0;
+  color: var(--color-on-primary);
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-bold);
+}
+
+.game-details__actions {
+  display: flex;
+  gap: var(--size-2);
+
+  > .btn--filled {
+    flex: 1;
+  }
+}
+
+// Icon-only square on mobile, a full "Add to Favorites" pill from tablet up.
+.game-details__favorite {
+  aspect-ratio: 1;
+  padding: var(--btn-padding-icon);
+
+  @include bp.tablet-up {
+    flex: 1;
+    aspect-ratio: auto;
+    padding: var(--btn-padding-large);
+  }
+
+  &[aria-pressed="true"] .game-details__favorite-icon {
+    color: var(--color-like);
+  }
+}
+
+.game-details__favorite-icon {
+  font-size: var(--icon-size-large);
+}
+
+.game-details__favorite-label {
+  @include bp.mobile-only {
+    @include mix.visually-hidden;
+  }
 }
