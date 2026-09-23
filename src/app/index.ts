@@ -11,7 +11,8 @@ import { onNavigate, type Page } from "../utils/navigation";
 // chip, sort, pagination) across visits.
 const pages: Record<Page, HTMLElement> = {
   home: createHomePage(),
-  library: createLibraryPage(),
+  // The Game Details dialog is wired in with its own task.
+  library: createLibraryPage({ onOpenDetails: () => {} }),
 };
 
 const app = document.createElement("div");
