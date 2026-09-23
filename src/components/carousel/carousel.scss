@@ -76,6 +76,9 @@
   margin: 0;
   padding-inline: calc(var(--carousel-gap) / 2);
   list-style: none;
+  // Horizontal swipes are handled in carousel.ts; vertical ones still scroll.
+  touch-action: pan-y;
+  user-select: none;
 
   @include bp.tablet-up {
     --carousel-gap: var(--size-1);

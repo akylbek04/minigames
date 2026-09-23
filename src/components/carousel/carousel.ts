@@ -9,6 +9,7 @@ import "./carousel.scss";
 const featuredGames = (allGamesData.data as Game[]).filter((game) => game.featured);
 
 const AUTOPLAY_DELAY = 4000;
+const SWIPE_THRESHOLD = 40;
 
 // A card's role comes from its circular distance to the active card; CSS
 // sizes each role per breakpoint (edge cards only show on desktop) and
@@ -88,15 +89,25 @@ export function createCarousel(): HTMLElement {
     }
   }
 
-  // Autoplay: one step right to left every 4s.
+  // Autoplay timer that can pause and later resume with whatever time was
+  // left, as RSS-QS-2-3-1 requires for press-and-hold.
   let timerId: number | undefined;
+  let deadline = 0;
+  let remaining = AUTOPLAY_DELAY;
 
-  function startTimer(): void {
+  function startTimer(delay = AUTOPLAY_DELAY): void {
     clearTimeout(timerId);
+    remaining = delay;
+    deadline = performance.now() + delay;
     timerId = setTimeout(() => {
       step(1);
       startTimer();
-    }, AUTOPLAY_DELAY);
+    }, delay);
+  }
+
+  function pauseTimer(): void {
+    clearTimeout(timerId);
+    remaining = Math.max(0, deadline - performance.now());
   }
 
   function step(direction: 1 | -1): void {
@@ -111,6 +122,44 @@ export function createCarousel(): HTMLElement {
 
   prevButton.addEventListener("click", () => stepAndRestart(-1));
   nextButton.addEventListener("click", () => stepAndRestart(1));
+
+  // Press-and-hold pauses autoplay. Releasing without a swipe resumes the
+  // remaining countdown; a swipe steps and starts a fresh 4s countdown.
+  let pointerStartX: number | undefined;
+
+  track.addEventListener("pointerdown", (event) => {
+    if (!event.isPrimary) {
+      return;
+    }
+    pointerStartX = event.clientX;
+    pauseTimer();
+  });
+
+  document.addEventListener("pointerup", (event) => {
+    if (pointerStartX === undefined || !event.isPrimary) {
+      return;
+    }
+    const deltaX = event.clientX - pointerStartX;
+    pointerStartX = undefined;
+
+    if (Math.abs(deltaX) >= SWIPE_THRESHOLD) {
+      stepAndRestart(deltaX < 0 ? 1 : -1);
+    } else {
+      startTimer(remaining);
+    }
+  });
+
+  document.addEventListener("pointercancel", () => {
+    if (pointerStartX === undefined) {
+      return;
+    }
+
+    pointerStartX = undefined;
+    startTimer(remaining);
+  });
+
+  // Browsers' native image drag would swallow a mouse swipe.
+  track.addEventListener("dragstart", (event) => event.preventDefault());
 
   render();
   startTimer();
