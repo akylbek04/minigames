@@ -1,0 +1,64 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--size-1);
+
+  @include bp.tablet-up {
+    gap: var(--size-2);
+  }
+}
+
+.pagination__pages {
+  display: flex;
+  gap: inherit;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pagination__button {
+  @include mix.reset-button;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-5);
+  height: var(--size-5);
+  color: var(--color-on-primary);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+  font-size: var(--font-size-label-large);
+  font-weight: var(--font-weight-bold);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  .material-symbols-outlined {
+    font-size: var(--icon-size-medium);
+  }
+
+  &:hover {
+    background-color: var(--color-surface);
+  }
+
+  &[aria-current="page"] {
+    color: var(--color-white);
+    background-color: var(--color-on-primary);
+  }
+
+  &:disabled {
+    color: var(--color-outline-variant);
+    background-color: transparent;
+    border-color: var(--color-outline);
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+  }
+}
