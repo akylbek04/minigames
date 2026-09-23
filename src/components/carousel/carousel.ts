@@ -10,6 +10,8 @@ const featuredGames = (allGamesData.data as Game[]).filter((game) => game.featur
 
 const AUTOPLAY_DELAY = 4000;
 const SWIPE_THRESHOLD = 40;
+// A press held at least this long is a "pause and look", not a click.
+const LONG_PRESS_DELAY = 500;
 
 // A card's role comes from its circular distance to the active card; CSS
 // sizes each role per breakpoint (edge cards only show on desktop) and
@@ -46,7 +48,11 @@ function createCard(game: Game): HTMLButtonElement {
   ]);
 }
 
-export function createCarousel(): HTMLElement {
+export interface CarouselCallbacks {
+  onOpenDetails: () => void;
+}
+
+export function createCarousel({ onOpenDetails }: CarouselCallbacks): HTMLElement {
   const title = el("h2", { class: "carousel__title" }, ["New Games"]);
 
   const prevButton = el(
@@ -126,12 +132,16 @@ export function createCarousel(): HTMLElement {
   // Press-and-hold pauses autoplay. Releasing without a swipe resumes the
   // remaining countdown; a swipe steps and starts a fresh 4s countdown.
   let pointerStartX: number | undefined;
+  let pointerStartTime = 0;
+  let shouldSuppressClick = false;
 
   track.addEventListener("pointerdown", (event) => {
     if (!event.isPrimary) {
       return;
     }
     pointerStartX = event.clientX;
+    pointerStartTime = performance.now();
+    shouldSuppressClick = false;
     pauseTimer();
   });
 
@@ -143,8 +153,10 @@ export function createCarousel(): HTMLElement {
     pointerStartX = undefined;
 
     if (Math.abs(deltaX) >= SWIPE_THRESHOLD) {
+      shouldSuppressClick = true;
       stepAndRestart(deltaX < 0 ? 1 : -1);
     } else {
+      shouldSuppressClick = performance.now() - pointerStartTime >= LONG_PRESS_DELAY;
       startTimer(remaining);
     }
   });
@@ -160,6 +172,16 @@ export function createCarousel(): HTMLElement {
 
   // Browsers' native image drag would swallow a mouse swipe.
   track.addEventListener("dragstart", (event) => event.preventDefault());
+
+  track.addEventListener("click", (event) => {
+    if (shouldSuppressClick) {
+      shouldSuppressClick = false;
+      return;
+    }
+    if (event.target instanceof Element && event.target.closest(".carousel__card")) {
+      onOpenDetails();
+    }
+  });
 
   render();
   startTimer();

@@ -13,7 +13,7 @@ const gameDetailsDialog = createGameDetailsDialog();
 // Both pages are built once and swapped, so each keeps its UI state (active
 // chip, sort, pagination) across visits.
 const pages: Record<Page, HTMLElement> = {
-  home: createHomePage(),
+  home: createHomePage({ onOpenDetails: gameDetailsDialog.open }),
   library: createLibraryPage({ onOpenDetails: gameDetailsDialog.open }),
 };
 
