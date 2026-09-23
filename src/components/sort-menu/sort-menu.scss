@@ -1,0 +1,95 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.sort-menu {
+  flex-shrink: 0;
+}
+
+.sort-menu__toggle {
+  @include mix.reset-button;
+
+  anchor-name: --sort-menu;
+  width: 100%;
+  padding: var(--btn-padding-medium);
+  color: var(--color-on-primary);
+  text-align: start;
+  background-color: var(--color-white);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+  font-size: var(--font-size-label-large);
+  font-weight: var(--font-weight-bold);
+  transition: background-color 0.15s ease;
+
+  &:hover,
+  &[aria-expanded="true"] {
+    background-color: var(--color-surface);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+  }
+
+  @include bp.tablet-up {
+    width: calc(var(--size-15) + var(--size-9));
+  }
+}
+
+// Top-layer popover pinned under the toggle with CSS anchor positioning.
+.sort-menu__options {
+  position-anchor: --sort-menu;
+  inset: auto;
+  top: anchor(bottom);
+  left: anchor(left);
+  width: anchor-size(width);
+  margin: var(--size-05) 0 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  background-color: var(--color-white);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-small);
+  box-shadow: var(--shadow-level-1);
+
+  li + li {
+    border-top: 1px solid var(--color-outline);
+  }
+}
+
+.sort-menu__option {
+  @include mix.reset-button;
+
+  display: flex;
+  align-items: center;
+  gap: var(--size-05);
+  width: 100%;
+  padding: var(--size-2);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-label-large);
+  font-weight: var(--font-weight-medium);
+  text-align: start;
+
+  &:hover {
+    background-color: var(--color-surface);
+  }
+
+  &[aria-checked="true"] {
+    font-weight: var(--font-weight-bold);
+    background-color: var(--color-primary-low);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: -2px;
+  }
+}
+
+.sort-menu__check {
+  color: var(--color-tertiary);
+  font-size: var(--icon-size-small);
+  visibility: hidden;
+
+  [aria-checked="true"] > & {
+    visibility: visible;
+  }
+}
