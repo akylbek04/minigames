@@ -61,3 +61,16 @@
     font-size: var(--font-size-body-large);
   }
 }
+
+.library-page__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+
+  @include bp.desktop-up {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--size-5);
+  }
+}

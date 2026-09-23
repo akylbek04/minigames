@@ -1,0 +1,54 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.filter-chips__wrapper {
+  min-width: 0;
+}
+
+// One row that never wraps: chips past the edge stay clipped and are reached
+// by swiping. The scrollbar itself is hidden globally (globals.scss).
+.filter-chips {
+  display: flex;
+  gap: var(--size-1);
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+  cursor: grab;
+
+  @include bp.tablet-up {
+    gap: var(--size-2);
+  }
+}
+
+.filter-chips__chip {
+  @include mix.reset-button;
+
+  padding: var(--size-05) var(--size-2);
+  color: var(--color-on-primary);
+  white-space: nowrap;
+  background-color: var(--color-white);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+  font-size: var(--font-size-label-medium);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.5;
+  transition: background-color 0.15s ease;
+
+  @include bp.tablet-up {
+    font-size: var(--font-size-label-large);
+  }
+
+  &:hover {
+    background-color: var(--color-surface);
+  }
+
+  &[aria-pressed="true"] {
+    background-color: var(--color-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+  }
+}
