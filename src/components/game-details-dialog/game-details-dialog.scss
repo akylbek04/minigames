@@ -253,3 +253,93 @@
   font-weight: var(--font-weight-regular);
   white-space: nowrap;
 }
+
+.game-details__avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-3);
+  height: var(--size-3);
+  color: var(--color-on-primary);
+  border: 1.5px solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+  font-size: var(--font-size-label-medium);
+  font-weight: var(--font-weight-bold);
+
+  &--self {
+    width: var(--size-5);
+    height: var(--size-5);
+    background-color: var(--color-primary);
+    border-width: 2px;
+    font-size: var(--font-size-body-medium);
+  }
+}
+
+.game-details__comment-form {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--size-2);
+}
+
+// field-sizing lets the textarea grow with its text; past 88px it scrolls.
+.game-details__comment-input {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--size-6);
+  max-height: var(--size-11);
+  field-sizing: content;
+  padding: var(--size-1) var(--size-2);
+  overflow-y: auto;
+  color: var(--color-on-primary);
+  font: inherit;
+  font-size: var(--font-size-body-small);
+  background-color: var(--color-white);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-small);
+  resize: none;
+  // Scrollbars are hidden site-wide (globals.scss); this one is required.
+  scrollbar-width: thin;
+
+  &::placeholder {
+    color: var(--color-on-bg-low);
+  }
+
+  &:focus-visible {
+    outline: none;
+    background-color: var(--color-surface-low);
+    border-color: var(--color-tertiary);
+  }
+}
+
+.game-details__comment-submit {
+  @include mix.reset-button;
+
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-5);
+  height: var(--size-5);
+  margin-top: var(--size-05);
+  color: var(--color-white);
+  background-color: var(--color-on-primary);
+  border-radius: var(--corner-small);
+  font-size: var(--icon-size-medium);
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--color-tertiary);
+  }
+
+  &:disabled {
+    color: var(--color-outline-variant);
+    background-color: var(--color-outline);
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+  }
+}

@@ -3,13 +3,16 @@ import { materialIcon } from "../../utils/icon";
 import { assetUrl } from "../../utils/asset-url";
 import { closeDialogAnimated, openDialogAnimated } from "../../utils/animated-dialog";
 import gameData from "../../assets/data/game-tukoni-forest-keepers.json";
-import type { GameDetails } from "../../types/game-details";
+import commentsData from "../../assets/data/comments-tukoni-forest-keepers.json";
+import type { GameComment, GameDetails } from "../../types/game-details";
 import { createGameInfo } from "./game-info";
 import { createTopRecords } from "./top-records";
+import { createComments } from "./comments";
 import "./game-details-dialog.scss";
 
 // Story 2 always shows the same static game, whichever card opened it.
 const game: GameDetails = gameData.data;
+const comments: GameComment[] = commentsData.data;
 
 export interface GameDetailsDialog {
   dialog: HTMLDialogElement;
@@ -39,6 +42,7 @@ export function createGameDetailsDialog(): GameDetailsDialog {
     const body = el("div", { class: "game-details__body" }, [
       createGameInfo(game),
       createTopRecords(game.topRecords),
+      createComments(comments),
     ]);
 
     return [hero, body];
