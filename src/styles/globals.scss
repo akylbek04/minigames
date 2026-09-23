@@ -74,3 +74,8 @@ button {
 .visually-hidden {
   @include mix.visually-hidden;
 }
+
+// Keep the page behind an open modal from scrolling.
+html:has(dialog[open]) {
+  overflow: hidden;
+}

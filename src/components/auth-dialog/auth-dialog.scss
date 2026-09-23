@@ -2,6 +2,8 @@
 @use "../../styles/mixins" as mix;
 
 .auth-dialog {
+  @include mix.modal-dialog;
+
   width: min(92vw, 380px);
   max-height: calc(100vh - var(--size-4));
   margin: auto;
@@ -12,31 +14,10 @@
   border: 2px solid var(--color-on-primary);
   border-radius: var(--corner-large);
   box-shadow: var(--shadow-level-3);
-  opacity: 1;
-  transform: scale(1);
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease,
-    overlay 0.2s ease allow-discrete,
-    display 0.2s ease allow-discrete;
 
   @include bp.tablet-up {
     // 420px is an explicit spec requirement, not a spacing-scale value
     width: 420px;
-  }
-
-  &::backdrop {
-    background-color: rgba(36, 33, 69, 0.55);
-  }
-
-  &.is-closing {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-
-  @starting-style {
-    opacity: 0;
-    transform: scale(0.96);
   }
 }
 

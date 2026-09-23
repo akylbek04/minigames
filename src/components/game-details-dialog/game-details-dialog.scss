@@ -1,0 +1,432 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.game-details {
+  @include mix.modal-dialog;
+
+  width: 100%;
+  max-width: none;
+  max-height: calc(100dvh - var(--size-4));
+  margin: auto;
+  padding: 0;
+  overflow-y: auto;
+  color: var(--color-on-bg);
+  background-color: var(--color-bg);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-extra-large);
+  box-shadow: var(--shadow-level-3);
+
+  @include bp.tablet-up {
+    // RSS-QS-2-2-4: 600px wide from tablet up, full width on mobile.
+    width: 600px;
+  }
+}
+
+.game-details__hero {
+  position: relative;
+}
+
+.game-details__hero-image {
+  width: 100%;
+  // 220px is the Figma hero height at every breakpoint
+  height: 220px;
+  object-fit: cover;
+}
+
+.game-details__close {
+  @include mix.reset-button;
+
+  position: absolute;
+  top: var(--size-2);
+  right: var(--size-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-5);
+  height: var(--size-5);
+  color: var(--color-on-primary);
+  background-color: var(--color-white);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+  box-shadow: var(--shadow-level-1);
+  font-size: var(--icon-size-large);
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--color-surface);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+  }
+}
+
+.game-details__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4);
+  padding: var(--size-3);
+}
+
+.game-details__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+}
+
+.game-details__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+
+  @include bp.tablet-up {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.game-details__title {
+  color: var(--color-on-primary);
+  font-size: var(--font-size-display-medium);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+}
+
+.game-details__stats {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--size-2);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-label-large);
+  font-weight: var(--font-weight-bold);
+}
+
+.game-details__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-05);
+}
+
+.game-details__stat-icon {
+  font-size: var(--icon-size-medium);
+
+  &--rating {
+    color: var(--color-primary);
+  }
+
+  &--likes {
+    color: var(--color-like);
+  }
+}
+
+.game-details__description {
+  margin-top: calc(-1 * var(--size-1));
+}
+
+.game-details__specs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--size-2);
+  margin: 0;
+
+  @include bp.tablet-up {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.game-details__spec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-05);
+  padding: var(--size-1) var(--size-2);
+  background-color: var(--color-white);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-small);
+  box-shadow: var(--shadow-level-1);
+}
+
+.game-details__spec-term {
+  color: var(--color-on-bg-low);
+  font-size: var(--font-size-label-medium);
+}
+
+.game-details__spec-value {
+  margin: 0;
+  color: var(--color-on-primary);
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-bold);
+}
+
+.game-details__actions {
+  display: flex;
+  gap: var(--size-2);
+
+  > .btn--filled {
+    flex: 1;
+  }
+}
+
+// Icon-only square on mobile, a full "Add to Favorites" pill from tablet up.
+.game-details__favorite {
+  aspect-ratio: 1;
+  padding: var(--btn-padding-icon);
+
+  @include bp.tablet-up {
+    flex: 1;
+    aspect-ratio: auto;
+    padding: var(--btn-padding-large);
+  }
+
+  &[aria-pressed="true"] .game-details__favorite-icon {
+    color: var(--color-like);
+  }
+}
+
+.game-details__favorite-icon {
+  font-size: var(--icon-size-large);
+}
+
+.game-details__favorite-label {
+  @include bp.mobile-only {
+    @include mix.visually-hidden;
+  }
+}
+
+.game-details__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+}
+
+.game-details__section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-body-medium);
+  font-weight: var(--font-weight-bold);
+}
+
+.game-details__trophy {
+  color: var(--color-primary-high);
+  font-size: var(--icon-size-large);
+}
+
+.game-details__records {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.game-details__record {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  padding: var(--size-2);
+  color: var(--color-on-primary);
+  background-color: var(--color-white);
+  border-radius: var(--corner-small);
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-bold);
+
+  @include bp.tablet-up {
+    gap: var(--size-2);
+  }
+}
+
+.game-details__record-player {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.game-details__record-date {
+  color: var(--color-on-bg-low);
+  font-size: var(--font-size-label-medium);
+  font-weight: var(--font-weight-regular);
+  white-space: nowrap;
+}
+
+.game-details__avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-3);
+  height: var(--size-3);
+  color: var(--color-on-primary);
+  border: 1.5px solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+  font-size: var(--font-size-label-medium);
+  font-weight: var(--font-weight-bold);
+
+  &--self {
+    width: var(--size-5);
+    height: var(--size-5);
+    background-color: var(--color-primary);
+    border-width: 2px;
+    font-size: var(--font-size-body-medium);
+  }
+}
+
+.game-details__comment-form {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--size-2);
+}
+
+// field-sizing lets the textarea grow with its text; past 88px it scrolls.
+.game-details__comment-input {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--size-6);
+  max-height: var(--size-11);
+  field-sizing: content;
+  padding: var(--size-1) var(--size-2);
+  overflow-y: auto;
+  color: var(--color-on-primary);
+  font: inherit;
+  font-size: var(--font-size-body-small);
+  background-color: var(--color-white);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-small);
+  resize: none;
+  // Scrollbars are hidden site-wide (globals.scss); this one is required.
+  scrollbar-width: thin;
+
+  &::placeholder {
+    color: var(--color-on-bg-low);
+  }
+
+  &:focus-visible {
+    outline: none;
+    background-color: var(--color-surface-low);
+    border-color: var(--color-tertiary);
+  }
+}
+
+.game-details__comment-submit {
+  @include mix.reset-button;
+
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-5);
+  height: var(--size-5);
+  margin-top: var(--size-05);
+  color: var(--color-white);
+  background-color: var(--color-on-primary);
+  border-radius: var(--corner-small);
+  font-size: var(--icon-size-medium);
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--color-tertiary);
+  }
+
+  &:disabled {
+    color: var(--color-outline-variant);
+    background-color: var(--color-outline);
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+  }
+}
+
+@for $index from 1 through 5 {
+  .game-details__avatar--#{$index} {
+    background-color: var(--color-avatar-random-#{$index});
+  }
+}
+
+.game-details__comments {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.game-details__comment {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--size-1);
+  padding: var(--size-2);
+  color: var(--color-on-primary);
+  background-color: var(--color-white);
+  border: 2px solid var(--color-on-primary);
+  border-radius: var(--corner-medium);
+  box-shadow: var(--shadow-level-1);
+}
+
+.game-details__comment-header {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  gap: var(--size-1);
+}
+
+.game-details__comment-author {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.game-details__comment-date {
+  color: var(--color-on-bg-low);
+  font-size: var(--font-size-label-medium);
+  white-space: nowrap;
+}
+
+.game-details__comment-text {
+  font-size: var(--font-size-body-small);
+}
+
+.game-details__like {
+  @include mix.reset-button;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-05);
+  padding: 0 var(--size-1);
+  margin-left: calc(-1 * var(--size-1));
+  color: var(--color-on-primary);
+  border-radius: var(--corner-full);
+  font-size: var(--font-size-label-medium);
+  font-weight: var(--font-weight-bold);
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--color-surface);
+  }
+
+  &[aria-pressed="true"] {
+    color: var(--color-like);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+  }
+}
+
+.game-details__like-icon {
+  font-size: var(--icon-size-small);
+}
