@@ -228,8 +228,10 @@
   );
 }
 
-// RSS-QS-1-4-4: cards rendered narrower than 288px show only the image.
-@container (min-width: 288px) {
+// RSS-QS-1-4-4 / 2-3-1: cards rendered narrower than 288px show only the
+// image. A container query measures the content box, so the card's two 2.5px
+// borders come off the 288px rendered-width threshold.
+@container (min-width: calc(288px - 5px)) {
   .carousel__card-info {
     display: flex;
   }
@@ -259,14 +261,14 @@
   gap: var(--size-05);
 }
 
-.carousel__card-rating {
-  color: var(--color-primary);
-}
-
-.carousel__card-likes {
-  color: var(--color-like);
-}
-
 .carousel__card-icon {
   font-size: var(--icon-size-small);
+
+  .carousel__card-rating > & {
+    color: var(--color-primary);
+  }
+
+  .carousel__card-likes > & {
+    color: var(--color-like);
+  }
 }
