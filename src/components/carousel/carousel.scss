@@ -68,18 +68,19 @@
 }
 
 .carousel__track {
+  --carousel-gap: var(--size-05);
+
   display: flex;
   align-items: flex-start;
-  gap: var(--size-05);
   height: 206px;
   margin: 0;
-  padding-inline: var(--size-05);
+  padding-inline: calc(var(--carousel-gap) / 2);
   list-style: none;
 
   @include bp.tablet-up {
-    gap: var(--size-1);
+    --carousel-gap: var(--size-1);
+
     height: 288px;
-    padding-inline: var(--size-1);
   }
 
   @include bp.desktop-up {
@@ -87,47 +88,59 @@
   }
 }
 
-.carousel__card {
-  container-type: inline-size;
-  // flex-basis 0 + min-width 0 makes each card's share of the row a pure
-  // ratio of the flex-grow values below, so widths scale continuously with
-  // the viewport instead of jumping between fixed px at each breakpoint.
+// Each slot's share of the row is a pure ratio of its flex-grow (basis 0,
+// min-width 0), so widths scale with the viewport and animate between roles.
+.carousel__slot {
+  flex: 0 1 0%;
   min-width: 0;
-  overflow: hidden;
-  position: relative;
-  height: 200px;
-  background-color: var(--color-white);
-  // 2.5px is an explicit Figma value between the 2px/3px border tokens
-  border: 2.5px solid var(--color-on-primary);
-  border-radius: var(--corner-large);
-  box-shadow: var(--shadow-level-1);
+  margin-inline: calc(var(--carousel-gap) / 2);
+  transition:
+    flex-grow 0.5s ease,
+    min-width 0.5s ease,
+    margin 0.5s ease,
+    visibility 0.5s;
+}
 
-  @include bp.tablet-up {
-    height: 280px;
-  }
+// visibility also keeps collapsed cards out of the tab order and the
+// accessibility tree; it flips only once the collapse transition ends.
+@mixin collapsed-slot {
+  flex-grow: 0;
+  margin-inline: 0;
+  visibility: hidden;
 
-  @include bp.desktop-up {
-    height: 384px;
-    border-radius: var(--corner-extra-large);
+  .carousel__card {
+    border-width: 0;
+    box-shadow: none;
   }
 }
 
-// Cards that only appear at desktop, flanking the row to hint it scrolls.
-.carousel__card--edge {
-  display: none;
+// Off-screen cards collapse to nothing, which also hides the jump when a card
+// wraps from one end of the loop to the other.
+.carousel__slot[data-role="hidden"] {
+  @include collapsed-slot;
+}
+
+// The flanking pair that only appears on desktop, hinting the row goes on.
+.carousel__slot[data-role="edge"] {
+  @include collapsed-slot;
 
   @include bp.desktop-up {
-    display: block;
-    flex: 120 1 0%;
+    flex-grow: 120;
+    margin-inline: calc(var(--carousel-gap) / 2);
+    visibility: visible;
+
+    .carousel__card {
+      border-width: 2.5px;
+      box-shadow: var(--shadow-level-1);
+    }
   }
 }
 
-// The other flanking pair: narrow at mobile/tablet, a mid-size card at desktop.
-.carousel__card--medium {
-  flex: 56 1 0%;
+.carousel__slot[data-role="medium"] {
+  flex-grow: 56;
 
   @include bp.tablet-up {
-    flex: 105 1 0%;
+    flex-grow: 105;
   }
 
   @include bp.desktop-up {
@@ -136,23 +149,57 @@
     // browser window renders ~1903px wide once the scrollbar is subtracted
     // (see common-layout-requirements.md), which would otherwise push a
     // literal 288 ratio just under the threshold and hide the overlay.
-    flex: 320 1 0%;
+    flex-grow: 320;
   }
 }
 
-// The featured card, always centered and widest. A floor of 288px keeps its
-// info overlay visible per RSS-QS-1-4-4 even on the narrowest mobile widths,
-// where its proportional flex share alone would otherwise dip just under it.
-.carousel__card--wide {
-  flex: 218 1 0%;
+// The centered, widest card. A floor of 288px keeps its info overlay visible
+// even on the narrowest mobile widths, where its flex share alone would dip
+// just under it.
+.carousel__slot[data-role="wide"] {
+  flex-grow: 218;
   min-width: 288px;
 
   @include bp.tablet-up {
-    flex: 448 1 0%;
+    flex-grow: 448;
   }
 
   @include bp.desktop-up {
-    flex: 816 1 0%;
+    flex-grow: 816;
+  }
+}
+
+.carousel__card {
+  @include mix.reset-button;
+
+  container-type: inline-size;
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  text-align: start;
+  background-color: var(--color-white);
+  // 2.5px is an explicit Figma value between the 2px/3px border tokens
+  border: 2.5px solid var(--color-on-primary);
+  border-radius: var(--corner-large);
+  box-shadow: var(--shadow-level-1);
+  transition:
+    border-width 0.5s ease,
+    box-shadow 0.5s ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+  }
+
+  @include bp.tablet-up {
+    height: 280px;
+  }
+
+  @include bp.desktop-up {
+    height: 384px;
+    border-radius: var(--corner-extra-large);
   }
 }
 
