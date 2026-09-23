@@ -2,11 +2,11 @@ import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
 import { formatCompactNumber } from "../../utils/format";
 import { assetUrl } from "../../utils/asset-url";
-import featuredGamesData from "../../assets/data/featured-games.json";
+import allGamesData from "../../assets/data/all-games-seed.json";
 import type { Game } from "../../types/game";
 import "./carousel.scss";
 
-const featuredGames = featuredGamesData.data as Game[];
+const featuredGames = (allGamesData.data as Game[]).filter((game) => game.featured);
 
 type CardRole = "edge" | "medium" | "wide";
 
