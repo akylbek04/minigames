@@ -1,5 +1,4 @@
 import { el } from "../../utils/dom";
-import { materialIcon } from "../../utils/icon";
 import { formatRelativeTime } from "../../utils/format";
 import type { TopRecord } from "../../types/game-details";
 
@@ -12,7 +11,7 @@ export function createTopRecords(records: TopRecord[]): HTMLElement {
     { class: "game-details__section", "aria-labelledby": "game-details-records-title" },
     [
       el("h3", { id: "game-details-records-title", class: "game-details__section-title" }, [
-        materialIcon("trophy", "game-details__trophy icon--filled"),
+        el("span", { class: "game-details__trophy", "aria-hidden": "true" }, ["🏆"]),
         "Top Records",
       ]),
       el(
