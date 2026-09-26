@@ -65,10 +65,15 @@
 }
 
 .leaderboard__table th {
-  padding: var(--size-2);
+  padding: var(--size-2) var(--size-1);
   color: var(--color-white);
   font-weight: var(--font-weight-extra-bold);
+  line-height: 1;
   text-transform: uppercase;
+
+  @include bp.tablet-up {
+    padding-inline: var(--size-2);
+  }
 
   @include bp.desktop-up {
     padding: var(--size-3);
@@ -76,8 +81,12 @@
 }
 
 .leaderboard__table td {
-  padding: var(--size-2);
+  padding: var(--size-2) var(--size-1);
   border-bottom: 1px solid var(--color-outline);
+
+  @include bp.tablet-up {
+    padding-inline: var(--size-2);
+  }
 
   @include bp.desktop-up {
     padding-inline: var(--size-3);
@@ -98,12 +107,16 @@
 }
 
 .leaderboard__col-rank {
-  width: 40px;
+  width: var(--size-7);
   color: var(--color-on-primary);
   font-weight: var(--font-weight-extra-bold);
 
   @include bp.tablet-up {
     width: 80px;
+  }
+
+  @include bp.desktop-up {
+    width: var(--size-15);
   }
 
   .leaderboard__row:first-child & {
@@ -116,7 +129,7 @@
 }
 
 .leaderboard__table .leaderboard__col-player {
-  width: 97px;
+  width: auto;
 
   @include bp.tablet-up {
     width: 160px;
@@ -131,6 +144,10 @@
 // content (avatar + username) is left-aligned.
 .leaderboard__table td.leaderboard__col-player {
   text-align: left;
+
+  @include bp.desktop-up {
+    padding-left: 0;
+  }
 }
 
 .leaderboard__player {
@@ -184,8 +201,9 @@
     border-width: 1.5px;
   }
 
+  // The leader's avatar is primary yellow; the rest follow the avatar palette.
   &--1 {
-    background-color: var(--color-avatar-random-3);
+    background-color: var(--color-primary);
   }
 
   &--2 {
@@ -193,7 +211,7 @@
   }
 
   &--3 {
-    background-color: var(--color-avatar-random-1);
+    background-color: var(--color-avatar-random-3);
   }
 
   &--4 {
@@ -222,7 +240,7 @@
 }
 
 .leaderboard__col-score {
-  width: 80px;
+  width: var(--size-8);
   color: var(--color-on-primary);
   font-weight: var(--font-weight-bold);
 
@@ -250,7 +268,7 @@
 }
 
 .leaderboard__col-streak {
-  width: 70px;
+  width: var(--size-10);
   font-weight: var(--font-weight-bold);
 
   @include bp.tablet-up {
@@ -301,4 +319,24 @@
   background-color: var(--color-bg);
   border: 1.5px solid var(--color-on-primary);
   border-radius: var(--corner-full);
+}
+
+.leaderboard__label-full {
+  display: none;
+
+  @include bp.desktop-up {
+    display: inline;
+  }
+}
+
+.leaderboard__label-short {
+  @include bp.desktop-up {
+    display: none;
+  }
+}
+
+.leaderboard__title-suffix {
+  @include bp.mobile-only {
+    display: none;
+  }
 }
