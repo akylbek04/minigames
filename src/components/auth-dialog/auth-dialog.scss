@@ -10,9 +10,9 @@
   padding: var(--size-4);
   overflow-y: auto;
   color: var(--color-on-bg);
-  background-color: var(--color-surface-low);
-  border: 2px solid var(--color-on-primary);
-  border-radius: var(--corner-large);
+  background-color: var(--color-bg);
+  border: 2px solid var(--color-outline-variant);
+  border-radius: var(--corner-extra-large);
   box-shadow: var(--shadow-level-3);
 
   @include bp.tablet-up {
@@ -23,7 +23,7 @@
 
 .auth-dialog__tabs {
   display: flex;
-  padding: var(--size-05);
+  overflow: hidden;
   background-color: var(--color-white);
   border: 2px solid var(--color-on-primary);
   border-radius: var(--corner-small);
@@ -34,11 +34,14 @@
 
   flex: 1;
   padding: var(--size-1) var(--size-2);
-  color: var(--color-on-primary);
+  color: var(--color-on-bg);
   text-align: center;
-  border-radius: var(--corner-extra-small);
   font-weight: var(--font-weight-bold);
   transition: background-color 0.15s ease;
+
+  &:hover:not(.is-active) {
+    background-color: var(--color-surface);
+  }
 
   &.is-active {
     color: var(--color-white);
@@ -72,8 +75,9 @@
 }
 
 .auth-dialog__title {
-  font-size: var(--font-size-headline-small);
-  font-weight: var(--font-weight-extra-bold);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-headline-medium);
+  font-weight: var(--font-weight-bold);
 }
 
 .auth-dialog__subtitle {
@@ -96,6 +100,7 @@
 }
 
 .auth-dialog__label {
+  color: var(--color-on-primary);
   font-size: var(--font-size-label-large);
   font-weight: var(--font-weight-bold);
 }
@@ -116,11 +121,13 @@
 
 .auth-dialog__input {
   width: 100%;
-  padding: var(--size-2) var(--size-2) var(--size-2) var(--size-6);
+  min-height: var(--size-6);
+  padding: var(--size-1) var(--size-2) var(--size-1) var(--size-6);
+  color: var(--color-on-primary);
   font-family: inherit;
-  font-size: var(--font-size-body-medium);
+  font-size: var(--font-size-body-small);
   background-color: var(--color-white);
-  border: 2px solid var(--color-outline);
+  border: 2px solid var(--color-on-primary);
   border-radius: var(--corner-small);
   transition: border-color 0.15s ease;
 
@@ -130,6 +137,7 @@
 
   &:focus-visible {
     outline: none;
+    background-color: var(--color-surface-low);
     border-color: var(--color-tertiary);
   }
 }
@@ -153,9 +161,21 @@
   @include mix.reset-button;
 
   align-self: flex-end;
-  color: var(--color-tertiary);
+  color: var(--color-on-primary);
   font-size: var(--font-size-label-large);
+  font-weight: var(--font-weight-bold);
   text-decoration: underline;
+
+  &:hover {
+    color: var(--color-tertiary);
+  }
+}
+
+// Large-button type size on the 48px-tall medium padding, as in the mockup.
+.auth-dialog__submit,
+.auth-dialog__google {
+  min-height: var(--size-6);
+  padding: var(--btn-padding-medium);
 }
 
 .auth-dialog__submit {
@@ -181,12 +201,18 @@
 }
 
 .auth-dialog__google {
+  gap: var(--size-2);
   width: 100%;
+  box-shadow: none;
+
+  &:hover {
+    box-shadow: none;
+  }
 
   svg {
     display: block;
-    width: var(--icon-size-medium);
-    height: var(--icon-size-medium);
+    width: var(--icon-size-large);
+    height: var(--icon-size-large);
   }
 }
 
@@ -200,7 +226,11 @@
 .auth-dialog__link-inline {
   @include mix.reset-button;
 
-  color: var(--color-tertiary);
+  color: var(--color-on-primary);
   text-decoration: underline;
   font-weight: var(--font-weight-bold);
+
+  &:hover {
+    color: var(--color-tertiary);
+  }
 }
