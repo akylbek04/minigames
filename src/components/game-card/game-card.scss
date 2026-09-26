@@ -1,0 +1,171 @@
+@use "../../styles/breakpoints" as bp;
+
+.game-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--color-white);
+  // 2.5px is the same explicit Figma card border the Home carousel uses
+  border: 2.5px solid var(--color-on-primary);
+  border-radius: var(--corner-large);
+  box-shadow: var(--shadow-level-2);
+
+  @include bp.tablet-up {
+    flex-direction: row;
+  }
+}
+
+.game-card__image {
+  flex-shrink: 0;
+  width: 100%;
+  aspect-ratio: 17 / 8;
+  object-fit: cover;
+  border-bottom: 2.5px solid var(--color-on-primary);
+
+  @include bp.tablet-up {
+    // Figma's image column is 39% of the card at both tablet and desktop.
+    width: 39%;
+    aspect-ratio: 16 / 9;
+    border-bottom: none;
+  }
+}
+
+.game-card__body {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "title title"
+    "badge badge"
+    "description description"
+    "stats price"
+    "details details";
+  align-items: center;
+  gap: var(--size-1);
+  min-width: 0;
+  padding: var(--size-2);
+
+  @include bp.tablet-up {
+    // Price and Details sit in (or span into) the flexible column and align
+    // to its end, so neither widens the title's column.
+    grid-template-columns: minmax(0, max-content) auto 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "title badge price"
+      "description description description"
+      "stats stats details";
+    column-gap: var(--size-2);
+  }
+}
+
+.game-card__title {
+  grid-area: title;
+  overflow: hidden;
+  color: var(--color-on-primary);
+  font-size: var(--font-size-headline-small);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  @include bp.desktop-up {
+    font-size: var(--font-size-headline-medium);
+  }
+}
+
+.game-card__badge {
+  grid-area: badge;
+  justify-self: start;
+  padding: 0 var(--size-1);
+  color: var(--color-on-primary);
+  background-color: var(--color-secondary);
+  border: 1.5px solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+  font-size: var(--font-size-label-medium);
+  font-weight: var(--font-weight-bold);
+}
+
+.game-card__price {
+  grid-area: price;
+  justify-self: end;
+  color: var(--color-on-primary);
+  font-size: var(--font-size-headline-small);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+
+  &--free {
+    color: var(--color-price-free);
+  }
+
+  @include bp.desktop-up {
+    font-size: var(--font-size-headline-medium);
+  }
+}
+
+// RSS-QS-2-1-5: a description that doesn't fit is cut with a trailing "…".
+.game-card__description {
+  display: -webkit-box;
+  grid-area: description;
+  align-self: start;
+  overflow: hidden;
+  font-size: var(--font-size-body-small);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+
+  @include bp.desktop-up {
+    font-size: var(--font-size-body-medium);
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+}
+
+.game-card__stats {
+  display: flex;
+  grid-area: stats;
+
+  // Spanning the flexible column keeps the stats out of the title column's
+  // sizing; Details overlaps the empty end of this row.
+  @include bp.tablet-up {
+    grid-column: 1 / -1;
+  }
+
+  gap: var(--size-3);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-label-large);
+  font-weight: var(--font-weight-bold);
+}
+
+.game-card__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-1);
+}
+
+.game-card__stat-icon {
+  font-size: var(--icon-size-medium);
+
+  &--rating {
+    color: var(--color-primary);
+  }
+
+  &--likes {
+    color: var(--color-like);
+  }
+}
+
+.game-card__details {
+  grid-area: details;
+
+  @include bp.tablet-up {
+    justify-self: end;
+  }
+
+  padding: var(--btn-padding-small);
+  margin-top: var(--size-1);
+
+  @include bp.tablet-up {
+    margin-top: 0;
+  }
+}

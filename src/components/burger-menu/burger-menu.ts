@@ -2,10 +2,9 @@ import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
 import { closeDialogAnimated, openDialogAnimated } from "../../utils/animated-dialog";
 import { assetUrl } from "../../utils/asset-url";
+import { MAIN_NAV_LINKS, createPageLink } from "../../utils/navigation";
 import type { AuthMode } from "../../types/auth";
 import "./burger-menu.scss";
-
-const NAV_LINKS = ["Home", "Library", "Tournaments", "Community"];
 
 export interface BurgerMenuCallbacks {
   onOpenAuth: (mode: AuthMode) => void;
@@ -39,7 +38,7 @@ export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMen
   );
 
   const topBar = el("div", { class: "mobile-menu__topbar" }, [
-    el("a", { href: "/", class: "mobile-menu__logo" }, [
+    createPageLink({ page: "home" }, { class: "mobile-menu__logo" }, [
       el("img", { src: assetUrl("/favicon.svg"), alt: "", class: "mobile-menu__logo-icon" }),
       el("span", {}, ["MiniGames"]),
     ]),
@@ -50,18 +49,8 @@ export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMen
     el(
       "ul",
       {},
-      NAV_LINKS.map((label, index) =>
-        el("li", {}, [
-          el(
-            "a",
-            {
-              href: "/",
-              class: "mobile-menu__link",
-              ...(index === 0 && { "aria-current": "page" }),
-            },
-            [label],
-          ),
-        ]),
+      MAIN_NAV_LINKS.map(({ label, ...options }) =>
+        el("li", {}, [createPageLink(options, { class: "mobile-menu__link" }, [label])]),
       ),
     ),
   ]);
@@ -107,6 +96,13 @@ export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMen
   });
 
   closeButton.addEventListener("click", close);
+
+  // Picking a page from the menu should reveal it, not leave the menu covering it.
+  dialog.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.closest("a")) {
+      close();
+    }
+  });
 
   dialog.addEventListener("cancel", (event) => {
     event.preventDefault();
