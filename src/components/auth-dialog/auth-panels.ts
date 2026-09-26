@@ -9,10 +9,11 @@ function createDivider(): HTMLElement {
 }
 
 function createGoogleButton(label: string): HTMLElement {
-  return el("button", { type: "button", class: "btn btn--outline auth-dialog__google" }, [
-    icon(icons.google),
-    label,
-  ]);
+  return el(
+    "button",
+    { type: "button", class: "btn btn--outline btn--large auth-dialog__google" },
+    [icon(icons.google), label],
+  );
 }
 
 function createSwitchLink(label: string): HTMLButtonElement {
@@ -43,9 +44,11 @@ export function createLoginPanel(onSwitch: (mode: AuthMode) => void): HTMLElemen
     "Forgot Password?",
   ]);
 
-  const submit = el("button", { type: "submit", class: "btn btn--filled auth-dialog__submit" }, [
-    "Login",
-  ]);
+  const submit = el(
+    "button",
+    { type: "submit", class: "btn btn--filled btn--large auth-dialog__submit" },
+    ["Login"],
+  );
 
   const form = el("form", { class: "auth-dialog__form", novalidate: "" }, [
     emailField,
@@ -94,7 +97,6 @@ export function createRegisterPanel(onSwitch: (mode: AuthMode) => void): HTMLEle
     placeholder: "Min. 8 characters",
     autocomplete: "new-password",
     iconName: "lock",
-    passwordToggle: true,
   });
 
   const confirmPasswordField = createField({
@@ -104,12 +106,13 @@ export function createRegisterPanel(onSwitch: (mode: AuthMode) => void): HTMLEle
     placeholder: "Repeat your password",
     autocomplete: "new-password",
     iconName: "lock",
-    passwordToggle: true,
   });
 
-  const submit = el("button", { type: "submit", class: "btn btn--filled auth-dialog__submit" }, [
-    "Create Account",
-  ]);
+  const submit = el(
+    "button",
+    { type: "submit", class: "btn btn--filled btn--large auth-dialog__submit" },
+    ["Create Account"],
+  );
 
   const form = el("form", { class: "auth-dialog__form", novalidate: "" }, [
     usernameField,
