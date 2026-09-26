@@ -6,11 +6,12 @@ import "./leaderboard.scss";
 
 const leaderboard = leaderboardData.data as LeaderboardEntry[];
 
-const COLUMNS = [
+// Tablet and mobile headers use the mockup's shorter labels where given.
+const COLUMNS: { label: string; shortLabel?: string; class: string }[] = [
   { label: "Rank", class: "leaderboard__col-rank" },
   { label: "Player", class: "leaderboard__col-player" },
-  { label: "Games Played", class: "leaderboard__col-games" },
-  { label: "Total Score", class: "leaderboard__col-score" },
+  { label: "Games Played", shortLabel: "Games", class: "leaderboard__col-games" },
+  { label: "Total Score", shortLabel: "Score", class: "leaderboard__col-score" },
   { label: "Streak", class: "leaderboard__col-streak" },
   { label: "Favorite Game", class: "leaderboard__col-favorite" },
 ];
@@ -75,13 +76,29 @@ function createRow(entry: LeaderboardEntry, index: number): HTMLElement {
 }
 
 export function createLeaderboard(): HTMLElement {
-  const title = el("h2", { class: "leaderboard__title" }, ["Top Players This Week"]);
+  // Mobile shortens the heading to "Top Players", as in the mockup.
+  // One inner span so the title mixin's flex gap doesn't split the words.
+  const title = el("h2", { class: "leaderboard__title" }, [
+    el("span", {}, [
+      "Top Players",
+      el("span", { class: "leaderboard__title-suffix" }, [" This Week"]),
+    ]),
+  ]);
 
   const headRow = el(
     "tr",
     {},
-    COLUMNS.map(({ label, class: columnClass }) =>
-      el("th", { scope: "col", class: columnClass }, [label]),
+    COLUMNS.map(({ label, shortLabel, class: columnClass }) =>
+      el(
+        "th",
+        { scope: "col", class: columnClass },
+        shortLabel
+          ? [
+              el("span", { class: "leaderboard__label-short" }, [shortLabel]),
+              el("span", { class: "leaderboard__label-full" }, [label]),
+            ]
+          : [label],
+      ),
     ),
   );
 
