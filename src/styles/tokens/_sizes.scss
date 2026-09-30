@@ -39,6 +39,58 @@ $icon-sizes: (
   "large": 24px,
 );
 
+$borders: (
+  "hairline": 1px,
+  "thin": 1.5px,
+  "regular": 2px,
+  "thick": 2.5px,
+  "heavy": 3px,
+);
+
+$focus-ring: (
+  "width": 2px,
+  "offset": 2px,
+);
+
+// Small translate distances for hover/press feedback and enter/leave motion
+$offsets: (
+  "lift": -1px,
+  "press": 2px,
+  "slide": 12px,
+);
+
+// Fixed component dimensions from the Figma mockups and task spec
+$carousel-info-min-width: 288px;
+
+$components: (
+  "container-max-width": 1920px,
+  "footer-brand-width": 400px,
+  "hero-card-width-tablet": 480px,
+  "hero-card-width-desktop": 640px,
+  "auth-dialog-max-width": 380px,
+  "auth-dialog-width": 420px,
+  "game-details-dialog-width": 600px,
+  "game-details-hero-height": 220px,
+  "carousel-track-height": 206px,
+  "carousel-track-height-tablet": 288px,
+  "carousel-track-height-desktop": 388px,
+  "carousel-card-height": 200px,
+  "carousel-card-height-tablet": 280px,
+  "carousel-card-height-desktop": 384px,
+  "carousel-info-min-width": $carousel-info-min-width,
+  "leaderboard-player-width-tablet": 160px,
+  "leaderboard-column-width-tablet": 110px,
+  "leaderboard-player-gap": 6px,
+  "leaderboard-player-gap-desktop": 12px,
+  "leaderboard-avatar-size-tablet": 28px,
+  "leaderboard-badge-padding-inline": 12px,
+  "game-dev-illustration-height": 227px,
+  "game-dev-illustration-height-tablet": 300px,
+  "game-dev-gap-min": 10px,
+  "game-dev-cta-padding-inline-min": 12px,
+  "game-dev-icon-size-min": 14px,
+);
+
 @mixin emit-sizes {
   @each $name, $value in $sizes {
     --size-#{$name}: #{$value};
@@ -51,5 +103,17 @@ $icon-sizes: (
   }
   @each $name, $value in $icon-sizes {
     --icon-size-#{$name}: #{$value};
+  }
+  @each $name, $value in $borders {
+    --border-#{$name}: #{$value};
+  }
+  @each $name, $value in $focus-ring {
+    --focus-ring-#{$name}: #{$value};
+  }
+  @each $name, $value in $offsets {
+    --offset-#{$name}: #{$value};
+  }
+  @each $name, $value in $components {
+    --#{$name}: #{$value};
   }
 }
