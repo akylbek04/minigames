@@ -42,7 +42,7 @@
   font-family: var(--font-family-secondary);
   font-size: var(--font-size-body-small);
   // 2.5px is an explicit Figma value between the 2px/3px border tokens
-  border: 2.5px solid var(--color-on-primary);
+  border: var(--border-thick) solid var(--color-on-primary);
   border-radius: var(--corner-large);
   box-shadow: var(--shadow-level-1);
 
@@ -55,7 +55,7 @@
 .leaderboard__table thead {
   background-color: var(--color-tertiary);
   color: var(--color-white);
-  border-bottom: 1.5px solid var(--color-on-primary);
+  border-bottom: var(--border-thin) solid var(--color-on-primary);
 }
 
 .leaderboard__table th,
@@ -65,10 +65,15 @@
 }
 
 .leaderboard__table th {
-  padding: var(--size-2);
+  padding: var(--size-2) var(--size-1);
   color: var(--color-white);
   font-weight: var(--font-weight-extra-bold);
+  line-height: 1;
   text-transform: uppercase;
+
+  @include bp.tablet-up {
+    padding-inline: var(--size-2);
+  }
 
   @include bp.desktop-up {
     padding: var(--size-3);
@@ -76,8 +81,12 @@
 }
 
 .leaderboard__table td {
-  padding: var(--size-2);
-  border-bottom: 1px solid var(--color-outline);
+  padding: var(--size-2) var(--size-1);
+  border-bottom: var(--border-hairline) solid var(--color-outline);
+
+  @include bp.tablet-up {
+    padding-inline: var(--size-2);
+  }
 
   @include bp.desktop-up {
     padding-inline: var(--size-3);
@@ -98,12 +107,16 @@
 }
 
 .leaderboard__col-rank {
-  width: 40px;
+  width: var(--size-7);
   color: var(--color-on-primary);
   font-weight: var(--font-weight-extra-bold);
 
   @include bp.tablet-up {
-    width: 80px;
+    width: var(--size-10);
+  }
+
+  @include bp.desktop-up {
+    width: var(--size-15);
   }
 
   .leaderboard__row:first-child & {
@@ -116,10 +129,10 @@
 }
 
 .leaderboard__table .leaderboard__col-player {
-  width: 97px;
+  width: auto;
 
   @include bp.tablet-up {
-    width: 160px;
+    width: var(--leaderboard-player-width-tablet);
   }
 
   @include bp.desktop-up {
@@ -131,14 +144,17 @@
 // content (avatar + username) is left-aligned.
 .leaderboard__table td.leaderboard__col-player {
   text-align: left;
+
+  @include bp.desktop-up {
+    padding-left: 0;
+  }
 }
 
 .leaderboard__player {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  // 6px is an explicit Figma value; no token lands between size-05(4px) and size-1(8px)
-  gap: 6px;
+  gap: var(--leaderboard-player-gap);
   color: var(--color-on-primary);
   font-weight: var(--font-weight-bold);
 
@@ -147,8 +163,7 @@
   }
 
   @include bp.desktop-up {
-    // 12px is an explicit Figma value between size-1(8px) and size-2(16px)
-    gap: 12px;
+    gap: var(--leaderboard-player-gap-desktop);
   }
 }
 
@@ -168,24 +183,24 @@
   color: var(--color-on-primary);
   font-size: var(--font-size-label-small);
   font-weight: var(--font-weight-bold);
-  border: 1px solid var(--color-on-primary);
+  border: var(--border-hairline) solid var(--color-on-primary);
   border-radius: var(--corner-full);
 
   @include bp.tablet-up {
-    // 28px is an explicit Figma value between size-3(24px) and size-4(32px)
-    width: 28px;
-    height: 28px;
+    width: var(--leaderboard-avatar-size-tablet);
+    height: var(--leaderboard-avatar-size-tablet);
   }
 
   @include bp.desktop-up {
     width: var(--size-5);
     height: var(--size-5);
     font-size: var(--font-size-label-large);
-    border-width: 1.5px;
+    border-width: var(--border-thin);
   }
 
+  // The leader's avatar is primary yellow; the rest follow the avatar palette.
   &--1 {
-    background-color: var(--color-avatar-random-3);
+    background-color: var(--color-primary);
   }
 
   &--2 {
@@ -193,7 +208,7 @@
   }
 
   &--3 {
-    background-color: var(--color-avatar-random-1);
+    background-color: var(--color-avatar-random-3);
   }
 
   &--4 {
@@ -208,12 +223,11 @@
 .leaderboard__col-games {
   display: none;
   color: var(--color-on-primary);
-  // SemiBold 600 has no matching weight token; loaded explicitly for this column
-  font-weight: 600;
+  font-weight: var(--font-weight-semi-bold);
 
   @include bp.tablet-up {
     display: table-cell;
-    width: 110px;
+    width: var(--leaderboard-column-width-tablet);
   }
 
   @include bp.desktop-up {
@@ -222,12 +236,12 @@
 }
 
 .leaderboard__col-score {
-  width: 80px;
+  width: var(--size-8);
   color: var(--color-on-primary);
   font-weight: var(--font-weight-bold);
 
   @include bp.tablet-up {
-    width: 110px;
+    width: var(--leaderboard-column-width-tablet);
   }
 
   @include bp.desktop-up {
@@ -250,11 +264,11 @@
 }
 
 .leaderboard__col-streak {
-  width: 70px;
+  width: var(--size-10);
   font-weight: var(--font-weight-bold);
 
   @include bp.tablet-up {
-    width: 110px;
+    width: var(--leaderboard-column-width-tablet);
   }
 
   @include bp.desktop-up {
@@ -294,11 +308,31 @@
 
 .leaderboard__badge {
   display: inline-block;
-  padding: var(--size-05) 12px;
+  padding: var(--size-05) var(--leaderboard-badge-padding-inline);
   color: var(--color-on-primary);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-label-medium);
   background-color: var(--color-bg);
-  border: 1.5px solid var(--color-on-primary);
+  border: var(--border-thin) solid var(--color-on-primary);
   border-radius: var(--corner-full);
+}
+
+.leaderboard__label-full {
+  display: none;
+
+  @include bp.desktop-up {
+    display: inline;
+  }
+}
+
+.leaderboard__label-short {
+  @include bp.desktop-up {
+    display: none;
+  }
+}
+
+.leaderboard__title-suffix {
+  @include bp.mobile-only {
+    display: none;
+  }
 }

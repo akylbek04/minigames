@@ -17,8 +17,14 @@ $font-sizes: (
 $font-weights: (
   "regular": 400,
   "medium": 500,
+  "semi-bold": 600,
   "bold": 700,
   "extra-bold": 800,
+);
+
+$letter-spacings: (
+  "tight": -0.005em,
+  "wide": 0.005em,
 );
 
 $font-family-primary:
@@ -36,6 +42,9 @@ $font-family-secondary:
   }
   @each $name, $value in $font-weights {
     --font-weight-#{$name}: #{$value};
+  }
+  @each $name, $value in $letter-spacings {
+    --letter-spacing-#{$name}: #{$value};
   }
   --font-family-primary: #{$font-family-primary};
   --font-family-secondary: #{$font-family-secondary};

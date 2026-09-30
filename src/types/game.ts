@@ -11,3 +11,9 @@ export interface Game {
   cardImage: string;
   featured: boolean;
 }
+
+export interface Category {
+  slug: GameCategory | "all";
+  label: string;
+  isDefault: boolean;
+}
