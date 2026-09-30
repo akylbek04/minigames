@@ -12,13 +12,13 @@
   overflow-y: auto;
   color: var(--color-on-bg);
   background-color: var(--color-bg);
-  border: 2px solid var(--color-outline-variant);
+  border: var(--border-regular) solid var(--color-outline-variant);
   border-radius: var(--corner-extra-large);
   box-shadow: var(--shadow-level-3);
 
   @include bp.tablet-up {
-    // RSS-QS-2-2-4: 600px wide from tablet up, full width on mobile.
-    width: 600px;
+    // RSS-QS-2-2-4: fixed width from tablet up, full width on mobile.
+    width: var(--game-details-dialog-width);
   }
 }
 
@@ -28,8 +28,7 @@
 
 .game-details__hero-image {
   width: 100%;
-  // 220px is the Figma hero height at every breakpoint
-  height: 220px;
+  height: var(--game-details-hero-height);
   object-fit: cover;
 }
 
@@ -46,7 +45,7 @@
   height: var(--size-5);
   color: var(--color-on-primary);
   background-color: var(--color-white);
-  border: 2px solid var(--color-on-primary);
+  border: var(--border-regular) solid var(--color-on-primary);
   border-radius: var(--corner-full);
   box-shadow: var(--shadow-level-1);
   font-size: var(--icon-size-large);
@@ -57,8 +56,8 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-tertiary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--color-tertiary);
+    outline-offset: var(--focus-ring-offset);
   }
 }
 
@@ -142,7 +141,7 @@
   gap: var(--size-05);
   padding: var(--size-1) var(--size-2);
   background-color: var(--color-white);
-  border: 2px solid var(--color-on-primary);
+  border: var(--border-regular) solid var(--color-on-primary);
   border-radius: var(--corner-small);
   box-shadow: var(--shadow-level-1);
 }
@@ -262,7 +261,7 @@
   width: var(--size-3);
   height: var(--size-3);
   color: var(--color-on-primary);
-  border: 1.5px solid var(--color-on-primary);
+  border: var(--border-thin) solid var(--color-on-primary);
   border-radius: var(--corner-full);
   font-size: var(--font-size-label-medium);
   font-weight: var(--font-weight-bold);
@@ -271,7 +270,7 @@
     width: var(--size-5);
     height: var(--size-5);
     background-color: var(--color-primary);
-    border-width: 2px;
+    border-width: var(--border-regular);
     font-size: var(--font-size-body-medium);
   }
 }
@@ -295,7 +294,7 @@
   font: inherit;
   font-size: var(--font-size-body-small);
   background-color: var(--color-white);
-  border: 2px solid var(--color-on-primary);
+  border: var(--border-regular) solid var(--color-on-primary);
   border-radius: var(--corner-small);
   resize: none;
   // Scrollbars are hidden site-wide (globals.scss); this one is required.
@@ -339,8 +338,8 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-tertiary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--color-tertiary);
+    outline-offset: var(--focus-ring-offset);
   }
 }
 
@@ -367,7 +366,7 @@
   padding: var(--size-2);
   color: var(--color-on-primary);
   background-color: var(--color-white);
-  border: 2px solid var(--color-white);
+  border: var(--border-regular) solid var(--color-white);
   border-radius: var(--corner-medium);
   box-shadow: var(--shadow-level-1);
 }
@@ -423,8 +422,8 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-tertiary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--color-tertiary);
+    outline-offset: var(--focus-ring-offset);
   }
 }
 

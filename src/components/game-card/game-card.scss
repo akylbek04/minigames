@@ -7,7 +7,7 @@
   overflow: hidden;
   background-color: var(--color-white);
   // 2.5px is the same explicit Figma card border the Home carousel uses
-  border: 2.5px solid var(--color-on-primary);
+  border: var(--border-thick) solid var(--color-on-primary);
   border-radius: var(--corner-large);
   box-shadow: var(--shadow-level-2);
 
@@ -21,7 +21,7 @@
   width: 100%;
   aspect-ratio: 17 / 8;
   object-fit: cover;
-  border-bottom: 2.5px solid var(--color-on-primary);
+  border-bottom: var(--border-thick) solid var(--color-on-primary);
 
   @include bp.tablet-up {
     // Figma's image column is 39% of the card at both tablet and desktop.
@@ -80,7 +80,7 @@
   padding: 0 var(--size-1);
   color: var(--color-on-primary);
   background-color: var(--color-secondary);
-  border: 1.5px solid var(--color-on-primary);
+  border: var(--border-thin) solid var(--color-on-primary);
   border-radius: var(--corner-full);
   font-size: var(--font-size-label-medium);
   font-weight: var(--font-weight-bold);

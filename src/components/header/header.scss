@@ -3,7 +3,7 @@
 
 .header {
   background-color: var(--color-bg);
-  border-bottom: 2px solid var(--color-on-primary);
+  border-bottom: var(--border-regular) solid var(--color-on-primary);
 }
 
 .header__inner {
@@ -17,7 +17,7 @@
 
   @include bp.tablet-up {
     padding-inline: var(--size-5);
-    height: 72px;
+    height: var(--size-9);
   }
 
   @include bp.desktop-up {
@@ -35,7 +35,7 @@
   color: var(--color-on-primary);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-headline-small);
-  letter-spacing: -0.005em;
+  letter-spacing: var(--letter-spacing-tight);
 
   @include bp.desktop-up {
     font-size: var(--font-size-headline-medium);

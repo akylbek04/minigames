@@ -2,6 +2,12 @@ $shadows: (
   "level-1": 4px 4px 0 0 var(--color-on-primary),
   "level-2": 6px 6px 0 0 var(--color-on-primary),
   "level-3": 8px 8px 0 0 var(--color-on-primary),
+  // soft layered shadows, used only by the Game Dev section card and CTA
+  "soft-card": (
+      0 14px 30px -10px rgba(0, 0, 0, 0.0784),
+      0 2px 8px -4px rgba(0, 0, 0, 0.0392),
+    ),
+  "soft-button": 0 10px 20px -10px rgba(0, 0, 0, 0.102),
 );
 
 @mixin emit-shadows {

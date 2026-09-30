@@ -4,20 +4,19 @@
 .auth-dialog {
   @include mix.modal-dialog;
 
-  width: min(92vw, 380px);
+  width: min(92vw, var(--auth-dialog-max-width));
   max-height: calc(100vh - var(--size-4));
   margin: auto;
   padding: var(--size-4);
   overflow-y: auto;
   color: var(--color-on-bg);
   background-color: var(--color-bg);
-  border: 2px solid var(--color-outline-variant);
+  border: var(--border-regular) solid var(--color-outline-variant);
   border-radius: var(--corner-extra-large);
   box-shadow: var(--shadow-level-3);
 
   @include bp.tablet-up {
-    // 420px is an explicit spec requirement, not a spacing-scale value
-    width: 420px;
+    width: var(--auth-dialog-width);
   }
 }
 
@@ -25,7 +24,7 @@
   display: flex;
   overflow: hidden;
   background-color: var(--color-white);
-  border: 2px solid var(--color-on-primary);
+  border: var(--border-regular) solid var(--color-on-primary);
   border-radius: var(--corner-small);
 }
 
@@ -63,14 +62,14 @@
 
   &.is-entering {
     opacity: 0;
-    transform: translateX(12px);
+    transform: translateX(var(--offset-slide));
   }
 
   &.is-leaving {
     position: absolute;
     inset: 0 0 auto;
     opacity: 0;
-    transform: translateX(-12px);
+    transform: translateX(calc(-1 * var(--offset-slide)));
   }
 }
 
@@ -127,7 +126,7 @@
   font-family: inherit;
   font-size: var(--font-size-body-small);
   background-color: var(--color-white);
-  border: 2px solid var(--color-on-primary);
+  border: var(--border-regular) solid var(--color-on-primary);
   border-radius: var(--corner-small);
   transition: border-color 0.15s ease;
 
@@ -195,7 +194,7 @@
   &::after {
     content: "";
     flex: 1;
-    height: 1px;
+    height: var(--border-hairline);
     background-color: var(--color-outline);
   }
 }
