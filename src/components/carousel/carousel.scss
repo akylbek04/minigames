@@ -1,4 +1,6 @@
+@use "sass:map";
 @use "../../styles/breakpoints" as bp;
+@use "../../styles/tokens/sizes";
 @use "../../styles/mixins" as mix;
 
 .carousel__inner {
@@ -52,7 +54,7 @@
   height: var(--size-5);
   color: var(--color-on-primary);
   background-color: var(--color-white);
-  border: 2px solid var(--color-on-primary);
+  border: var(--border-regular) solid var(--color-on-primary);
   border-radius: var(--corner-full);
   font-size: var(--icon-size-medium);
 
@@ -72,7 +74,7 @@
 
   display: flex;
   align-items: flex-start;
-  height: 206px;
+  height: var(--carousel-track-height);
   margin: 0;
   padding-inline: calc(var(--carousel-gap) / 2);
   list-style: none;
@@ -83,11 +85,11 @@
   @include bp.tablet-up {
     --carousel-gap: var(--size-1);
 
-    height: 288px;
+    height: var(--carousel-track-height-tablet);
   }
 
   @include bp.desktop-up {
-    height: 388px;
+    height: var(--carousel-track-height-desktop);
   }
 }
 
@@ -133,7 +135,7 @@
     visibility: visible;
 
     .carousel__card {
-      border-width: 2.5px;
+      border-width: var(--border-thick);
       box-shadow: var(--shadow-level-1);
     }
   }
@@ -161,7 +163,7 @@
 // just under it.
 .carousel__slot[data-role="wide"] {
   flex-grow: 218;
-  min-width: 288px;
+  min-width: var(--carousel-info-min-width);
 
   @include bp.tablet-up {
     flex-grow: 448;
@@ -179,12 +181,11 @@
   display: block;
   position: relative;
   width: 100%;
-  height: 200px;
+  height: var(--carousel-card-height);
   overflow: hidden;
   text-align: start;
   background-color: var(--color-white);
-  // 2.5px is an explicit Figma value between the 2px/3px border tokens
-  border: 2.5px solid var(--color-on-primary);
+  border: var(--border-thick) solid var(--color-on-primary);
   border-radius: var(--corner-large);
   box-shadow: var(--shadow-level-1);
   transition:
@@ -192,16 +193,16 @@
     box-shadow 0.5s ease;
 
   &:focus-visible {
-    outline: 2px solid var(--color-tertiary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--color-tertiary);
+    outline-offset: var(--focus-ring-offset);
   }
 
   @include bp.tablet-up {
-    height: 280px;
+    height: var(--carousel-card-height-tablet);
   }
 
   @include bp.desktop-up {
-    height: 384px;
+    height: var(--carousel-card-height-desktop);
     border-radius: var(--corner-extra-large);
   }
 }
@@ -231,7 +232,7 @@
 // RSS-QS-1-4-4 / 2-3-1: cards rendered narrower than 288px show only the
 // image. A container query measures the content box, so the card's two 2.5px
 // borders come off the 288px rendered-width threshold.
-@container (min-width: calc(288px - 5px)) {
+@container (min-width: calc(#{sizes.$carousel-info-min-width} - 2 * #{map.get(sizes.$borders, "thick")})) {
   .carousel__card-info {
     display: flex;
   }
