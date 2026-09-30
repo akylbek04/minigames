@@ -29,7 +29,7 @@
   width: var(--size-5);
   height: var(--size-5);
   color: var(--color-on-primary);
-  border: 2px solid var(--color-on-primary);
+  border: var(--border-regular) solid var(--color-on-primary);
   border-radius: var(--corner-full);
   font-size: var(--font-size-label-large);
   font-weight: var(--font-weight-bold);
@@ -58,7 +58,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-tertiary);
-    outline-offset: 2px;
+    outline: var(--focus-ring-width) solid var(--color-tertiary);
+    outline-offset: var(--focus-ring-offset);
   }
 }
