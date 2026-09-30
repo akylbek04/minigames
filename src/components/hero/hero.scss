@@ -4,7 +4,7 @@
 .hero {
   position: relative;
   overflow: hidden;
-  border-bottom: 2px solid var(--color-on-primary);
+  border-bottom: var(--border-regular) solid var(--color-on-primary);
 
   &::before,
   &::after {
@@ -56,23 +56,22 @@
   width: 100%;
   padding: var(--size-3);
   background-color: var(--color-bg);
-  border: 2px solid var(--color-on-primary);
+  border: var(--border-regular) solid var(--color-on-primary);
   border-radius: var(--corner-medium);
   box-shadow: var(--shadow-level-1);
 
   @include bp.tablet-up {
-    width: 480px;
-    // 2.5px is an explicit Figma value between the 2px/3px border tokens
-    border-width: 2.5px;
+    width: var(--hero-card-width-tablet);
+    border-width: var(--border-thick);
     border-radius: var(--corner-large);
     box-shadow: var(--shadow-level-2);
   }
 
   @include bp.desktop-up {
-    width: 640px;
+    width: var(--hero-card-width-desktop);
     gap: var(--size-3);
     padding: var(--size-6);
-    border-width: 3px;
+    border-width: var(--border-heavy);
     border-radius: var(--corner-extra-large);
     box-shadow: var(--shadow-level-3);
   }
@@ -133,7 +132,7 @@
   @include bp.tablet-up {
     padding: var(--btn-padding-medium);
     font-size: var(--font-size-body-small);
-    letter-spacing: 0.005em;
+    letter-spacing: var(--letter-spacing-wide);
   }
 
   @include bp.desktop-up {

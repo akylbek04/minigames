@@ -2,9 +2,9 @@
 
 @mixin container {
   width: 100%;
-  max-width: 1920px;
+  max-width: var(--container-max-width);
   margin-inline: auto;
-  padding-inline: clamp(1rem, 4vw, 5rem);
+  padding-inline: clamp(var(--size-2), 4vw, var(--size-10));
 }
 
 @mixin visually-hidden {
@@ -33,7 +33,7 @@
     width: var(--size-1);
     height: var(--size-3);
     background-color: var(--color-primary);
-    border: 1.5px solid var(--color-on-primary);
+    border: var(--border-thin) solid var(--color-on-primary);
     border-radius: var(--corner-extra-small);
   }
 
