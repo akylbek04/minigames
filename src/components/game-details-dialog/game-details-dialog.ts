@@ -14,17 +14,23 @@ import "./game-details-dialog.scss";
 const game: GameDetails = gameData.data;
 const comments: GameComment[] = commentsData.data;
 
-export interface GameDetailsDialog {
-  dialog: HTMLDialogElement;
-  open: () => void;
+export interface GameDetailsDialogOptions {
+  // The dialog never closes itself: it asks for the URL to drop the game,
+  // and sync() closes it once the URL says so.
+  onRequestClose: () => void;
 }
 
-export function createGameDetailsDialog(): GameDetailsDialog {
-  const dialog = el("dialog", { class: "game-details", "aria-labelledby": "game-details-title" });
+export interface GameDetailsDialog {
+  dialog: HTMLDialogElement;
+  // Opens, switches or closes the dialog to match the `game` URL parameter.
+  sync: (slug: string | undefined) => void;
+}
 
-  function close(): void {
-    closeDialogAnimated(dialog);
-  }
+export function createGameDetailsDialog({
+  onRequestClose,
+}: GameDetailsDialogOptions): GameDetailsDialog {
+  const dialog = el("dialog", { class: "game-details", "aria-labelledby": "game-details-title" });
+  const state: { slug?: string } = {};
 
   function createContent(): Node[] {
     const closeButton = el(
@@ -32,7 +38,7 @@ export function createGameDetailsDialog(): GameDetailsDialog {
       { type: "button", class: "game-details__close", "aria-label": "Close game details" },
       [materialIcon("close")],
     );
-    closeButton.addEventListener("click", close);
+    closeButton.addEventListener("click", onRequestClose);
 
     const hero = el("div", { class: "game-details__hero" }, [
       el("img", { src: assetUrl(game.heroImage), alt: "", class: "game-details__hero-image" }),
@@ -50,21 +56,30 @@ export function createGameDetailsDialog(): GameDetailsDialog {
 
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) {
-      close();
+      onRequestClose();
     }
   });
 
   dialog.addEventListener("cancel", (event) => {
     event.preventDefault();
-    close();
+    onRequestClose();
   });
 
   // Content is rebuilt on every open, which resets favorites, likes and the
-  // comment draft as Story 2 requires (nothing is persisted yet).
-  function open(): void {
+  // comment draft (nothing is persisted yet).
+  function sync(slug: string | undefined): void {
+    if (slug === undefined) {
+      state.slug = undefined;
+      closeDialogAnimated(dialog);
+      return;
+    }
+    if (slug === state.slug && dialog.open && !dialog.classList.contains("is-closing")) {
+      return;
+    }
+    state.slug = slug;
     dialog.replaceChildren(...createContent());
     openDialogAnimated(dialog);
   }
 
-  return { dialog, open };
+  return { dialog, sync };
 }

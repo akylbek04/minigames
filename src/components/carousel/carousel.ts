@@ -26,30 +26,34 @@ export function circularOffset(index: number, active: number, total: number): nu
 }
 
 function createCard(game: Game): HTMLButtonElement {
-  return el("button", { type: "button", class: "carousel__card", "aria-label": game.name }, [
-    el("img", {
-      src: assetUrl(game.cardImage),
-      alt: "",
-      class: "carousel__card-image",
-    }),
-    el("span", { class: "carousel__card-info", "aria-hidden": "true" }, [
-      el("span", { class: "carousel__card-title" }, [game.name]),
-      el("span", { class: "carousel__card-stats" }, [
-        el("span", { class: "carousel__card-rating" }, [
-          materialIcon("star", "carousel__card-icon"),
-          String(game.rating),
-        ]),
-        el("span", { class: "carousel__card-likes" }, [
-          materialIcon("favorite", "carousel__card-icon"),
-          formatCompactNumber(game.likesCount),
+  return el(
+    "button",
+    { type: "button", class: "carousel__card", "aria-label": game.name, "data-slug": game.slug },
+    [
+      el("img", {
+        src: assetUrl(game.cardImage),
+        alt: "",
+        class: "carousel__card-image",
+      }),
+      el("span", { class: "carousel__card-info", "aria-hidden": "true" }, [
+        el("span", { class: "carousel__card-title" }, [game.name]),
+        el("span", { class: "carousel__card-stats" }, [
+          el("span", { class: "carousel__card-rating" }, [
+            materialIcon("star", "carousel__card-icon"),
+            String(game.rating),
+          ]),
+          el("span", { class: "carousel__card-likes" }, [
+            materialIcon("favorite", "carousel__card-icon"),
+            formatCompactNumber(game.likesCount),
+          ]),
         ]),
       ]),
-    ]),
-  ]);
+    ],
+  );
 }
 
 export interface CarouselCallbacks {
-  onOpenDetails: () => void;
+  onOpenDetails: (slug: string) => void;
 }
 
 export function createCarousel({ onOpenDetails }: CarouselCallbacks): HTMLElement {
@@ -178,8 +182,9 @@ export function createCarousel({ onOpenDetails }: CarouselCallbacks): HTMLElemen
       shouldSuppressClick = false;
       return;
     }
-    if (event.target instanceof Element && event.target.closest(".carousel__card")) {
-      onOpenDetails();
+    const card = event.target instanceof Element && event.target.closest(".carousel__card");
+    if (card instanceof HTMLElement && card.dataset.slug) {
+      onOpenDetails(card.dataset.slug);
     }
   });
 
