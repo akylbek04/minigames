@@ -1,0 +1,117 @@
+@use "../../styles/breakpoints" as bp;
+
+// The popover box itself is invisible and lets clicks through; only the
+// snackbars inside it are interactive, so the page stays usable.
+.snackbar-region {
+  position: fixed;
+  inset: auto var(--size-2) var(--size-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+  width: auto;
+  max-width: var(--snackbar-max-width);
+  margin: 0 auto;
+  padding: 0;
+  overflow: visible;
+  background: none;
+  border: none;
+  pointer-events: none;
+
+  @include bp.tablet-up {
+    inset: auto var(--size-3) var(--size-3) auto;
+    width: var(--snackbar-max-width);
+  }
+}
+
+.snackbar {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  padding: var(--size-1) var(--size-1) var(--size-1) var(--size-2);
+  color: var(--color-white);
+  background-color: var(--color-on-primary);
+  border: var(--border-regular) solid var(--color-on-primary);
+  border-left-width: var(--size-1);
+  border-radius: var(--corner-medium);
+  box-shadow: var(--shadow-level-2);
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(var(--offset-slide));
+  }
+
+  &.is-leaving {
+    opacity: 0;
+    transform: translateY(var(--offset-slide));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.snackbar--success {
+  border-left-color: var(--color-price-free);
+}
+
+.snackbar--error {
+  border-left-color: var(--color-like);
+}
+
+.snackbar--warning {
+  border-left-color: var(--color-primary);
+}
+
+.snackbar--info {
+  border-left-color: var(--color-secondary);
+}
+
+.snackbar__icon {
+  flex-shrink: 0;
+  font-size: var(--icon-size-large);
+
+  .snackbar--success & {
+    color: var(--color-price-free);
+  }
+
+  .snackbar--error & {
+    color: var(--color-like);
+  }
+
+  .snackbar--warning & {
+    color: var(--color-primary);
+  }
+}
+
+.snackbar__message {
+  flex: 1;
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-medium);
+}
+
+.snackbar__close {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: var(--size-05);
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-radius: var(--corner-full);
+  font-size: var(--icon-size-medium);
+
+  &:hover {
+    background-color: var(--color-bg-footer-lowest);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-primary);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
