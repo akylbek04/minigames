@@ -1,10 +1,11 @@
 import { el } from "../../utils/dom";
 import { formatCompactNumber } from "../../utils/format";
-import leaderboardData from "../../assets/data/leaderboard.json";
+import { fetchLeaderboard } from "../../api/minigames-api";
+import { createAsyncContent } from "../feedback/async-content";
+import { createEmptyState } from "../feedback/empty-state";
+import { createSkeleton, createSkeletonGroup } from "../feedback/skeleton";
 import type { LeaderboardEntry } from "../../types/leaderboard";
 import "./leaderboard.scss";
-
-const leaderboard = leaderboardData.data as LeaderboardEntry[];
 
 // Tablet and mobile headers use the mockup's shorter labels where given.
 const COLUMNS: { label: string; shortLabel?: string; class: string }[] = [
@@ -75,17 +76,8 @@ function createRow(entry: LeaderboardEntry, index: number): HTMLElement {
   ]);
 }
 
-export function createLeaderboard(): HTMLElement {
-  // Mobile shortens the heading to "Top Players", as in the mockup.
-  // One inner span so the title mixin's flex gap doesn't split the words.
-  const title = el("h2", { class: "leaderboard__title" }, [
-    el("span", {}, [
-      "Top Players",
-      el("span", { class: "leaderboard__title-suffix" }, [" This Week"]),
-    ]),
-  ]);
-
-  const headRow = el(
+function createHeadRow(): HTMLElement {
+  return el(
     "tr",
     {},
     COLUMNS.map(({ label, shortLabel, class: columnClass }) =>
@@ -101,17 +93,78 @@ export function createLeaderboard(): HTMLElement {
       ),
     ),
   );
+}
 
-  const table = el("table", { class: "leaderboard__table" }, [
-    el("thead", {}, [headRow]),
+function createTable(entries: LeaderboardEntry[]): HTMLElement {
+  return el("table", { class: "leaderboard__table" }, [
+    el("thead", {}, [createHeadRow()]),
     el(
       "tbody",
       {},
-      leaderboard.map((entry, index) => createRow(entry, index)),
+      entries.map((entry, index) => createRow(entry, index)),
     ),
   ]);
+}
 
-  return el("section", { class: "leaderboard", "aria-label": "Top Players This Week" }, [
-    el("div", { class: "leaderboard__inner" }, [title, table]),
+// The real header over rows of shimmering cells, as many rows as the
+// leaderboard shows (the extra ones hide on smaller screens like real rows).
+const SKELETON_ROW_COUNT = 5;
+
+function createLeaderboardSkeleton(): Node {
+  const rows = Array.from({ length: SKELETON_ROW_COUNT }, (_, index) =>
+    el(
+      "tr",
+      {
+        class:
+          index >= EXTRA_ROW_START_INDEX
+            ? "leaderboard__row leaderboard__row--extra"
+            : "leaderboard__row",
+      },
+      COLUMNS.map(({ class: columnClass }) =>
+        el("td", { class: columnClass }, [createSkeleton("leaderboard__skeleton-cell")]),
+      ),
+    ),
+  );
+
+  return createSkeletonGroup("Loading top players…", [
+    el("table", { class: "leaderboard__table", "aria-hidden": "true" }, [
+      el("thead", {}, [createHeadRow()]),
+      el("tbody", {}, rows),
+    ]),
   ]);
+}
+
+export interface Leaderboard {
+  element: HTMLElement;
+  load: () => void;
+}
+
+export function createLeaderboard(): Leaderboard {
+  // Mobile shortens the heading to "Top Players", as in the mockup.
+  // One inner span so the title mixin's flex gap doesn't split the words.
+  const title = el("h2", { class: "leaderboard__title" }, [
+    el("span", {}, [
+      "Top Players",
+      el("span", { class: "leaderboard__title-suffix" }, [" This Week"]),
+    ]),
+  ]);
+
+  const content = createAsyncContent<LeaderboardEntry[]>({
+    subject: "top players",
+    renderLoading: createLeaderboardSkeleton,
+    renderData: createTable,
+    isEmpty: (entries) => entries.length === 0,
+    renderEmpty: () =>
+      createEmptyState({
+        title: "No players yet",
+        message: "Play a game this week to be the first on the leaderboard.",
+        icon: "emoji_events",
+      }),
+  });
+
+  const element = el("section", { class: "leaderboard", "aria-label": "Top Players This Week" }, [
+    el("div", { class: "leaderboard__inner" }, [title, content.element]),
+  ]);
+
+  return { element, load: () => void content.load(fetchLeaderboard) };
 }
