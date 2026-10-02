@@ -14,10 +14,19 @@ export function visiblePageStart(active: number, total: number, size: number): n
   return Math.max(1, Math.min(centered, total - size + 1));
 }
 
-// Only the control's own state changes for now; switching the cards follows
-// with the API in Story 3.
-export function createPagination(totalPages: number): HTMLElement {
-  let activePage = 1;
+export interface PaginationOptions {
+  // Picking a page only reports it; the URL then drives the next update().
+  onSelect: (page: number) => void;
+}
+
+export interface Pagination {
+  element: HTMLElement;
+  // Rebuilds the controls from the API response metadata.
+  update: (page: number, totalPages: number) => void;
+}
+
+export function createPagination({ onSelect }: PaginationOptions): Pagination {
+  const state = { page: 1, totalPages: 1 };
 
   const prevButton = el(
     "button",
@@ -32,6 +41,7 @@ export function createPagination(totalPages: number): HTMLElement {
   const pages = el("ul", { class: "pagination__pages" });
 
   function render(): void {
+    const { page: activePage, totalPages } = state;
     const size = Math.min(totalPages, wideQuery.matches ? MAX_VISIBLE_WIDE : MAX_VISIBLE_MOBILE);
     const start = visiblePageStart(activePage, totalPages, size);
 
@@ -48,29 +58,34 @@ export function createPagination(totalPages: number): HTMLElement {
           },
           [String(page)],
         );
-        button.addEventListener("click", () => goTo(page));
+        button.addEventListener("click", () => onSelect(page));
         return el("li", {}, [button]);
       }),
     );
 
-    prevButton.disabled = activePage === 1;
-    nextButton.disabled = activePage === totalPages;
+    prevButton.disabled = activePage <= 1;
+    nextButton.disabled = activePage >= totalPages;
   }
 
-  function goTo(page: number): void {
-    activePage = page;
+  // An empty result still shows page 1 with both arrows (RSS-QS-3-2-4).
+  function update(page: number, totalPages: number): void {
+    state.totalPages = Math.max(1, totalPages);
+    state.page = Math.min(Math.max(1, page), state.totalPages);
     render();
   }
 
-  prevButton.addEventListener("click", () => goTo(activePage - 1));
-  nextButton.addEventListener("click", () => goTo(activePage + 1));
+  prevButton.addEventListener("click", () => onSelect(state.page - 1));
+  nextButton.addEventListener("click", () => onSelect(state.page + 1));
   wideQuery.addEventListener("change", render);
 
   render();
 
-  return el("nav", { class: "pagination", "aria-label": "Library pages" }, [
-    prevButton,
-    pages,
-    nextButton,
-  ]);
+  return {
+    element: el("nav", { class: "pagination", "aria-label": "Library pages" }, [
+      prevButton,
+      pages,
+      nextButton,
+    ]),
+    update,
+  };
 }
