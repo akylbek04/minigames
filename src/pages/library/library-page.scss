@@ -75,10 +75,14 @@
   }
 }
 
+.library-page__results {
+  margin-top: var(--size-2);
+}
+
 .library-page__games {
   display: grid;
   gap: var(--size-3);
-  margin: var(--size-2) 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 
@@ -87,6 +91,6 @@
   }
 }
 
-.library-page__games + .pagination {
+.library-page__results + .pagination {
   margin-top: var(--size-5);
 }
