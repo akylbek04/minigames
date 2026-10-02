@@ -1,0 +1,46 @@
+@use "../../styles/breakpoints" as bp;
+
+.error-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--size-2);
+  padding: var(--size-3);
+  color: var(--color-on-primary);
+  text-align: center;
+  background-color: color-mix(in srgb, var(--color-error) 8%, var(--color-white));
+  border: var(--border-regular) solid var(--color-error);
+  border-radius: var(--corner-large);
+
+  @include bp.tablet-up {
+    flex-direction: row;
+    text-align: start;
+  }
+}
+
+.error-banner__icon {
+  flex-shrink: 0;
+  color: var(--color-error);
+  font-size: var(--size-5);
+}
+
+.error-banner__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--size-05);
+}
+
+.error-banner__title {
+  font-size: var(--font-size-body-large);
+  font-weight: var(--font-weight-bold);
+}
+
+.error-banner__message {
+  color: var(--color-on-bg);
+  font-size: var(--font-size-body-small);
+}
+
+.error-banner__retry {
+  flex-shrink: 0;
+}

@@ -89,6 +89,7 @@ $components: (
   "game-dev-gap-min": 10px,
   "game-dev-cta-padding-inline-min": 12px,
   "game-dev-icon-size-min": 14px,
+  "snackbar-max-width": 400px,
 );
 
 @mixin emit-sizes {
