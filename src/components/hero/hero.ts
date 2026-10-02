@@ -1,4 +1,5 @@
 import { el } from "../../utils/dom";
+import { navigateTo } from "../../router/router";
 import "./hero.scss";
 
 export function createHero(): HTMLElement {
@@ -15,6 +16,7 @@ export function createHero(): HTMLElement {
   const cta = el("button", { type: "button", class: "btn btn--filled hero__cta" }, [
     "Browse Library",
   ]);
+  cta.addEventListener("click", () => navigateTo("/library"));
 
   const card = el("div", { class: "hero__card" }, [title, shortText, longText, cta]);
   const inner = el("div", { class: "hero__inner" }, [card]);
