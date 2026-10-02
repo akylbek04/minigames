@@ -45,10 +45,11 @@ export function createGameInfo(game: GameDetails): HTMLElement {
     ]),
   ]);
 
-  // Story 2's static game is free, so only the Play Now variant exists yet;
-  // it deliberately does nothing.
+  // Free games get "Play Now", paid ones "Buy Now: <price>". Neither does
+  // anything yet: playing and buying are outside this project's scope.
+  const isFree = game.specs.price === "Free";
   const playButton = el("button", { type: "button", class: "btn btn--filled btn--large" }, [
-    "Play Now",
+    isFree ? "Play Now" : `Buy Now: ${game.specs.price}`,
   ]);
 
   return el("section", { class: "game-details__info", "aria-labelledby": "game-details-title" }, [

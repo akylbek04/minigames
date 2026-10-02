@@ -4,23 +4,48 @@ export function formatCompactNumber(value: number): string {
   );
 }
 
-const RELATIVE_TIME_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
-  ["year", 365 * 24 * 60 * 60],
-  ["month", 30 * 24 * 60 * 60],
-  ["week", 7 * 24 * 60 * 60],
-  ["day", 24 * 60 * 60],
-  ["hour", 60 * 60],
-  ["minute", 60],
-];
-const relativeTimeFormat = new Intl.RelativeTimeFormat("en", { numeric: "always" });
+const MINUTE = 60 * 1000;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+const WEEK = 7 * DAY;
+const MAX_WEEKS = 3;
 
-// "3 hours ago", "1 week ago": the largest whole unit that fits.
+function pluralize(count: number, unit: string): string {
+  return `${count} ${unit}${count === 1 ? "" : "s"} ago`;
+}
+
+// Whole calendar months between two dates, not counting an unfinished one.
+function monthsBetween(from: Date, to: Date): number {
+  const months = (to.getFullYear() - from.getFullYear()) * 12 + to.getMonth() - from.getMonth();
+  return to.getDate() < from.getDate() ? months - 1 : months;
+}
+
+// RSS-QS-3-3-2 scale, always rounded down to whole units: "just now",
+// "N min ago", "N hours ago", "N days ago", "N weeks ago" (1-3),
+// "N months ago" (1-11), then "N years ago".
 export function formatRelativeTime(isoDate: string, now = Date.now()): string {
-  const seconds = (new Date(isoDate).getTime() - now) / 1000;
-  for (const [unit, unitSeconds] of RELATIVE_TIME_UNITS) {
-    if (Math.abs(seconds) >= unitSeconds) {
-      return relativeTimeFormat.format(Math.round(seconds / unitSeconds), unit);
-    }
+  const date = new Date(isoDate);
+  const elapsed = Math.max(0, now - date.getTime());
+  if (Number.isNaN(elapsed)) {
+    return "";
   }
-  return "just now";
+
+  if (elapsed < MINUTE) {
+    return "just now";
+  }
+  if (elapsed < HOUR) {
+    return `${Math.floor(elapsed / MINUTE)} min ago`;
+  }
+  if (elapsed < DAY) {
+    return pluralize(Math.floor(elapsed / HOUR), "hour");
+  }
+  if (elapsed < WEEK) {
+    return pluralize(Math.floor(elapsed / DAY), "day");
+  }
+
+  const months = monthsBetween(date, new Date(now));
+  if (months < 1) {
+    return pluralize(Math.min(Math.floor(elapsed / WEEK), MAX_WEEKS), "week");
+  }
+  return months < 12 ? pluralize(months, "month") : pluralize(Math.floor(months / 12), "year");
 }

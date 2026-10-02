@@ -7,9 +7,6 @@ export interface Game {
   rating: number;
   likesCount: number;
   cardImage: string;
-  // Only the Story 2 mock data carries this; the API marks featured games
-  // through the `featured=true` query instead.
-  featured?: boolean;
 }
 
 export interface Category {
