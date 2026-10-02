@@ -1,4 +1,5 @@
 @use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
 
 .game-card {
   display: flex;
@@ -167,5 +168,37 @@
 
   @include bp.tablet-up {
     margin-top: 0;
+  }
+}
+
+.game-card__image--skeleton {
+  @include mix.shimmer;
+
+  border-radius: 0;
+}
+
+.game-card__skeleton-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--size-1);
+  padding: var(--size-2);
+}
+
+.game-card__skeleton-line {
+  width: 100%;
+  height: var(--size-2);
+
+  &--title {
+    width: 60%;
+    height: var(--size-3);
+  }
+
+  &--badge {
+    width: var(--size-10);
+  }
+
+  &--short {
+    width: 40%;
   }
 }
