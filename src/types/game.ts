@@ -1,19 +1,34 @@
-export type GameCategory = "puzzle" | "card" | "match" | "farm" | "strategy" | "arcade";
-
 export interface Game {
   slug: string;
   name: string;
-  category: GameCategory;
+  category: string;
   price: string;
   shortDescription: string;
   rating: number;
   likesCount: number;
   cardImage: string;
-  featured: boolean;
+  // Only the Story 2 mock data carries this; the API marks featured games
+  // through the `featured=true` query instead.
+  featured?: boolean;
 }
 
 export interface Category {
-  slug: GameCategory | "all";
+  slug: string;
   label: string;
   isDefault: boolean;
+}
+
+export type SortOption = "rating-desc" | "rating-asc" | "name-asc" | "name-desc";
+
+export interface GamesQuery {
+  category: string;
+  sort: string;
+  page: string;
+}
+
+export interface GamesPageMeta {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
 }
