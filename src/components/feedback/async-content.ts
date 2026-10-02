@@ -28,6 +28,9 @@ export type Request<T> = (signal: AbortSignal) => Promise<T>;
 export interface AsyncContent<T> {
   element: HTMLElement;
   load: (request: Request<T>) => Promise<void>;
+  // For when the request can't be sent yet (it waits on other data) but the
+  // user should already see that content is on its way.
+  showLoading: () => void;
 }
 
 // One content area that cycles through the shared feedback states: skeleton
@@ -82,5 +85,9 @@ export function createAsyncContent<T>(options: AsyncContentOptions<T>): AsyncCon
     }
   }
 
-  return { element, load: (request) => load(request) };
+  return {
+    element,
+    load: (request) => load(request),
+    showLoading: () => show(options.renderLoading(), "loading"),
+  };
 }

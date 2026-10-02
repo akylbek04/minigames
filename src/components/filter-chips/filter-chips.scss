@@ -52,3 +52,13 @@
     outline-offset: var(--focus-ring-offset);
   }
 }
+
+// Same pill shape as a real chip, with room for a short label.
+.filter-chips__chip--skeleton {
+  @include mix.shimmer;
+
+  flex-shrink: 0;
+  width: var(--size-12);
+  height: var(--size-4);
+  cursor: default;
+}

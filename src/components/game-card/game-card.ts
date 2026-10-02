@@ -2,15 +2,20 @@ import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
 import { formatCompactNumber } from "../../utils/format";
 import { assetUrl } from "../../utils/asset-url";
-import categoriesData from "../../assets/data/categories.json";
-import type { Category, Game } from "../../types/game";
+import { createSkeleton, createSkeletonGroup } from "../feedback/skeleton";
+import type { Game } from "../../types/game";
 import "./game-card.scss";
 
-const categoryLabels = new Map(
-  (categoriesData.data as Category[]).map((category) => [category.slug, category.label]),
-);
+export interface GameCardOptions {
+  // Badge text; the API only gives the category slug.
+  categoryLabel: string;
+  onOpenDetails: (slug: string) => void;
+}
 
-export function createGameCard(game: Game, onOpenDetails: (slug: string) => void): HTMLElement {
+export function createGameCard(
+  game: Game,
+  { categoryLabel, onOpenDetails }: GameCardOptions,
+): HTMLElement {
   const isFree = game.price === "Free";
 
   const detailsButton = el(
@@ -22,7 +27,7 @@ export function createGameCard(game: Game, onOpenDetails: (slug: string) => void
 
   const body = el("div", { class: "game-card__body" }, [
     el("h2", { class: "game-card__title" }, [game.name]),
-    el("span", { class: "game-card__badge" }, [categoryLabels.get(game.category) ?? game.category]),
+    el("span", { class: "game-card__badge" }, [categoryLabel]),
     el("p", { class: `game-card__price${isFree ? " game-card__price--free" : ""}` }, [game.price]),
     el("p", { class: "game-card__description" }, [game.shortDescription]),
     el("p", { class: "game-card__stats" }, [
@@ -43,5 +48,29 @@ export function createGameCard(game: Game, onOpenDetails: (slug: string) => void
   return el("article", { class: "game-card" }, [
     el("img", { src: assetUrl(game.cardImage), alt: "", class: "game-card__image" }),
     body,
+  ]);
+}
+
+// A card-shaped placeholder: image block plus title, badge and text lines.
+function createGameCardSkeleton(): HTMLElement {
+  return el("article", { class: "game-card", "aria-hidden": "true" }, [
+    createSkeleton("game-card__image game-card__image--skeleton"),
+    el("div", { class: "game-card__skeleton-body" }, [
+      createSkeleton("game-card__skeleton-line game-card__skeleton-line--title"),
+      createSkeleton("game-card__skeleton-line game-card__skeleton-line--badge"),
+      createSkeleton("game-card__skeleton-line"),
+      createSkeleton("game-card__skeleton-line"),
+      createSkeleton("game-card__skeleton-line game-card__skeleton-line--short"),
+    ]),
+  ]);
+}
+
+export function createGameCardsSkeleton(count: number, listClass: string): Node {
+  return createSkeletonGroup("Loading games…", [
+    el(
+      "ul",
+      { class: listClass },
+      Array.from({ length: count }, () => el("li", {}, [createGameCardSkeleton()])),
+    ),
   ]);
 }
