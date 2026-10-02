@@ -1,9 +1,13 @@
 import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
 import { formatRelativeTime } from "../../utils/format";
+import { fetchLatestComments, type CommentsResponse } from "../../api/minigames-api";
+import { createAsyncContent } from "../feedback/async-content";
+import { createEmptyState } from "../feedback/empty-state";
+import { createSkeleton, createSkeletonGroup } from "../feedback/skeleton";
 import type { GameComment } from "../../types/game-details";
 
-// Submitting is out of scope until Story 3, so the form never sends.
+// Posting is an authenticated feature (Story 4), so the form never sends.
 function createCommentForm(): HTMLFormElement {
   const textarea = el("textarea", {
     class: "game-details__comment-input",
@@ -47,7 +51,8 @@ function avatarColor(name: string): number {
   );
 }
 
-// Liking only toggles this button's own state for now; counts stay as loaded.
+// Liking is an authenticated feature (Story 4): the button only toggles its
+// own pressed state and the count stays as loaded.
 function createLikeButton(comment: GameComment): HTMLButtonElement {
   const button = el(
     "button",
@@ -86,20 +91,83 @@ function createComment(comment: GameComment): HTMLElement {
   ]);
 }
 
-export function createComments(comments: GameComment[]): HTMLElement {
-  return el(
-    "section",
-    { class: "game-details__section", "aria-labelledby": "game-details-comments-title" },
-    [
-      el("h3", { id: "game-details-comments-title", class: "game-details__section-title" }, [
-        `Comments (${comments.length})`,
-      ]),
-      createCommentForm(),
+const SKELETON_COMMENT_COUNT = 3;
+
+function createNoComments(): HTMLElement {
+  return createEmptyState({
+    title: "No comments yet",
+    message: "Nobody has shared their thoughts on this game so far.",
+    icon: "forum",
+  });
+}
+
+function createCommentsSkeleton(): Node {
+  return createSkeletonGroup("Loading comments…", [
+    el(
+      "ul",
+      { class: "game-details__comments", "aria-hidden": "true" },
+      Array.from({ length: SKELETON_COMMENT_COUNT }, () =>
+        el("li", {}, [
+          el("div", { class: "game-details__comment" }, [
+            createSkeleton("game-details__skeleton-line game-details__skeleton-line--short"),
+            createSkeleton("game-details__skeleton-line"),
+            createSkeleton("game-details__skeleton-line"),
+          ]),
+        ]),
+      ),
+    ),
+  ]);
+}
+
+export interface CommentsSection {
+  element: HTMLElement;
+  load: () => void;
+}
+
+// The latest comments plus the game's total comment count, loaded on their
+// own so a comments failure never hides the rest of the game details.
+export function createCommentsSection(slug: string): CommentsSection {
+  const title = el(
+    "h3",
+    { id: "game-details-comments-title", class: "game-details__section-title" },
+    ["Comments"],
+  );
+
+  const list = createAsyncContent<CommentsResponse>({
+    subject: "comments",
+    renderLoading: createCommentsSkeleton,
+    renderData: ({ data }) =>
       el(
         "ul",
         { class: "game-details__comments" },
-        comments.map((comment) => el("li", {}, [createComment(comment)])),
+        data.map((comment) => el("li", {}, [createComment(comment)])),
       ),
-    ],
+    isEmpty: ({ data }) => data.length === 0,
+    renderEmpty: createNoComments,
+    // An unknown game has no comments either; the dialog itself already
+    // shows Game Not Found, so this is not reported as a failure.
+    renderNotFound: createNoComments,
+    onStateChange: (state) => {
+      if (state !== "ready" && state !== "empty") {
+        title.textContent = "Comments";
+      }
+    },
+  });
+
+  const element = el(
+    "section",
+    { class: "game-details__section", "aria-labelledby": "game-details-comments-title" },
+    [title, createCommentForm(), list.element],
   );
+
+  return {
+    element,
+    load: () =>
+      void list.load(async (signal) => {
+        const response = await fetchLatestComments(slug, signal);
+        // The exact total for the game, not just the 3 comments shown.
+        title.textContent = `Comments (${response.meta.totalComments})`;
+        return response;
+      }),
+  };
 }
