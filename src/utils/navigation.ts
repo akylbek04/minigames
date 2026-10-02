@@ -1,28 +1,13 @@
 import { el } from "./dom";
 import { assetUrl } from "./asset-url";
+import { navigateTo, onRouteChange } from "../router/router";
 
 export type Page = "home" | "library";
 
-type NavigationListener = (page: Page) => void;
-
-const listeners: NavigationListener[] = [];
-const state: { page: Page } = { page: "home" };
-
-export function navigate(page: Page): void {
-  window.scrollTo({ top: 0 });
-  if (page === state.page) {
-    return;
-  }
-  state.page = page;
-  for (const listener of listeners) {
-    listener(page);
-  }
-}
-
-export function onNavigate(listener: NavigationListener): void {
-  listeners.push(listener);
-  listener(state.page);
-}
+const PAGE_PATHS: Record<Page, string> = {
+  home: "/",
+  library: "/library",
+};
 
 interface PageLinkOptions {
   page: Page;
@@ -40,26 +25,27 @@ export const MAIN_NAV_LINKS: (PageLinkOptions & { label: string })[] = [
   { label: "Community", page: "home" },
 ];
 
-// In-app link that swaps pages without a reload. Full URL sync is Story 4's
-// router, so every link keeps the app root as its href for now.
+// A real link (so "open in new tab" and copying it work) that navigates
+// in-app through the router on a plain click.
 export function createPageLink(
   { page, markActive = false }: PageLinkOptions,
   attrs: Record<string, string>,
   children: (Node | string)[],
 ): HTMLAnchorElement {
-  const link = el("a", { href: assetUrl("/"), ...attrs }, children);
+  const path = PAGE_PATHS[page];
+  const link = el("a", { href: assetUrl(path), ...attrs }, children);
 
   link.addEventListener("click", (event) => {
-    if (event.metaKey || event.ctrlKey || event.shiftKey) {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
       return;
     }
     event.preventDefault();
-    navigate(page);
+    navigateTo(path);
   });
 
   if (markActive) {
-    onNavigate((current) => {
-      link.setAttribute("aria-current", current === page ? "page" : "false");
+    onRouteChange(({ route }) => {
+      link.setAttribute("aria-current", route === page ? "page" : "false");
     });
   }
 
