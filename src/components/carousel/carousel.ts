@@ -2,11 +2,12 @@ import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
 import { formatCompactNumber } from "../../utils/format";
 import { assetUrl } from "../../utils/asset-url";
-import allGamesData from "../../assets/data/all-games-seed.json";
+import { fetchFeaturedGames } from "../../api/minigames-api";
+import { createAsyncContent } from "../feedback/async-content";
+import { createEmptyState } from "../feedback/empty-state";
+import { createSkeleton, createSkeletonGroup } from "../feedback/skeleton";
 import type { Game } from "../../types/game";
 import "./carousel.scss";
-
-const featuredGames = (allGamesData.data as Game[]).filter((game) => game.featured);
 
 const AUTOPLAY_DELAY = 4000;
 const SWIPE_THRESHOLD = 40;
@@ -52,11 +53,33 @@ function createCard(game: Game): HTMLButtonElement {
   );
 }
 
+// Placeholder slots in the same roles as a loaded carousel, so the skeleton
+// has the real layout at every breakpoint.
+function createCarouselSkeleton(): Node {
+  const roles = ["edge", "medium", "wide", "medium", "edge"];
+  return createSkeletonGroup("Loading featured games…", [
+    el(
+      "ul",
+      { class: "carousel__track", "aria-hidden": "true" },
+      roles.map((role) =>
+        el("li", { class: "carousel__slot", "data-role": role }, [
+          createSkeleton("carousel__card carousel__card--skeleton"),
+        ]),
+      ),
+    ),
+  ]);
+}
+
 export interface CarouselCallbacks {
   onOpenDetails: (slug: string) => void;
 }
 
-export function createCarousel({ onOpenDetails }: CarouselCallbacks): HTMLElement {
+export interface Carousel {
+  element: HTMLElement;
+  load: () => void;
+}
+
+export function createCarousel({ onOpenDetails }: CarouselCallbacks): Carousel {
   const title = el("h2", { class: "carousel__title" }, ["New Games"]);
 
   const prevButton = el(
@@ -79,13 +102,8 @@ export function createCarousel({ onOpenDetails }: CarouselCallbacks): HTMLElemen
     el("div", { class: "carousel__nav" }, [prevButton, nextButton]),
   ]);
 
-  const cards = featuredGames.map((game) => createCard(game));
-  const track = el(
-    "ul",
-    { class: "carousel__track" },
-    cards.map((card) => el("li", { class: "carousel__slot" }, [card])),
-  );
-  const slots = [...track.children] as HTMLElement[];
+  const track = el("ul", { class: "carousel__track" });
+  const slots: HTMLElement[] = [];
 
   let activeIndex = 0;
 
@@ -121,6 +139,9 @@ export function createCarousel({ onOpenDetails }: CarouselCallbacks): HTMLElemen
   }
 
   function step(direction: 1 | -1): void {
+    if (slots.length === 0) {
+      return;
+    }
     activeIndex = (activeIndex + direction + slots.length) % slots.length;
     render();
   }
@@ -188,10 +209,45 @@ export function createCarousel({ onOpenDetails }: CarouselCallbacks): HTMLElemen
     }
   });
 
-  render();
-  startTimer();
+  function setGames(games: Game[]): HTMLElement {
+    slots.splice(
+      0,
+      slots.length,
+      ...games.map((game) => el("li", { class: "carousel__slot" }, [createCard(game)])),
+    );
+    track.replaceChildren(...slots);
+    activeIndex = 0;
+    render();
+    startTimer();
+    return track;
+  }
 
-  return el("section", { class: "carousel", "aria-label": "New Games" }, [
-    el("div", { class: "carousel__inner" }, [header, track]),
+  const stage = createAsyncContent<Game[]>({
+    subject: "featured games",
+    className: "carousel__stage",
+    renderLoading: createCarouselSkeleton,
+    renderData: setGames,
+    isEmpty: (games) => games.length === 0,
+    renderEmpty: () =>
+      createEmptyState({
+        title: "No featured games yet",
+        message: "New games will show up here as soon as they are featured.",
+        icon: "sports_esports",
+      }),
+    // The arrows and autoplay only make sense while there are slides.
+    onStateChange: (state) => {
+      const hasSlides = state === "ready";
+      prevButton.disabled = !hasSlides;
+      nextButton.disabled = !hasSlides;
+      if (!hasSlides) {
+        clearTimeout(timerId);
+      }
+    },
+  });
+
+  const element = el("section", { class: "carousel", "aria-label": "New Games" }, [
+    el("div", { class: "carousel__inner" }, [header, stage.element]),
   ]);
+
+  return { element, load: () => void stage.load(fetchFeaturedGames) };
 }

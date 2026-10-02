@@ -273,3 +273,11 @@
     color: var(--color-like);
   }
 }
+
+// Keeps the card's shape and border; the card's own reset background would
+// otherwise hide the shimmer.
+.carousel__card--skeleton {
+  @include mix.shimmer;
+
+  cursor: default;
+}

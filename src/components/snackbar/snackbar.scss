@@ -27,13 +27,15 @@
   display: flex;
   align-items: center;
   gap: var(--size-1);
-  padding: var(--size-1) var(--size-1) var(--size-1) var(--size-2);
+  padding: var(--size-1) var(--size-1) var(--size-1) var(--size-3);
   color: var(--color-white);
   background-color: var(--color-on-primary);
   border: var(--border-regular) solid var(--color-on-primary);
-  border-left-width: var(--size-1);
   border-radius: var(--corner-medium);
-  box-shadow: var(--shadow-level-2);
+  // Inset accent stripe in the variant color, inside the rounded border.
+  box-shadow:
+    inset var(--size-1) 0 0 var(--snackbar-accent),
+    var(--shadow-level-2);
   pointer-events: auto;
   opacity: 1;
   transform: translateY(0);
@@ -57,19 +59,19 @@
 }
 
 .snackbar--success {
-  border-left-color: var(--color-price-free);
+  --snackbar-accent: var(--color-price-free);
 }
 
 .snackbar--error {
-  border-left-color: var(--color-like);
+  --snackbar-accent: var(--color-like);
 }
 
 .snackbar--warning {
-  border-left-color: var(--color-primary);
+  --snackbar-accent: var(--color-primary);
 }
 
 .snackbar--info {
-  border-left-color: var(--color-secondary);
+  --snackbar-accent: var(--color-secondary);
 }
 
 .snackbar__icon {

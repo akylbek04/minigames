@@ -42,7 +42,7 @@ const burgerMenu = createBurgerMenu({ onOpenAuth: openAuth });
 
 // Pages are built once and swapped, so each keeps its DOM between visits.
 const pages: Record<Route, AppPage> = {
-  home: { element: createHomePage({ onOpenDetails: openGameDetails }) },
+  home: createHomePage({ onOpenDetails: openGameDetails }),
   library: { element: createLibraryPage({ onOpenDetails: openGameDetails }) },
   "not-found": createNotFoundPage(),
 };
