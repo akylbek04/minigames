@@ -13,7 +13,7 @@ const games = allGames.slice(0, PAGE_SIZE);
 import "./library-page.scss";
 
 export interface LibraryPageCallbacks {
-  onOpenDetails: () => void;
+  onOpenDetails: (slug: string) => void;
 }
 
 export function createLibraryPage({ onOpenDetails }: LibraryPageCallbacks): HTMLElement {

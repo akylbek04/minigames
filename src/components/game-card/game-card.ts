@@ -10,7 +10,7 @@ const categoryLabels = new Map(
   (categoriesData.data as Category[]).map((category) => [category.slug, category.label]),
 );
 
-export function createGameCard(game: Game, onOpenDetails: () => void): HTMLElement {
+export function createGameCard(game: Game, onOpenDetails: (slug: string) => void): HTMLElement {
   const isFree = game.price === "Free";
 
   const detailsButton = el(
@@ -18,7 +18,7 @@ export function createGameCard(game: Game, onOpenDetails: () => void): HTMLEleme
     { type: "button", class: "btn btn--filled game-card__details" },
     ["Details"],
   );
-  detailsButton.addEventListener("click", onOpenDetails);
+  detailsButton.addEventListener("click", () => onOpenDetails(game.slug));
 
   const body = el("div", { class: "game-card__body" }, [
     el("h2", { class: "game-card__title" }, [game.name]),

@@ -4,12 +4,19 @@ import { createLoginPanel, createRegisterPanel } from "./auth-panels";
 import type { AuthMode } from "../../types/auth";
 import "./auth-dialog.scss";
 
-export interface AuthDialog {
-  dialog: HTMLDialogElement;
-  open: (mode: AuthMode) => void;
+export interface AuthDialogOptions {
+  // Tab switches and closing go through the URL; sync() then applies them.
+  onModeChange: (mode: AuthMode) => void;
+  onRequestClose: () => void;
 }
 
-export function createAuthDialog(): AuthDialog {
+export interface AuthDialog {
+  dialog: HTMLDialogElement;
+  // Opens, switches or closes the dialog to match the `auth` URL parameter.
+  sync: (mode: AuthMode | undefined) => void;
+}
+
+export function createAuthDialog({ onModeChange, onRequestClose }: AuthDialogOptions): AuthDialog {
   const loginTab = el("button", { type: "button", class: "auth-dialog__tab", role: "tab" }, [
     "Login",
   ]);
@@ -22,18 +29,17 @@ export function createAuthDialog(): AuthDialog {
 
   const dialog = el("dialog", { class: "auth-dialog", "aria-label": "Sign in or sign up" });
   dialog.append(tabs, panels);
-
-  function close(): void {
-    closeDialogAnimated(dialog);
-  }
+  const state: { mode?: AuthMode } = {};
 
   function switchTo(mode: AuthMode, shouldAnimate: boolean): void {
+    state.mode = mode;
     loginTab.classList.toggle("is-active", mode === "login");
     registerTab.classList.toggle("is-active", mode === "register");
     loginTab.setAttribute("aria-selected", String(mode === "login"));
     registerTab.setAttribute("aria-selected", String(mode === "register"));
 
-    const nextPanel = mode === "login" ? createLoginPanel(onSwitch) : createRegisterPanel(onSwitch);
+    const nextPanel =
+      mode === "login" ? createLoginPanel(onModeChange) : createRegisterPanel(onModeChange);
     const currentPanel = panels.firstElementChild;
 
     if (shouldAnimate && currentPanel) {
@@ -48,28 +54,34 @@ export function createAuthDialog(): AuthDialog {
     requestAnimationFrame(() => nextPanel.classList.remove("is-entering"));
   }
 
-  function onSwitch(mode: AuthMode): void {
-    switchTo(mode, true);
-  }
-
-  loginTab.addEventListener("click", () => switchTo("login", true));
-  registerTab.addEventListener("click", () => switchTo("register", true));
+  loginTab.addEventListener("click", () => onModeChange("login"));
+  registerTab.addEventListener("click", () => onModeChange("register"));
 
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) {
-      close();
+      onRequestClose();
     }
   });
 
   dialog.addEventListener("cancel", (event) => {
     event.preventDefault();
-    close();
+    onRequestClose();
   });
 
-  function open(mode: AuthMode): void {
+  function sync(mode: AuthMode | undefined): void {
+    if (mode === undefined) {
+      closeDialogAnimated(dialog);
+      return;
+    }
+    if (dialog.open && !dialog.classList.contains("is-closing")) {
+      if (mode !== state.mode) {
+        switchTo(mode, true);
+      }
+      return;
+    }
     switchTo(mode, false);
     openDialogAnimated(dialog);
   }
 
-  return { dialog, open };
+  return { dialog, sync };
 }

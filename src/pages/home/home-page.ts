@@ -5,7 +5,7 @@ import { createLeaderboard } from "../../components/leaderboard/leaderboard";
 import { createGameDevSection } from "../../components/game-dev-section/game-dev-section";
 
 export interface HomePageCallbacks {
-  onOpenDetails: () => void;
+  onOpenDetails: (slug: string) => void;
 }
 
 export function createHomePage({ onOpenDetails }: HomePageCallbacks): HTMLElement {
