@@ -36,6 +36,8 @@
   @include mix.reset-button;
 
   position: absolute;
+  // Sits over the hero image, which is positioned and comes later in the DOM.
+  z-index: 1;
   top: var(--size-2);
   right: var(--size-2);
   display: inline-flex;
@@ -429,4 +431,35 @@
 
 .game-details__like-icon {
   font-size: var(--icon-size-small);
+}
+
+.game-details__hero-image--skeleton {
+  @include mix.shimmer;
+
+  border-radius: 0;
+}
+
+.game-details__skeleton-line {
+  width: 100%;
+  height: var(--size-2);
+
+  &--title {
+    width: 60%;
+    height: var(--size-4);
+  }
+
+  &--short {
+    width: 40%;
+  }
+
+  &--button {
+    width: 50%;
+    height: var(--size-6);
+  }
+}
+
+// Clears the close button, which floats over the top of every state.
+.game-details__content > .error-banner,
+.game-details__not-found {
+  margin: var(--size-9) var(--size-3) var(--size-3);
 }

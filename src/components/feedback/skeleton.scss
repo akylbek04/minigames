@@ -1,0 +1,18 @@
+@use "../../styles/mixins" as mix;
+
+.skeleton {
+  @include mix.shimmer;
+
+  display: block;
+  border-radius: var(--corner-small);
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}

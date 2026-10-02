@@ -336,3 +336,9 @@
     display: none;
   }
 }
+
+.leaderboard__skeleton-cell {
+  width: 70%;
+  height: var(--size-2);
+  margin-inline: auto;
+}
