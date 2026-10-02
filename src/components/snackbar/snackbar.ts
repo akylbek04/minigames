@@ -16,11 +16,33 @@ const MAX_VISIBLE = 3;
 
 const region = el("div", { class: "snackbar-region", popover: "manual" });
 
-// A manual popover lives in the top layer, so snackbars stay visible above
-// open modal dialogs. Re-showing it moves it above any dialog opened since.
-function showRegion(): HTMLElement {
-  if (!region.isConnected) {
+// A modal dialog makes everything outside it inert, so while one is open the
+// region lives inside it. As a popover it stays in the top layer either way:
+// drawn above the dialog and positioned against the viewport.
+function getHost(): HTMLElement {
+  const openModals = [...document.querySelectorAll("dialog")].filter(
+    (dialog) => dialog.matches(":modal") && !dialog.classList.contains("is-closing"),
+  );
+  return openModals.at(-1) ?? document.body;
+}
+
+// Snackbars outlive the dialog they were shown over: follow it back out.
+function leaveClosedDialog(): void {
+  if (region.hasChildNodes()) {
+    showRegion();
+  } else {
     document.body.append(region);
+  }
+}
+
+// Re-showing also moves the region above any dialog opened since.
+function showRegion(): HTMLElement {
+  const host = getHost();
+  if (region.parentElement !== host) {
+    host.append(region);
+    if (host instanceof HTMLDialogElement) {
+      host.addEventListener("close", leaveClosedDialog, { once: true });
+    }
   }
   if (region.matches(":popover-open")) {
     region.hidePopover();
