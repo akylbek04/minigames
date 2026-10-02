@@ -103,6 +103,11 @@ export function createLibraryPage({ onOpenDetails }: LibraryPageCallbacks): AppP
   }
 
   async function show(params: URLSearchParams): Promise<void> {
+    // The first games request waits for the categories; show the skeleton
+    // (and no stray pagination) from the start rather than a blank list.
+    if (!state.query) {
+      games.showLoading();
+    }
     await loadCategories();
     const query: GamesQuery = {
       category: params.get("category") ?? state.defaultCategory,
