@@ -31,7 +31,7 @@ describe("auth service", () => {
 
   it("signs in with email and keeps only profile fields", async () => {
     vi.mocked(firebaseAuth.signInWithEmailAndPassword).mockResolvedValue(
-      credential({ displayName: "Alex", email: "alex@rs.school", photoURL: null }),
+      credential({ displayName: "Alex", email: "alex@rs.school" }),
     );
 
     await expect(signInWithEmail("alex@rs.school", "secret1")).resolves.toEqual({
@@ -46,7 +46,7 @@ describe("auth service", () => {
   });
 
   it("registers and saves the username as the Firebase displayName", async () => {
-    const user = { displayName: null, email: "new@rs.school", photoURL: null };
+    const user = { email: "new@rs.school" };
     vi.mocked(firebaseAuth.createUserWithEmailAndPassword).mockResolvedValue(credential(user));
 
     const profile = await registerWithEmail("Newbie", "new@rs.school", "Secret1!");
