@@ -15,6 +15,8 @@ import {
   type Route,
 } from "../router/router";
 import { parseAuthMode, type AuthMode } from "../types/auth";
+import { getActiveSession, onSessionChange, type SessionChange } from "../auth/session";
+import { showSnackbar, type SnackbarVariant } from "../components/snackbar/snackbar";
 
 // Dialog state lives in the URL: `?game=<slug>` and `?auth=login|register`.
 const GAME_PARAM = "game";
@@ -24,6 +26,11 @@ const PAGE_TITLES: Record<Route, string> = {
   home: "MiniGames — Take a Short Break & Have Fun",
   library: "Game Library — MiniGames",
   "not-found": "Page Not Found — MiniGames",
+};
+
+const SESSION_MESSAGES: Partial<Record<SessionChange, [string, SnackbarVariant]>> = {
+  expired: ["Your session has expired. You're browsing as a guest now.", "warning"],
+  invalid: ["Your saved session wasn't valid, so you've been signed out.", "warning"],
 };
 
 const openGameDetails = (slug: string): void => openOverlay(GAME_PARAM, slug);
@@ -60,7 +67,24 @@ export function createApp(root: HTMLElement): void {
   );
   root.append(app);
 
+  onSessionChange((_, change) => {
+    const message = SESSION_MESSAGES[change];
+    if (message) {
+      showSnackbar(...message);
+    }
+  });
+
+  // The session is checked on startup, on returning to the tab and before
+  // every navigation; protected actions check it themselves.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      getActiveSession();
+    }
+  });
+  getActiveSession();
+
   onRouteChange(({ route, query }, previous) => {
+    getActiveSession();
     const page = pages[route];
     if (route !== previous?.route) {
       app.querySelector("main")?.replaceWith(page.element);
