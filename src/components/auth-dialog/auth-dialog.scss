@@ -53,7 +53,12 @@
   margin-top: var(--size-3);
 }
 
+// A fieldset (see auth-panels.ts), without the default frame.
 .auth-dialog__panel {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
   opacity: 1;
   transform: translateX(0);
   transition:

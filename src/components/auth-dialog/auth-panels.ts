@@ -3,6 +3,7 @@ import { icon } from "../../utils/icon";
 import { icons } from "../icons/icons";
 import { createField, type AuthField } from "./auth-form-field";
 import type { AuthMode } from "../../types/auth";
+import { registerWithEmail, signInWithEmail, type AuthProfile } from "../../auth/auth-service";
 import {
   validateConfirmPassword,
   validateEmail,
@@ -10,6 +11,13 @@ import {
   validateRegisterPassword,
   validateUsername,
 } from "../../auth/validation";
+
+export interface PanelActions {
+  onSwitch: (mode: AuthMode) => void;
+  // Runs a sign-in request; `control` is the button that started it and
+  // shows the spinner while the dialog is locked.
+  onAuthRequest: (request: () => Promise<AuthProfile>, control: HTMLButtonElement) => void;
+}
 
 interface ValidatedField {
   field: AuthField;
@@ -65,7 +73,13 @@ function createSwitchLink(label: string): HTMLButtonElement {
   return el("button", { type: "button", class: "auth-dialog__link-inline" }, [label]);
 }
 
-export function createLoginPanel(onSwitch: (mode: AuthMode) => void): HTMLElement {
+// A fieldset, so disabling it locks every input and button of the panel at
+// once while a request is pending.
+function createPanel(children: Node[]): HTMLFieldSetElement {
+  return el("fieldset", { class: "auth-dialog__panel" }, children);
+}
+
+export function createLoginPanel({ onSwitch, onAuthRequest }: PanelActions): HTMLFieldSetElement {
   const emailField = createField({
     id: "login-email",
     label: "Email Address",
@@ -107,13 +121,18 @@ export function createLoginPanel(onSwitch: (mode: AuthMode) => void): HTMLElemen
   ]);
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    isValid();
+    if (!isValid()) {
+      return;
+    }
+    const email = emailField.input.value.trim();
+    const password = passwordField.input.value;
+    onAuthRequest(() => signInWithEmail(email, password), submit);
   });
 
   const registerLink = createSwitchLink("Register");
   registerLink.addEventListener("click", () => onSwitch("register"));
 
-  return el("div", { class: "auth-dialog__panel" }, [
+  return createPanel([
     el("h2", { class: "auth-dialog__title" }, ["Welcome Back!"]),
     el("p", { class: "auth-dialog__subtitle" }, ["Sign in to resume your games and progress."]),
     form,
@@ -123,7 +142,10 @@ export function createLoginPanel(onSwitch: (mode: AuthMode) => void): HTMLElemen
   ]);
 }
 
-export function createRegisterPanel(onSwitch: (mode: AuthMode) => void): HTMLElement {
+export function createRegisterPanel({
+  onSwitch,
+  onAuthRequest,
+}: PanelActions): HTMLFieldSetElement {
   const usernameField = createField({
     id: "register-username",
     label: "Username",
@@ -188,13 +210,19 @@ export function createRegisterPanel(onSwitch: (mode: AuthMode) => void): HTMLEle
   ]);
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    isValid();
+    if (!isValid()) {
+      return;
+    }
+    const username = usernameField.input.value;
+    const email = emailField.input.value.trim();
+    const password = passwordField.input.value;
+    onAuthRequest(() => registerWithEmail(username, email, password), submit);
   });
 
   const loginLink = createSwitchLink("Login");
   loginLink.addEventListener("click", () => onSwitch("login"));
 
-  return el("div", { class: "auth-dialog__panel" }, [
+  return createPanel([
     el("h2", { class: "auth-dialog__title" }, ["Create Account"]),
     el("p", { class: "auth-dialog__subtitle" }, ["Join MiniGames to track your score & streak."]),
     form,
