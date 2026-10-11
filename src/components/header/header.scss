@@ -113,3 +113,25 @@
     padding: var(--btn-padding-medium);
   }
 }
+
+.header__profile {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  min-width: 0;
+}
+
+.header__username {
+  display: none;
+  overflow: hidden;
+  max-width: var(--size-15);
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-label-large);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include bp.tablet-up {
+    display: block;
+  }
+}

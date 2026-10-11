@@ -1,7 +1,10 @@
 import { el } from "../../utils/dom";
 import { assetUrl } from "../../utils/asset-url";
 import { MAIN_NAV_LINKS, createPageLink } from "../../utils/navigation";
+import { getProfileName } from "../../auth/profile";
+import { createUserAvatar } from "../user-avatar/user-avatar";
 import type { AuthMode } from "../../types/auth";
+import type { AppSession } from "../../auth/session";
 import "./header.scss";
 
 export interface HeaderCallbacks {
@@ -9,7 +12,21 @@ export interface HeaderCallbacks {
   menuToggle: HTMLElement;
 }
 
-export function createHeader({ onOpenAuth, menuToggle }: HeaderCallbacks): HTMLElement {
+export interface Header {
+  element: HTMLElement;
+  // Guest controls without a session, the user's profile with one.
+  setSession: (session: AppSession | undefined) => void;
+}
+
+// Name as text (never markup) next to the photo or initials.
+function createProfile(session: AppSession): HTMLElement {
+  return el("div", { class: "header__profile" }, [
+    createUserAvatar(session, "header__avatar"),
+    el("span", { class: "header__username" }, [getProfileName(session)]),
+  ]);
+}
+
+export function createHeader({ onOpenAuth, menuToggle }: HeaderCallbacks): Header {
   const nav = el("nav", { class: "header__nav", "aria-label": "Main" }, [
     el(
       "ul",
@@ -35,12 +52,19 @@ export function createHeader({ onOpenAuth, menuToggle }: HeaderCallbacks): HTMLE
     el("span", {}, ["MiniGames"]),
   ]);
 
-  const navActions = el("div", { class: "header__nav-actions" }, [
-    nav,
-    el("div", { class: "header__actions" }, [loginButton, signUpButton, menuToggle]),
-  ]);
+  const actions = el("div", { class: "header__actions" });
+  const navActions = el("div", { class: "header__nav-actions" }, [nav, actions]);
 
-  return el("header", { class: "header" }, [
+  function setSession(session: AppSession | undefined): void {
+    actions.replaceChildren(
+      ...(session ? [createProfile(session)] : [loginButton, signUpButton]),
+      menuToggle,
+    );
+  }
+  setSession(undefined);
+
+  const element = el("header", { class: "header" }, [
     el("div", { class: "header__inner" }, [logo, navActions]),
   ]);
+  return { element, setSession };
 }
