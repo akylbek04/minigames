@@ -20,6 +20,7 @@ import {
   getActiveSession,
   onSessionChange,
   startSession,
+  type AppSession,
   type SessionChange,
 } from "../auth/session";
 import { getProfileName } from "../auth/profile";
@@ -57,6 +58,18 @@ function notifyAlreadySignedIn(): void {
   showSnackbar("You're already signed in.", "info");
 }
 
+// Protected actions run only with an active session; otherwise the user
+// is told why and Auth takes the place of the current dialog. The action
+// itself is never replayed after signing in.
+function requireSession(reason: string): AppSession | undefined {
+  const session = getActiveSession();
+  if (!session) {
+    showSnackbar(reason, "warning");
+    openOverlay(AUTH_PARAM, "login");
+  }
+  return session;
+}
+
 // Every Auth entry point is guarded by the session: UI controls here, URLs
 // and Back/Forward in the route listener.
 function openAuth(mode: AuthMode): void {
@@ -72,6 +85,7 @@ function openAuth(mode: AuthMode): void {
 export function createApp(root: HTMLElement): void {
   const gameDetailsDialog = createGameDetailsDialog({
     onRequestClose: () => closeOverlay(GAME_PARAM),
+    requireSession,
   });
   const authDialog = createAuthDialog({
     onModeChange: (mode) => updateQuery({ [AUTH_PARAM]: mode }, { replace: true }),
@@ -110,6 +124,7 @@ export function createApp(root: HTMLElement): void {
   onSessionChange((session, change) => {
     header.setSession(session);
     burgerMenu.setSession(session);
+    gameDetailsDialog.setSession(session);
     if (change === "login" && session) {
       showSnackbar(`Welcome, ${getProfileName(session)}!`, "success");
     }
@@ -153,7 +168,10 @@ export function createApp(root: HTMLElement): void {
     }
     page.show?.(query);
 
-    gameDetailsDialog.sync(query.get(GAME_PARAM) || undefined);
-    authDialog.sync(parseAuthMode(query.get(AUTH_PARAM)));
+    // Only one dialog at a time: Auth covers Game Details, which keeps its
+    // state and comes back when Auth closes.
+    const authMode = parseAuthMode(query.get(AUTH_PARAM));
+    gameDetailsDialog.sync(query.get(GAME_PARAM) || undefined, authMode !== undefined);
+    authDialog.sync(authMode);
   });
 }

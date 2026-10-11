@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { ApiError, getJson, isAbortError } from "./client";
+import { ApiError, getJson, isAbortError, postJson } from "./client";
 
 const API = "https://faxb76kxra.execute-api.eu-central-1.amazonaws.com/api";
 
@@ -55,5 +55,34 @@ describe("getJson", () => {
 
     stubFetch(new DOMException("Aborted", "AbortError"));
     await expect(getJson("/games")).rejects.toSatisfy(isAbortError);
+  });
+});
+
+describe("postJson", () => {
+  it("sends the body as JSON with a timeout", async () => {
+    const fetchMock = stubFetch(Response.json({ data: { ok: true } }, { status: 201 }));
+
+    await expect(postJson("/comments/1/like", { userEmail: "a@x.io" })).resolves.toEqual({
+      data: { ok: true },
+    });
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe(`${API}/comments/1/like`);
+    expect(init).toMatchObject({
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userEmail: "a@x.io" }),
+    });
+    expect(init.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it("marks failures without a clear answer as an unknown outcome", async () => {
+    stubFetch(new TypeError("Failed to fetch"));
+    await expect(postJson("/x", {})).rejects.toMatchObject({ isOutcomeUnknown: true });
+
+    stubFetch(Response.json({ error: "down" }, { status: 503 }));
+    await expect(postJson("/x", {})).rejects.toMatchObject({ isOutcomeUnknown: true });
+
+    stubFetch(Response.json({ error: "bad text" }, { status: 400 }));
+    await expect(postJson("/x", {})).rejects.toMatchObject({ isOutcomeUnknown: false });
   });
 });

@@ -1,27 +1,70 @@
 import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
+import { setBusy } from "../../utils/busy";
 import { formatCompactNumber } from "../../utils/format";
+import { toggleFavorite } from "../../api/minigames-api";
+import { notifyMutationFailed } from "../feedback/request-feedback";
+import { showSnackbar } from "../snackbar/snackbar";
 import type { GameDetails } from "../../types/game-details";
+import type { AppSession } from "../../auth/session";
 
-function createFavoriteButton(): HTMLButtonElement {
-  const label = el("span", { class: "game-details__favorite-label" }, ["Add to Favorites"]);
+export interface GameInfoOptions {
+  requireSession: (reason: string) => AppSession | undefined;
+}
+
+// Shows only what the server said: the personalized details on open, then
+// each toggle response. Locked while a toggle is in flight, never resent.
+function createFavoriteButton(
+  game: GameDetails,
+  likesCount: HTMLElement,
+  { requireSession }: GameInfoOptions,
+): HTMLButtonElement {
+  const label = el("span", { class: "game-details__favorite-label" });
   const button = el(
     "button",
     { type: "button", class: "btn btn--outline btn--large game-details__favorite" },
     [materialIcon("favorite", "game-details__favorite-icon"), label],
   );
-  button.setAttribute("aria-pressed", "false");
 
-  button.addEventListener("click", () => {
-    const isFavorite = button.getAttribute("aria-pressed") !== "true";
-    button.setAttribute("aria-pressed", String(isFavorite));
-    label.textContent = isFavorite ? "Remove from Favorites" : "Add to Favorites";
-  });
+  function render(isFavorited: boolean): void {
+    button.setAttribute("aria-pressed", String(isFavorited));
+    label.textContent = isFavorited ? "Remove from Favorites" : "Add to Favorites";
+  }
 
+  async function toggle(): Promise<void> {
+    const session = requireSession("Log in to add games to your favorites.");
+    if (!session) {
+      return;
+    }
+    button.disabled = true;
+    setBusy(button, true);
+    try {
+      const result = await toggleFavorite(game.slug, session.email);
+      render(result.isFavorited);
+      likesCount.textContent = formatCompactNumber(result.likesCount);
+      showSnackbar(
+        result.isFavorited ? "Added to your favorites." : "Removed from your favorites.",
+        "success",
+      );
+    } catch (error) {
+      notifyMutationFailed(error, {
+        failed: "Couldn't update your favorites. Please try again.",
+        unknown:
+          "We couldn't confirm the favorites change. Reopen the game to check it before trying again.",
+      });
+    } finally {
+      button.disabled = false;
+      setBusy(button, false);
+    }
+  }
+
+  render(game.isLikedByCurrentUser);
+  button.addEventListener("click", () => void toggle());
   return button;
 }
 
-export function createGameInfo(game: GameDetails): HTMLElement {
+export function createGameInfo(game: GameDetails, options: GameInfoOptions): HTMLElement {
+  const likesCount = el("span", {}, [formatCompactNumber(game.likesCount)]);
   const specs = [
     ["Genre", game.specs.genre],
     ["Players", game.specs.players],
@@ -40,7 +83,7 @@ export function createGameInfo(game: GameDetails): HTMLElement {
       el("span", { class: "game-details__stat" }, [
         materialIcon("favorite", "game-details__stat-icon game-details__stat-icon--likes"),
         el("span", { class: "visually-hidden" }, ["Likes "]),
-        formatCompactNumber(game.likesCount),
+        likesCount,
       ]),
     ]),
   ]);
@@ -65,6 +108,9 @@ export function createGameInfo(game: GameDetails): HTMLElement {
         ]),
       ),
     ),
-    el("div", { class: "game-details__actions" }, [playButton, createFavoriteButton()]),
+    el("div", { class: "game-details__actions" }, [
+      playButton,
+      createFavoriteButton(game, likesCount, options),
+    ]),
   ]);
 }

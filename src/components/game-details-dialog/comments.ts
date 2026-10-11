@@ -164,7 +164,7 @@ export function createCommentsSection(slug: string): CommentsSection {
     element,
     load: () =>
       void list.load(async (signal) => {
-        const response = await fetchLatestComments(slug, signal);
+        const response = await fetchLatestComments(slug, undefined, signal);
         // The exact total for the game, not just the 3 comments shown.
         title.textContent = `Comments (${response.meta.totalComments})`;
         return response;
