@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { FirebaseError } from "firebase/app";
 import { createAuthDialog, type AuthDialog, type AuthDialogOptions } from "./auth-dialog";
-import { signInWithEmail, type AuthProfile } from "../../auth/auth-service";
+import { signInWithEmail, signInWithGoogle, type AuthProfile } from "../../auth/auth-service";
 import { flush, query, typeInto } from "../../test/dom";
 
 vi.mock("../../auth/auth-service", async (importOriginal) => ({
@@ -103,15 +103,49 @@ describe("auth dialog", () => {
     expect(snackbarText()).toContain("Incorrect email or password.");
   });
 
-  it("treats a cancelled provider window as a cancel, not an error", async () => {
-    vi.mocked(signInWithEmail).mockRejectedValue(
+  it("signs in with Google from either panel, locking the dialog meanwhile", async () => {
+    const request = Promise.withResolvers<AuthProfile>();
+    vi.mocked(signInWithGoogle).mockReturnValue(request.promise);
+    auth.sync("register");
+    const google = query<HTMLButtonElement>(
+      auth.dialog,
+      ":scope .auth-dialog__panel:not(.is-leaving) .auth-dialog__google",
+    );
+    google.click();
+
+    expect(google.getAttribute("aria-busy")).toBe("true");
+    expect(google.closest("fieldset")?.disabled).toBe(true);
+    auth.dialog.dispatchEvent(new Event("cancel", { cancelable: true }));
+    expect(options.onRequestClose).not.toHaveBeenCalled();
+
+    request.resolve({ ...PROFILE, avatarUrl: "https://img/a" });
+    await flush();
+    expect(options.onAuthenticated).toHaveBeenCalledWith({
+      ...PROFILE,
+      avatarUrl: "https://img/a",
+    });
+  });
+
+  it("keeps the dialog usable when the Google window is closed", async () => {
+    vi.mocked(signInWithGoogle).mockRejectedValue(
       new FirebaseError("auth/popup-closed-by-user", "closed"),
     );
-    submitLogin();
+    query<HTMLButtonElement>(auth.dialog, ".auth-dialog__google").click();
     await flush();
 
-    expect(snackbarText()).toContain("Sign-in was cancelled.");
+    expect(options.onAuthenticated).not.toHaveBeenCalled();
+    expect(query<HTMLFieldSetElement>(auth.dialog, "fieldset").disabled).toBe(false);
+    expect(snackbarText()).toContain("Google sign-in was cancelled.");
     expect(document.querySelector(".snackbar--info")).not.toBeNull();
+  });
+
+  it("reports a failed Google sign-in as an error", async () => {
+    vi.mocked(signInWithGoogle).mockRejectedValue(new FirebaseError("auth/popup-blocked", ""));
+    query<HTMLButtonElement>(auth.dialog, ".auth-dialog__google").click();
+    await flush();
+
+    expect(snackbarText()).toContain("The browser blocked the Google window.");
+    expect(document.querySelector(".snackbar--error")).not.toBeNull();
   });
 
   it("closes when the URL drops the auth parameter", () => {
