@@ -311,6 +311,13 @@
     background-color: var(--color-surface-low);
     border-color: var(--color-tertiary);
   }
+
+  // Guests can't comment; also locked while a comment is being sent.
+  &:disabled {
+    background-color: var(--color-outline);
+    border-color: var(--color-outline-variant);
+    cursor: not-allowed;
+  }
 }
 
 .game-details__comment-submit {

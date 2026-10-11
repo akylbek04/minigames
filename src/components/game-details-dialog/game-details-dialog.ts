@@ -123,7 +123,7 @@ export function createGameDetailsDialog({
   // in parallel, and favorites, likes and the comment draft are reset.
   function load(slug: string): void {
     state.slug = slug;
-    state.comments = createCommentsSection(slug);
+    state.comments = createCommentsSection({ slug, session: state.session, requireSession });
     state.comments.load();
     dialog.replaceChildren(closeButton, content.element);
     loadDetails(slug);
@@ -148,9 +148,11 @@ export function createGameDetailsDialog({
 
   function setSession(session: AppSession | undefined): void {
     state.session = session;
-    if (state.slug) {
-      loadDetails(state.slug);
+    if (!state.slug) {
+      return;
     }
+    loadDetails(state.slug);
+    state.comments?.setSession(session);
   }
 
   return { dialog, sync, setSession };
