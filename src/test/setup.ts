@@ -23,14 +23,13 @@ Object.assign(HTMLElement.prototype, {
 });
 
 const nativeMatches = Element.prototype.matches;
-Element.prototype.matches = function matches(this: Element, selector: string): boolean {
+Element.prototype.matches = function (this: Element, selector: string): boolean {
   if (selector === ":popover-open") {
     return this.hasAttribute(POPOVER_OPEN_ATTR);
   }
-  if (selector === ":modal") {
-    return this instanceof HTMLDialogElement && this.open;
-  }
-  return nativeMatches.call(this, selector);
+  return selector === ":modal"
+    ? this instanceof HTMLDialogElement && this.open
+    : nativeMatches.call(this, selector);
 };
 
 afterEach(() => {
