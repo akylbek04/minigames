@@ -163,3 +163,18 @@
   gap: var(--size-2);
   margin-top: auto;
 }
+
+.mobile-menu__profile {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2);
+}
+
+.mobile-menu__username {
+  overflow: hidden;
+  color: var(--color-white);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-body-large);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
