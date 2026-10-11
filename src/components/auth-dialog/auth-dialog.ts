@@ -72,7 +72,7 @@ export function createAuthDialog({
       // The dialog stays open with the entered data, ready for a retry.
       setPending(false, control);
       if (isAuthCancelled(error)) {
-        showSnackbar("Sign-in was cancelled.", "info");
+        showSnackbar("Google sign-in was cancelled.", "info");
       } else {
         showSnackbar(describeAuthError(error), "error");
       }
