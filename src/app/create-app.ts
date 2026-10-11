@@ -67,8 +67,9 @@ export function createApp(root: HTMLElement): void {
 
   const app = document.createElement("div");
   app.id = "app";
+  const header = createHeader({ onOpenAuth: openAuth, menuToggle: burgerMenu.toggleButton });
   app.append(
-    createHeader({ onOpenAuth: openAuth, menuToggle: burgerMenu.toggleButton }),
+    header.element,
     burgerMenu.dialog,
     authDialog.dialog,
     gameDetailsDialog.dialog,
@@ -78,6 +79,8 @@ export function createApp(root: HTMLElement): void {
   root.append(app);
 
   onSessionChange((session, change) => {
+    header.setSession(session);
+    burgerMenu.setSession(session);
     if (change === "login" && session) {
       showSnackbar(`Welcome, ${getProfileName(session)}!`, "success");
     }
