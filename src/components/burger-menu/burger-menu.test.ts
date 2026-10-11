@@ -2,11 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 import { createBurgerMenu } from "./burger-menu";
 import { query } from "../../test/dom";
 
-function setup(): ReturnType<typeof createBurgerMenu> & { onOpenAuth: ReturnType<typeof vi.fn> } {
-  const onOpenAuth = vi.fn();
-  const menu = createBurgerMenu({ onOpenAuth });
+function setup() {
+  const callbacks = { onOpenAuth: vi.fn(), onLogout: vi.fn() };
+  const menu = createBurgerMenu(callbacks);
   document.body.append(menu.toggleButton, menu.dialog);
-  return { ...menu, onOpenAuth };
+  return { ...menu, ...callbacks };
 }
 
 describe("burger menu", () => {
@@ -49,5 +49,15 @@ describe("burger menu", () => {
 
     expect(dialog.querySelector(".mobile-menu__login")).toBeNull();
     expect(query(dialog, ".mobile-menu__username").textContent).toBe("zoe");
+  });
+
+  it("closes and logs out from the signed-in menu", () => {
+    const { toggleButton, dialog, setSession, onLogout } = setup();
+    setSession({ displayName: "Zoe", email: "zoe@rs.school", authenticatedAt: 1 });
+    toggleButton.click();
+    query<HTMLButtonElement>(dialog, ".mobile-menu__logout").click();
+
+    expect(onLogout).toHaveBeenCalledOnce();
+    expect(toggleButton.getAttribute("aria-expanded")).toBe("false");
   });
 });

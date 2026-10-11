@@ -4,10 +4,10 @@ import { query } from "../../test/dom";
 
 const SESSION = { displayName: "Ana Maria", email: "ana@rs.school", authenticatedAt: 1 };
 
-function setup(): ReturnType<typeof createHeader> & { onOpenAuth: ReturnType<typeof vi.fn> } {
-  const onOpenAuth = vi.fn();
-  const header = createHeader({ onOpenAuth, menuToggle: document.createElement("button") });
-  return { ...header, onOpenAuth };
+function setup() {
+  const callbacks = { onOpenAuth: vi.fn(), onLogout: vi.fn() };
+  const header = createHeader({ ...callbacks, menuToggle: document.createElement("button") });
+  return { ...header, ...callbacks };
 }
 
 describe("header", () => {
@@ -25,6 +25,13 @@ describe("header", () => {
     expect(element.querySelector(".header__login")).toBeNull();
     expect(query(element, ".header__username").textContent).toBe("Ana Maria");
     expect(query(element, ".user-avatar").textContent).toBe("AM");
+  });
+
+  it("logs out from the signed-in header", () => {
+    const { element, setSession, onLogout } = setup();
+    setSession(SESSION);
+    query<HTMLButtonElement>(element, ".header__logout").click();
+    expect(onLogout).toHaveBeenCalledOnce();
   });
 
   it("renders the name as text, never as markup", () => {

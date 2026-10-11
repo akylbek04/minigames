@@ -9,6 +9,7 @@ import "./header.scss";
 
 export interface HeaderCallbacks {
   onOpenAuth: (mode: AuthMode) => void;
+  onLogout: () => void;
   menuToggle: HTMLElement;
 }
 
@@ -26,7 +27,7 @@ function createProfile(session: AppSession): HTMLElement {
   ]);
 }
 
-export function createHeader({ onOpenAuth, menuToggle }: HeaderCallbacks): Header {
+export function createHeader({ onOpenAuth, onLogout, menuToggle }: HeaderCallbacks): Header {
   const nav = el("nav", { class: "header__nav", "aria-label": "Main" }, [
     el(
       "ul",
@@ -47,6 +48,11 @@ export function createHeader({ onOpenAuth, menuToggle }: HeaderCallbacks): Heade
   ]);
   signUpButton.addEventListener("click", () => onOpenAuth("register"));
 
+  const logoutButton = el("button", { type: "button", class: "btn btn--outline header__logout" }, [
+    "Log Out",
+  ]);
+  logoutButton.addEventListener("click", onLogout);
+
   const logo = createPageLink({ page: "home" }, { class: "header__logo" }, [
     el("img", { src: assetUrl("/favicon.svg"), alt: "", class: "header__logo-icon" }),
     el("span", {}, ["MiniGames"]),
@@ -57,7 +63,7 @@ export function createHeader({ onOpenAuth, menuToggle }: HeaderCallbacks): Heade
 
   function setSession(session: AppSession | undefined): void {
     actions.replaceChildren(
-      ...(session ? [createProfile(session)] : [loginButton, signUpButton]),
+      ...(session ? [createProfile(session), logoutButton] : [loginButton, signUpButton]),
       menuToggle,
     );
   }

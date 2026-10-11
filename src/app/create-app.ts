@@ -16,6 +16,7 @@ import {
 } from "../router/router";
 import { parseAuthMode, type AuthMode } from "../types/auth";
 import {
+  endSession,
   getActiveSession,
   onSessionChange,
   startSession,
@@ -37,7 +38,18 @@ const PAGE_TITLES: Record<Route, string> = {
 const SESSION_MESSAGES: Partial<Record<SessionChange, [string, SnackbarVariant]>> = {
   expired: ["Your session has expired. You're browsing as a guest now.", "warning"],
   invalid: ["Your saved session wasn't valid, so you've been signed out.", "warning"],
+  logout: ["You've been logged out.", "success"],
 };
+
+// The app is a guest again even if Firebase couldn't sign out; its own
+// persisted user is never used to restore a session.
+async function logout(): Promise<void> {
+  try {
+    await endSession("logout");
+  } catch {
+    showSnackbar("Couldn't sign out of Firebase. You're browsing as a guest.", "error");
+  }
+}
 
 const openGameDetails = (slug: string): void => openOverlay(GAME_PARAM, slug);
 const openAuth = (mode: AuthMode): void => openOverlay(AUTH_PARAM, mode);
@@ -56,7 +68,7 @@ export function createApp(root: HTMLElement): void {
       closeOverlay(AUTH_PARAM);
     },
   });
-  const burgerMenu = createBurgerMenu({ onOpenAuth: openAuth });
+  const burgerMenu = createBurgerMenu({ onOpenAuth: openAuth, onLogout: () => void logout() });
 
   // Pages are built once and swapped, so each keeps its DOM between visits.
   const pages: Record<Route, AppPage> = {
@@ -67,7 +79,11 @@ export function createApp(root: HTMLElement): void {
 
   const app = document.createElement("div");
   app.id = "app";
-  const header = createHeader({ onOpenAuth: openAuth, menuToggle: burgerMenu.toggleButton });
+  const header = createHeader({
+    onOpenAuth: openAuth,
+    onLogout: () => void logout(),
+    menuToggle: burgerMenu.toggleButton,
+  });
   app.append(
     header.element,
     burgerMenu.dialog,

@@ -93,7 +93,9 @@
   gap: var(--size-2);
 }
 
-.header__login {
+// Small screens log in and out from the mobile menu.
+.header__login,
+.header__logout {
   display: none;
 
   @include bp.desktop-up {
