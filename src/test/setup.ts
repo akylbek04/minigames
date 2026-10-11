@@ -32,7 +32,24 @@ Element.prototype.matches = function (this: Element, selector: string): boolean 
     : nativeMatches.call(this, selector);
 } as Element["matches"];
 
+// Each test mounts its own app; listeners an earlier app left on window or
+// document would otherwise keep reacting (popstate, visibilitychange).
+type ListenerArgs = Parameters<EventTarget["addEventListener"]>;
+const addedListeners: [EventTarget, ...ListenerArgs][] = [];
+
+const listenerTargets: EventTarget[] = [globalThis, document];
+for (const target of listenerTargets) {
+  const addEventListener = target.addEventListener.bind(target);
+  target.addEventListener = (...args: ListenerArgs) => {
+    addedListeners.push([target, ...args]);
+    addEventListener(...args);
+  };
+}
+
 afterEach(() => {
+  for (const [target, ...args] of addedListeners.splice(0)) {
+    target.removeEventListener(...args);
+  }
   document.body.replaceChildren();
   localStorage.clear();
   history.replaceState(undefined, "", "/");
