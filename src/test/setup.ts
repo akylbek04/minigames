@@ -30,7 +30,7 @@ Element.prototype.matches = function (this: Element, selector: string): boolean 
   return selector === ":modal"
     ? this instanceof HTMLDialogElement && this.open
     : nativeMatches.call(this, selector);
-};
+} as Element["matches"];
 
 afterEach(() => {
   document.body.replaceChildren();
