@@ -102,3 +102,20 @@ export async function postComment(slug: string, comment: NewComment): Promise<Ga
   const response = await postJson<DataResponse<GameComment>>(gamePath(slug, "/comments"), comment);
   return response.data;
 }
+
+export interface CommentLikeState {
+  isLikedByCurrentUser: boolean;
+  likesCount: number;
+}
+
+// Likes or unlikes with the same request; each success flips the state.
+export async function toggleCommentLike(
+  commentId: string,
+  userEmail: string,
+): Promise<CommentLikeState> {
+  const response = await postJson<DataResponse<CommentLikeState>>(
+    `/comments/${encodeURIComponent(commentId)}/like`,
+    { userEmail },
+  );
+  return response.data;
+}

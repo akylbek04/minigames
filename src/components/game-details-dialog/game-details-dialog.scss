@@ -430,6 +430,10 @@
     color: var(--color-like);
   }
 
+  &:disabled {
+    cursor: progress;
+  }
+
   &:focus-visible {
     outline: var(--focus-ring-width) solid var(--color-tertiary);
     outline-offset: var(--focus-ring-offset);
