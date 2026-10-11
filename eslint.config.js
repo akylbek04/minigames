@@ -5,7 +5,7 @@ import prettier from "eslint-config-prettier";
 import globals from "globals";
 
 export default tseslint.config(
-  { ignores: ["dist", "node_modules"] },
+  { ignores: ["dist", "node_modules", "coverage"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   unicorn.configs.recommended,
