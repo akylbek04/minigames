@@ -1,8 +1,12 @@
 const API_BASE_URL = "https://faxb76kxra.execute-api.eu-central-1.amazonaws.com/api";
 
-// Status 0 means the request never got a response (offline, DNS, CORS).
+// Status 0 means the request never got a response (offline, DNS, CORS,
+// timeout).
 const NETWORK_ERROR_STATUS = 0;
 const TOO_MANY_REQUESTS_STATUS = 429;
+const SERVER_ERROR_STATUS = 500;
+// A change request that takes longer is given up on (its outcome unknown).
+const MUTATION_TIMEOUT = 15_000;
 
 export class ApiError extends Error {
   readonly status: number;
@@ -21,6 +25,12 @@ export class ApiError extends Error {
 
   get isRateLimited(): boolean {
     return this.status === TOO_MANY_REQUESTS_STATUS;
+  }
+
+  // No answer, or a server failure: a change may or may not have been
+  // applied, so it must not be resent automatically.
+  get isOutcomeUnknown(): boolean {
+    return this.status === NETWORK_ERROR_STATUS || this.status >= SERVER_ERROR_STATUS;
   }
 }
 
@@ -52,14 +62,10 @@ async function readErrorMessage(response: Response): Promise<string> {
   return `Request failed with status ${response.status}`;
 }
 
-export async function getJson<T>(
-  path: string,
-  params: QueryParams = {},
-  signal?: AbortSignal,
-): Promise<T> {
+async function request<T>(url: string, init: RequestInit): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(buildUrl(path, params), { signal });
+    response = await fetch(url, init);
   } catch (error) {
     if (isAbortError(error)) {
       throw error;
@@ -71,4 +77,21 @@ export async function getJson<T>(
     throw new ApiError(await readErrorMessage(response), response.status);
   }
   return (await response.json()) as T;
+}
+
+export function getJson<T>(
+  path: string,
+  params: QueryParams = {},
+  signal?: AbortSignal,
+): Promise<T> {
+  return request<T>(buildUrl(path, params), { signal });
+}
+
+export function postJson<T>(path: string, body: unknown): Promise<T> {
+  return request<T>(buildUrl(path, {}), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(MUTATION_TIMEOUT),
+  });
 }

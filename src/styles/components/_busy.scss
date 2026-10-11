@@ -1,0 +1,19 @@
+// Spinner added by utils/busy.ts to a control waiting for a request.
+.busy-spinner {
+  animation: busy-spin var(--duration-spin) linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: var(--duration-spin-reduced);
+  }
+}
+
+// The spinner stands in for the control's own icon while busy.
+.is-busy > :is(.material-symbols-outlined, .icon):not(.busy-spinner) {
+  display: none;
+}
+
+@keyframes busy-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}

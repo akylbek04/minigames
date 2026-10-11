@@ -93,7 +93,9 @@
   gap: var(--size-2);
 }
 
-.header__login {
+// Small screens log in and out from the mobile menu.
+.header__login,
+.header__logout {
   display: none;
 
   @include bp.desktop-up {
@@ -111,5 +113,27 @@
 
   @include bp.desktop-up {
     padding: var(--btn-padding-medium);
+  }
+}
+
+.header__profile {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+  min-width: 0;
+}
+
+.header__username {
+  display: none;
+  overflow: hidden;
+  max-width: var(--size-15);
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-label-large);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include bp.tablet-up {
+    display: block;
   }
 }

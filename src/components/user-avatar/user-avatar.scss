@@ -1,0 +1,15 @@
+.user-avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-5);
+  height: var(--size-5);
+  color: var(--color-on-primary);
+  background-color: var(--color-primary);
+  border: var(--border-regular) solid var(--color-on-primary);
+  border-radius: var(--corner-full);
+  font-size: var(--font-size-label-large);
+  font-weight: var(--font-weight-bold);
+  object-fit: cover;
+}

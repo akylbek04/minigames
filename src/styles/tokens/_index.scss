@@ -2,10 +2,12 @@
 @use "sizes" as sizes;
 @use "typography" as typography;
 @use "shadows" as shadows;
+@use "motion" as motion;
 
 :root {
   @include colors.emit-colors;
   @include sizes.emit-sizes;
   @include typography.emit-typography;
   @include shadows.emit-shadows;
+  @include motion.emit-motion;
 }

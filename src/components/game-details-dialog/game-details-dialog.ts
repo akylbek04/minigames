@@ -7,6 +7,7 @@ import { createAsyncContent } from "../feedback/async-content";
 import { createEmptyState } from "../feedback/empty-state";
 import { createSkeleton, createSkeletonGroup } from "../feedback/skeleton";
 import type { GameDetails } from "../../types/game-details";
+import type { AppSession } from "../../auth/session";
 import { createGameInfo } from "./game-info";
 import { createTopRecords } from "./top-records";
 import { createCommentsSection, type CommentsSection } from "./comments";
@@ -35,16 +36,23 @@ export interface GameDetailsDialogOptions {
   // The dialog never closes itself: it asks for the URL to drop the game,
   // and sync() closes it once the URL says so.
   onRequestClose: () => void;
+  // Called before every protected action. Without an active session it
+  // shows `reason`, sends the user to Auth and returns undefined.
+  requireSession: (reason: string) => AppSession | undefined;
 }
 
 export interface GameDetailsDialog {
   dialog: HTMLDialogElement;
   // Opens, switches or closes the dialog to match the `game` URL parameter.
-  sync: (slug: string | undefined) => void;
+  // `isCovered` hides it while Auth is shown instead, keeping its state.
+  sync: (slug: string | undefined, isCovered?: boolean) => void;
+  // Re-requests the user-specific state (favorite, likes) for a new session.
+  setSession: (session: AppSession | undefined) => void;
 }
 
 export function createGameDetailsDialog({
   onRequestClose,
+  requireSession,
 }: GameDetailsDialogOptions): GameDetailsDialog {
   // aria-label covers the loading and error states, before a title exists.
   const dialog = el("dialog", {
@@ -52,7 +60,7 @@ export function createGameDetailsDialog({
     "aria-labelledby": "game-details-title",
     "aria-label": "Game details",
   });
-  const state: { slug?: string; comments?: CommentsSection } = {};
+  const state: { slug?: string; session?: AppSession; comments?: CommentsSection } = {};
 
   // Outside the loaded content, so it can close every state of the dialog.
   const closeButton = el(
@@ -67,7 +75,7 @@ export function createGameDetailsDialog({
       el("img", { src: assetUrl(game.heroImage), alt: "", class: "game-details__hero-image" }),
     ]);
     const body = el("div", { class: "game-details__body" }, [
-      createGameInfo(game),
+      createGameInfo(game, { requireSession }),
       createTopRecords(game.topRecords),
       ...(state.comments ? [state.comments.element] : []),
     ]);
@@ -105,29 +113,47 @@ export function createGameDetailsDialog({
     onRequestClose();
   });
 
+  // Personalized for the signed-in user; guests get the public state.
+  function loadDetails(slug: string): void {
+    const email = state.session?.email;
+    void content.load((signal) => fetchGameDetails(slug, email, signal));
+  }
+
   // Every open starts fresh: details and the latest comments are requested
   // in parallel, and favorites, likes and the comment draft are reset.
-  function open(slug: string): void {
+  function load(slug: string): void {
     state.slug = slug;
-    state.comments = createCommentsSection(slug);
+    state.comments = createCommentsSection({ slug, session: state.session, requireSession });
     state.comments.load();
     dialog.replaceChildren(closeButton, content.element);
-    void content.load((signal) => fetchGameDetails(slug, signal));
-    openDialogAnimated(dialog);
+    loadDetails(slug);
     dialog.scrollTop = 0;
   }
 
-  function sync(slug: string | undefined): void {
+  function sync(slug: string | undefined, isCovered = false): void {
     if (slug === undefined) {
       state.slug = undefined;
       closeDialogAnimated(dialog);
       return;
     }
-    if (slug === state.slug && dialog.open && !dialog.classList.contains("is-closing")) {
-      return;
+    if (slug !== state.slug) {
+      load(slug);
     }
-    open(slug);
+    if (isCovered) {
+      closeDialogAnimated(dialog);
+    } else {
+      openDialogAnimated(dialog);
+    }
   }
 
-  return { dialog, sync };
+  function setSession(session: AppSession | undefined): void {
+    state.session = session;
+    if (!state.slug) {
+      return;
+    }
+    loadDetails(state.slug);
+    state.comments?.setSession(session);
+  }
+
+  return { dialog, sync, setSession };
 }

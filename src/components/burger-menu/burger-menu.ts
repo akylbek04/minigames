@@ -3,19 +3,25 @@ import { materialIcon } from "../../utils/icon";
 import { closeDialogAnimated, openDialogAnimated } from "../../utils/animated-dialog";
 import { assetUrl } from "../../utils/asset-url";
 import { MAIN_NAV_LINKS, createPageLink } from "../../utils/navigation";
+import { getProfileName } from "../../auth/profile";
+import { createUserAvatar } from "../user-avatar/user-avatar";
 import type { AuthMode } from "../../types/auth";
+import type { AppSession } from "../../auth/session";
 import "./burger-menu.scss";
 
 export interface BurgerMenuCallbacks {
   onOpenAuth: (mode: AuthMode) => void;
+  onLogout: () => void;
 }
 
 export interface BurgerMenu {
   toggleButton: HTMLElement;
   dialog: HTMLDialogElement;
+  // Guest controls without a session, the user's profile with one.
+  setSession: (session: AppSession | undefined) => void;
 }
 
-export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMenu {
+export function createBurgerMenu({ onOpenAuth, onLogout }: BurgerMenuCallbacks): BurgerMenu {
   const toggleButton = el(
     "button",
     {
@@ -66,16 +72,34 @@ export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMen
     ["Sign Up"],
   );
 
+  const logoutButton = el(
+    "button",
+    { type: "button", class: "btn btn--outline mobile-menu__logout" },
+    ["Log Out"],
+  );
+
   const dialog = el("dialog", {
     id: "mobile-menu",
     class: "mobile-menu",
     "aria-label": "Mobile navigation",
   });
-  dialog.append(
-    topBar,
-    nav,
-    el("div", { class: "mobile-menu__actions" }, [loginButton, signUpButton]),
-  );
+  const actions = el("div", { class: "mobile-menu__actions" });
+  dialog.append(topBar, nav, actions);
+
+  function setSession(session: AppSession | undefined): void {
+    actions.replaceChildren(
+      ...(session
+        ? [
+            el("div", { class: "mobile-menu__profile" }, [
+              createUserAvatar(session),
+              el("span", { class: "mobile-menu__username" }, [getProfileName(session)]),
+            ]),
+            logoutButton,
+          ]
+        : [loginButton, signUpButton]),
+    );
+  }
+  setSession(undefined);
 
   function open(): void {
     openDialogAnimated(dialog);
@@ -119,5 +143,10 @@ export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMen
     onOpenAuth("register");
   });
 
-  return { toggleButton, dialog };
+  logoutButton.addEventListener("click", () => {
+    close();
+    onLogout();
+  });
+
+  return { toggleButton, dialog, setSession };
 }
