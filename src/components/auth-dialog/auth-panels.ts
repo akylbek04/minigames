@@ -3,7 +3,12 @@ import { icon } from "../../utils/icon";
 import { icons } from "../icons/icons";
 import { createField, type AuthField } from "./auth-form-field";
 import type { AuthMode } from "../../types/auth";
-import { registerWithEmail, signInWithEmail, type AuthProfile } from "../../auth/auth-service";
+import {
+  registerWithEmail,
+  signInWithEmail,
+  signInWithGoogle,
+  type AuthProfile,
+} from "../../auth/auth-service";
 import {
   validateConfirmPassword,
   validateEmail,
@@ -61,12 +66,19 @@ function createDivider(): HTMLElement {
   return el("div", { class: "auth-dialog__divider" }, [el("span", {}, ["OR"])]);
 }
 
-function createGoogleButton(label: string): HTMLElement {
-  return el(
+// Google covers both sign-in and sign-up: a new account is created on the
+// first sign-in.
+function createGoogleButton(
+  label: string,
+  onAuthRequest: PanelActions["onAuthRequest"],
+): HTMLButtonElement {
+  const button = el(
     "button",
     { type: "button", class: "btn btn--outline btn--large auth-dialog__google" },
     [icon(icons.google), label],
   );
+  button.addEventListener("click", () => onAuthRequest(signInWithGoogle, button));
+  return button;
 }
 
 function createSwitchLink(label: string): HTMLButtonElement {
@@ -137,7 +149,7 @@ export function createLoginPanel({ onSwitch, onAuthRequest }: PanelActions): HTM
     el("p", { class: "auth-dialog__subtitle" }, ["Sign in to resume your games and progress."]),
     form,
     createDivider(),
-    createGoogleButton("Continue with Google"),
+    createGoogleButton("Continue with Google", onAuthRequest),
     el("p", { class: "auth-dialog__switch-text" }, ["Don't have an account? ", registerLink]),
   ]);
 }
@@ -227,7 +239,7 @@ export function createRegisterPanel({
     el("p", { class: "auth-dialog__subtitle" }, ["Join MiniGames to track your score & streak."]),
     form,
     createDivider(),
-    createGoogleButton("Sign up with Google"),
+    createGoogleButton("Sign up with Google", onAuthRequest),
     el("p", { class: "auth-dialog__switch-text" }, ["Already have an account? ", loginLink]),
   ]);
 }
