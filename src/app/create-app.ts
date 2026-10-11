@@ -52,7 +52,20 @@ async function logout(): Promise<void> {
 }
 
 const openGameDetails = (slug: string): void => openOverlay(GAME_PARAM, slug);
-const openAuth = (mode: AuthMode): void => openOverlay(AUTH_PARAM, mode);
+
+function notifyAlreadySignedIn(): void {
+  showSnackbar("You're already signed in.", "info");
+}
+
+// Every Auth entry point is guarded by the session: UI controls here, URLs
+// and Back/Forward in the route listener.
+function openAuth(mode: AuthMode): void {
+  if (getActiveSession()) {
+    notifyAlreadySignedIn();
+    return;
+  }
+  openOverlay(AUTH_PARAM, mode);
+}
 
 // Builds the whole app into `root` and subscribes it to the router; the
 // caller starts the router once everything is mounted.
@@ -115,17 +128,28 @@ export function createApp(root: HTMLElement): void {
   });
   getActiveSession();
 
-  onRouteChange(({ route, query }, previous) => {
-    getActiveSession();
+  // Tracked here rather than read from the router's `previous`: the auth
+  // guard below re-renders from a replaced URL mid-navigation.
+  const rendered: { route?: Route } = {};
+
+  onRouteChange(({ route, query }) => {
+    // Expiry is resolved first, so an expired user counts as a guest here.
+    if (getActiveSession() && query.has(AUTH_PARAM)) {
+      notifyAlreadySignedIn();
+      // Re-enters this listener with the cleaned URL, in the same entry.
+      updateQuery({ [AUTH_PARAM]: undefined }, { replace: true });
+      return;
+    }
     const page = pages[route];
-    if (route !== previous?.route) {
+    if (route !== rendered.route) {
       app.querySelector("main")?.replaceWith(page.element);
       document.title = PAGE_TITLES[route];
       // Only a real page change scrolls up; opening a dialog or paging the
       // Library keeps the reader where they are.
-      if (previous) {
+      if (rendered.route) {
         window.scrollTo({ top: 0 });
       }
+      rendered.route = route;
     }
     page.show?.(query);
 
