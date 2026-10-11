@@ -157,7 +157,11 @@ export function createApp(root: HTMLElement): void {
     }
     const page = pages[route];
     if (route !== rendered.route) {
-      app.querySelector("main")?.replaceWith(page.element);
+      const current = app.querySelector("main");
+      // Home is mounted from the start; don't swap a page with itself.
+      if (current !== page.element) {
+        current?.replaceWith(page.element);
+      }
       document.title = PAGE_TITLES[route];
       // Only a real page change scrolls up; opening a dialog or paging the
       // Library keeps the reader where they are.
