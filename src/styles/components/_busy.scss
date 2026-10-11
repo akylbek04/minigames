@@ -1,9 +1,9 @@
 // Spinner added by utils/busy.ts to a control waiting for a request.
 .busy-spinner {
-  animation: busy-spin 1s linear infinite;
+  animation: busy-spin var(--duration-spin) linear infinite;
 
   @media (prefers-reduced-motion: reduce) {
-    animation-duration: 3s;
+    animation-duration: var(--duration-spin-reduced);
   }
 }
 

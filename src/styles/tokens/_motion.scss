@@ -1,0 +1,12 @@
+// Animation durations.
+$durations: (
+  "spin": 1s,
+  // Slower spin for users who prefer reduced motion.
+  "spin-reduced": 3s,
+);
+
+@mixin emit-motion {
+  @each $name, $value in $durations {
+    --duration-#{$name}: #{$value};
+  }
+}
