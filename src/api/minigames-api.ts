@@ -88,3 +88,17 @@ export async function toggleFavorite(slug: string, userEmail: string): Promise<F
   });
   return response.data;
 }
+
+export interface NewComment {
+  userEmail: string;
+  // 2–30 characters; `text` 1–500 after trimming.
+  authorName: string;
+  text: string;
+}
+
+// Answers 201 with the created comment, but without the new total: the
+// caller re-requests the latest comments for that.
+export async function postComment(slug: string, comment: NewComment): Promise<GameComment> {
+  const response = await postJson<DataResponse<GameComment>>(gamePath(slug, "/comments"), comment);
+  return response.data;
+}
