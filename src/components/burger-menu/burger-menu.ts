@@ -11,6 +11,7 @@ import "./burger-menu.scss";
 
 export interface BurgerMenuCallbacks {
   onOpenAuth: (mode: AuthMode) => void;
+  onLogout: () => void;
 }
 
 export interface BurgerMenu {
@@ -20,7 +21,7 @@ export interface BurgerMenu {
   setSession: (session: AppSession | undefined) => void;
 }
 
-export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMenu {
+export function createBurgerMenu({ onOpenAuth, onLogout }: BurgerMenuCallbacks): BurgerMenu {
   const toggleButton = el(
     "button",
     {
@@ -71,6 +72,12 @@ export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMen
     ["Sign Up"],
   );
 
+  const logoutButton = el(
+    "button",
+    { type: "button", class: "btn btn--outline mobile-menu__logout" },
+    ["Log Out"],
+  );
+
   const dialog = el("dialog", {
     id: "mobile-menu",
     class: "mobile-menu",
@@ -87,6 +94,7 @@ export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMen
               createUserAvatar(session),
               el("span", { class: "mobile-menu__username" }, [getProfileName(session)]),
             ]),
+            logoutButton,
           ]
         : [loginButton, signUpButton]),
     );
@@ -133,6 +141,11 @@ export function createBurgerMenu({ onOpenAuth }: BurgerMenuCallbacks): BurgerMen
   signUpButton.addEventListener("click", () => {
     close();
     onOpenAuth("register");
+  });
+
+  logoutButton.addEventListener("click", () => {
+    close();
+    onLogout();
   });
 
   return { toggleButton, dialog, setSession };

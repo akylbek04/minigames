@@ -178,3 +178,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+// Light outline on the dark menu, as in the mockup.
+.mobile-menu__logout {
+  color: var(--color-white);
+  background-color: transparent;
+  border-color: var(--color-white);
+  box-shadow: none;
+}
