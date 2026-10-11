@@ -5,42 +5,9 @@ import { fetchLatestComments, type CommentsResponse } from "../../api/minigames-
 import { createAsyncContent } from "../feedback/async-content";
 import { createEmptyState } from "../feedback/empty-state";
 import { createSkeleton, createSkeletonGroup } from "../feedback/skeleton";
+import { createCommentForm } from "./comment-form";
 import type { GameComment } from "../../types/game-details";
-
-// Posting is an authenticated feature (Story 4), so the form never sends.
-function createCommentForm(): HTMLFormElement {
-  const textarea = el("textarea", {
-    class: "game-details__comment-input",
-    name: "comment",
-    rows: "1",
-    placeholder: "Write a comment...",
-    "aria-label": "Write a comment",
-  });
-
-  const submitButton = el(
-    "button",
-    { type: "submit", class: "game-details__comment-submit", "aria-label": "Submit comment" },
-    [materialIcon("send")],
-  );
-  submitButton.disabled = true;
-
-  textarea.addEventListener("input", () => {
-    submitButton.disabled = textarea.value.trim() === "";
-  });
-
-  const form = el("form", { class: "game-details__comment-form" }, [
-    el(
-      "span",
-      { class: "game-details__avatar game-details__avatar--self", "aria-hidden": "true" },
-      ["U"],
-    ),
-    textarea,
-    submitButton,
-  ]);
-  form.addEventListener("submit", (event) => event.preventDefault());
-
-  return form;
-}
+import type { AppSession } from "../../auth/session";
 
 const AVATAR_COLOR_COUNT = 5;
 
@@ -119,14 +86,27 @@ function createCommentsSkeleton(): Node {
   ]);
 }
 
+export interface CommentsSectionOptions {
+  slug: string;
+  session: AppSession | undefined;
+  requireSession: (reason: string) => AppSession | undefined;
+}
+
 export interface CommentsSection {
   element: HTMLElement;
   load: () => void;
+  // Unlocks or locks the form and reloads the list for the new user.
+  setSession: (session: AppSession | undefined) => void;
 }
 
 // The latest comments plus the game's total comment count, loaded on their
 // own so a comments failure never hides the rest of the game details.
-export function createCommentsSection(slug: string): CommentsSection {
+export function createCommentsSection({
+  slug,
+  session,
+  requireSession,
+}: CommentsSectionOptions): CommentsSection {
+  const state = { session };
   const title = el(
     "h3",
     { id: "game-details-comments-title", class: "game-details__section-title" },
@@ -154,20 +134,31 @@ export function createCommentsSection(slug: string): CommentsSection {
     },
   });
 
+  // Personalized (each comment's like state) for a signed-in user.
+  function load(): void {
+    const email = state.session?.email;
+    void list.load(async (signal) => {
+      const response = await fetchLatestComments(slug, email, signal);
+      // The exact total for the game, not just the 3 comments shown.
+      title.textContent = `Comments (${response.meta.totalComments})`;
+      return response;
+    });
+  }
+
+  const form = createCommentForm({ slug, requireSession, onPosted: load });
+  form.setSession(session);
+
   const element = el(
     "section",
     { class: "game-details__section", "aria-labelledby": "game-details-comments-title" },
-    [title, createCommentForm(), list.element],
+    [title, form.element, list.element],
   );
 
-  return {
-    element,
-    load: () =>
-      void list.load(async (signal) => {
-        const response = await fetchLatestComments(slug, undefined, signal);
-        // The exact total for the game, not just the 3 comments shown.
-        title.textContent = `Comments (${response.meta.totalComments})`;
-        return response;
-      }),
-  };
+  function setSession(nextSession: AppSession | undefined): void {
+    state.session = nextSession;
+    form.setSession(nextSession);
+    load();
+  }
+
+  return { element, load, setSession };
 }
