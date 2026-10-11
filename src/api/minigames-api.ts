@@ -1,4 +1,4 @@
-import { getJson } from "./client";
+import { getJson, postJson } from "./client";
 import type { Category, Game, GamesPageMeta, GamesQuery } from "../types/game";
 import type { GameComment, GameDetails } from "../types/game-details";
 import type { LeaderboardEntry } from "../types/leaderboard";
@@ -49,19 +49,42 @@ export async function fetchLeaderboard(signal?: AbortSignal): Promise<Leaderboar
   return response.data;
 }
 
-export async function fetchGameDetails(slug: string, signal?: AbortSignal): Promise<GameDetails> {
-  const response = await getJson<DataResponse<GameDetails>>(
-    `/games/${encodeURIComponent(slug)}`,
-    {},
-    signal,
-  );
+function gamePath(slug: string, rest = ""): string {
+  return `/games/${encodeURIComponent(slug)}${rest}`;
+}
+
+// With `userEmail`, `isLikedByCurrentUser` is that user's favorite state;
+// guests omit it and always get false.
+export async function fetchGameDetails(
+  slug: string,
+  userEmail?: string,
+  signal?: AbortSignal,
+): Promise<GameDetails> {
+  const response = await getJson<DataResponse<GameDetails>>(gamePath(slug), { userEmail }, signal);
   return response.data;
 }
 
-export function fetchLatestComments(slug: string, signal?: AbortSignal): Promise<CommentsResponse> {
+export function fetchLatestComments(
+  slug: string,
+  userEmail?: string,
+  signal?: AbortSignal,
+): Promise<CommentsResponse> {
   return getJson<CommentsResponse>(
-    `/games/${encodeURIComponent(slug)}/comments`,
-    { limit: String(LATEST_COMMENTS_LIMIT), sort: "newest" },
+    gamePath(slug, "/comments"),
+    { limit: String(LATEST_COMMENTS_LIMIT), sort: "newest", userEmail },
     signal,
   );
+}
+
+export interface FavoriteState {
+  isFavorited: boolean;
+  likesCount: number;
+}
+
+// One endpoint flips the favorite either way; each success toggles it.
+export async function toggleFavorite(slug: string, userEmail: string): Promise<FavoriteState> {
+  const response = await postJson<DataResponse<FavoriteState>>(gamePath(slug, "/favorite"), {
+    userEmail,
+  });
+  return response.data;
 }
