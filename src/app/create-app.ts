@@ -26,12 +26,12 @@ const PAGE_TITLES: Record<Route, string> = {
   "not-found": "Page Not Found — MiniGames",
 };
 
+const openGameDetails = (slug: string): void => openOverlay(GAME_PARAM, slug);
+const openAuth = (mode: AuthMode): void => openOverlay(AUTH_PARAM, mode);
+
 // Builds the whole app into `root` and subscribes it to the router; the
 // caller starts the router once everything is mounted.
 export function createApp(root: HTMLElement): void {
-  const openGameDetails = (slug: string): void => openOverlay(GAME_PARAM, slug);
-  const openAuth = (mode: AuthMode): void => openOverlay(AUTH_PARAM, mode);
-
   const gameDetailsDialog = createGameDetailsDialog({
     onRequestClose: () => closeOverlay(GAME_PARAM),
   });

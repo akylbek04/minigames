@@ -12,6 +12,13 @@ export interface FieldOptions {
   passwordToggle?: boolean;
 }
 
+export interface AuthField {
+  element: HTMLElement;
+  input: HTMLInputElement;
+  // Shows an inline error under the input, or clears it with undefined.
+  setError: (message: string | undefined) => void;
+}
+
 export function createField({
   id,
   label,
@@ -21,7 +28,7 @@ export function createField({
   iconName,
   hint,
   passwordToggle,
-}: FieldOptions): HTMLElement {
+}: FieldOptions): AuthField {
   const input = el("input", {
     id,
     name: id,
@@ -53,11 +60,21 @@ export function createField({
     wrapper.append(toggle);
   }
 
+  const errorId = `${id}-error`;
+  const error = el("p", { id: errorId, class: "auth-dialog__error", "aria-live": "polite" });
+  input.setAttribute("aria-describedby", errorId);
+
+  function setError(message: string | undefined): void {
+    error.textContent = message ?? "";
+    input.setAttribute("aria-invalid", String(message !== undefined));
+  }
+
   const children: (Node | string)[] = [
     el("label", { for: id, class: "auth-dialog__label" }, [label]),
     wrapper,
     ...(hint ? [el("p", { class: "auth-dialog__hint" }, [hint])] : []),
+    error,
   ];
 
-  return el("div", { class: "auth-dialog__field" }, children);
+  return { element: el("div", { class: "auth-dialog__field" }, children), input, setError };
 }

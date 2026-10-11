@@ -19,10 +19,10 @@ describe("router", () => {
 
   it("resolves known paths and unknown ones to not-found", async () => {
     expect(router.getLocation().route).toBe("home");
-    expect((await loadRouter("/library/?page=2")).getLocation()).toMatchObject({
-      route: "library",
-    });
-    expect((await loadRouter("/nope")).getLocation().route).toBe("not-found");
+    const library = await loadRouter("/library/?page=2");
+    expect(library.getLocation().route).toBe("library");
+    const unknown = await loadRouter("/nope");
+    expect(unknown.getLocation().route).toBe("not-found");
   });
 
   it("renders the start URL and notifies listeners on navigation", () => {

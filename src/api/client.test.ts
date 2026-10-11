@@ -24,9 +24,13 @@ describe("getJson", () => {
   it("turns an error response into an ApiError with the server message", async () => {
     stubFetch(Response.json({ error: "Game not found: x" }, { status: 404 }));
 
-    const error = await getJson("/games/x").catch((error_: unknown) => error_);
-    expect(error).toBeInstanceOf(ApiError);
-    expect(error).toMatchObject({ status: 404, message: "Game not found: x", isNotFound: true });
+    const request = getJson("/games/x");
+    await expect(request).rejects.toBeInstanceOf(ApiError);
+    await expect(request).rejects.toMatchObject({
+      status: 404,
+      message: "Game not found: x",
+      isNotFound: true,
+    });
   });
 
   it("falls back to a generic message for non-JSON errors", async () => {
@@ -49,9 +53,7 @@ describe("getJson", () => {
     stubFetch(new TypeError("Failed to fetch"));
     await expect(getJson("/games")).rejects.toMatchObject({ status: 0 });
 
-    const abort = new DOMException("Aborted", "AbortError");
-    stubFetch(abort);
-    const error = await getJson("/games").catch((error_: unknown) => error_);
-    expect(isAbortError(error)).toBe(true);
+    stubFetch(new DOMException("Aborted", "AbortError"));
+    await expect(getJson("/games")).rejects.toSatisfy(isAbortError);
   });
 });

@@ -156,6 +156,19 @@
   font-size: var(--font-size-label-medium);
 }
 
+.auth-dialog__error {
+  color: var(--color-error);
+  font-size: var(--font-size-label-medium);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.auth-dialog__input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
 .auth-dialog__forgot {
   @include mix.reset-button;
 
