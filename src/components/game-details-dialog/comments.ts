@@ -15,13 +15,23 @@ import { createCommentForm } from "./comment-form";
 import type { GameComment } from "../../types/game-details";
 import type { AppSession } from "../../auth/session";
 
+// The avatar-random-1…5 color tokens.
 const AVATAR_COLOR_COUNT = 5;
 
-// Stable per author, so the same person always gets the same avatar color.
-function avatarColor(name: string): number {
-  return (
-    ([...name].reduce((sum, char) => sum + (char.codePointAt(0) ?? 0), 0) % AVATAR_COLOR_COUNT) + 1
-  );
+// A random token per commenter, remembered for as long as the comments
+// view lives, so reloads and re-renders keep each person's color.
+function createAvatarColors(): (authorName: string) => number {
+  const colors = new Map<string, number>();
+  return (authorName) => {
+    const color = colors.get(authorName) ?? Math.floor(Math.random() * AVATAR_COLOR_COUNT) + 1;
+    colors.set(authorName, color);
+    return color;
+  };
+}
+
+// First non-whitespace character, uppercased (whole, even if it is an emoji).
+function getAuthorInitial(authorName: string): string {
+  return [...authorName.trim()][0]?.toUpperCase() ?? "?";
 }
 
 type RequireSession = (reason: string) => AppSession | undefined;
@@ -68,16 +78,20 @@ function createLikeButton(comment: GameComment, requireSession: RequireSession):
   return button;
 }
 
-function createComment(comment: GameComment, requireSession: RequireSession): HTMLElement {
+function createComment(
+  comment: GameComment,
+  requireSession: RequireSession,
+  avatarColor: number,
+): HTMLElement {
   return el("article", { class: "game-details__comment" }, [
     el("header", { class: "game-details__comment-header" }, [
       el(
         "span",
         {
-          class: `game-details__avatar game-details__avatar--${avatarColor(comment.authorName)}`,
+          class: `game-details__avatar game-details__avatar--${avatarColor}`,
           "aria-hidden": "true",
         },
-        [comment.authorName.charAt(0)],
+        [getAuthorInitial(comment.authorName)],
       ),
       el("h4", { class: "game-details__comment-author" }, [comment.authorName]),
       el("time", { class: "game-details__comment-date", datetime: comment.createdAt }, [
@@ -138,6 +152,7 @@ export function createCommentsSection({
   requireSession,
 }: CommentsSectionOptions): CommentsSection {
   const state = { session };
+  const avatarColorFor = createAvatarColors();
   const title = el(
     "h3",
     { id: "game-details-comments-title", class: "game-details__section-title" },
@@ -151,7 +166,11 @@ export function createCommentsSection({
       el(
         "ul",
         { class: "game-details__comments" },
-        data.map((comment) => el("li", {}, [createComment(comment, requireSession)])),
+        data.map((comment) =>
+          el("li", {}, [
+            createComment(comment, requireSession, avatarColorFor(comment.authorName)),
+          ]),
+        ),
       ),
     isEmpty: ({ data }) => data.length === 0,
     renderEmpty: createNoComments,
