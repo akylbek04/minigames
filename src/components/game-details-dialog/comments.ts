@@ -1,7 +1,13 @@
 import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
+import { setBusy } from "../../utils/busy";
 import { formatRelativeTime } from "../../utils/format";
-import { fetchLatestComments, type CommentsResponse } from "../../api/minigames-api";
+import {
+  fetchLatestComments,
+  toggleCommentLike,
+  type CommentsResponse,
+} from "../../api/minigames-api";
+import { notifyMutationFailed } from "../feedback/request-feedback";
 import { createAsyncContent } from "../feedback/async-content";
 import { createEmptyState } from "../feedback/empty-state";
 import { createSkeleton, createSkeletonGroup } from "../feedback/skeleton";
@@ -18,26 +24,51 @@ function avatarColor(name: string): number {
   );
 }
 
-// Liking is an authenticated feature (Story 4): the button only toggles its
-// own pressed state and the count stays as loaded.
-function createLikeButton(comment: GameComment): HTMLButtonElement {
-  const button = el(
-    "button",
-    {
-      type: "button",
-      class: "game-details__like",
-      "aria-pressed": String(comment.isLikedByCurrentUser),
-      "aria-label": `Like comment by ${comment.authorName}, ${comment.likesCount} likes`,
-    },
-    [materialIcon("favorite", "game-details__like-icon"), String(comment.likesCount)],
-  );
-  button.addEventListener("click", () => {
-    button.setAttribute("aria-pressed", String(button.getAttribute("aria-pressed") !== "true"));
-  });
+type RequireSession = (reason: string) => AppSession | undefined;
+
+// The pressed state and count only ever come from the server: the
+// personalized list on load, then each toggle response. Locked while a
+// toggle is in flight and never resent.
+function createLikeButton(comment: GameComment, requireSession: RequireSession): HTMLButtonElement {
+  const count = el("span", {});
+  const button = el("button", { type: "button", class: "game-details__like" }, [
+    materialIcon("favorite", "game-details__like-icon"),
+    count,
+  ]);
+
+  function render(isLiked: boolean, likesCount: number): void {
+    button.setAttribute("aria-pressed", String(isLiked));
+    button.setAttribute("aria-label", `Like comment by ${comment.authorName}, ${likesCount} likes`);
+    count.textContent = String(likesCount);
+  }
+
+  async function toggle(): Promise<void> {
+    const session = requireSession("Log in to like comments.");
+    if (!session) {
+      return;
+    }
+    button.disabled = true;
+    setBusy(button, true);
+    try {
+      const result = await toggleCommentLike(comment.commentId, session.email);
+      render(result.isLikedByCurrentUser, result.likesCount);
+    } catch (error) {
+      notifyMutationFailed(error, {
+        failed: "Couldn't update the like. Please try again.",
+        unknown: "We couldn't confirm the like. Reopen the game to check it before trying again.",
+      });
+    } finally {
+      button.disabled = false;
+      setBusy(button, false);
+    }
+  }
+
+  render(comment.isLikedByCurrentUser, comment.likesCount);
+  button.addEventListener("click", () => void toggle());
   return button;
 }
 
-function createComment(comment: GameComment): HTMLElement {
+function createComment(comment: GameComment, requireSession: RequireSession): HTMLElement {
   return el("article", { class: "game-details__comment" }, [
     el("header", { class: "game-details__comment-header" }, [
       el(
@@ -54,7 +85,7 @@ function createComment(comment: GameComment): HTMLElement {
       ]),
     ]),
     el("p", { class: "game-details__comment-text" }, [comment.text]),
-    createLikeButton(comment),
+    createLikeButton(comment, requireSession),
   ]);
 }
 
@@ -89,7 +120,7 @@ function createCommentsSkeleton(): Node {
 export interface CommentsSectionOptions {
   slug: string;
   session: AppSession | undefined;
-  requireSession: (reason: string) => AppSession | undefined;
+  requireSession: RequireSession;
 }
 
 export interface CommentsSection {
@@ -120,7 +151,7 @@ export function createCommentsSection({
       el(
         "ul",
         { class: "game-details__comments" },
-        data.map((comment) => el("li", {}, [createComment(comment)])),
+        data.map((comment) => el("li", {}, [createComment(comment, requireSession)])),
       ),
     isEmpty: ({ data }) => data.length === 0,
     renderEmpty: createNoComments,
