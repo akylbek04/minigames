@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { signOutFromFirebase } from "./auth-service";
 
 vi.mock("./auth-service", () => ({ signOutFromFirebase: vi.fn() }));
 
 type SessionModule = typeof import("./session");
+type SessionListener = Parameters<SessionModule["onSessionChange"]>[0];
 
 const KEY = "minigames:akylbek04-minigames:app-session";
 const NOW = 1_800_000_000_000;
@@ -16,14 +17,14 @@ function store(value: unknown): void {
 
 describe("app session", () => {
   let session: SessionModule;
-  let changes: ReturnType<typeof vi.fn>;
+  let changes: Mock<SessionListener>;
 
   beforeEach(async () => {
     vi.useFakeTimers({ now: NOW });
     vi.mocked(signOutFromFirebase).mockResolvedValue();
     vi.resetModules();
     session = await import("./session");
-    changes = vi.fn();
+    changes = vi.fn<SessionListener>();
     session.onSessionChange(changes);
     return () => vi.useRealTimers();
   });
