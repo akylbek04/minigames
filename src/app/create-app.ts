@@ -15,7 +15,13 @@ import {
   type Route,
 } from "../router/router";
 import { parseAuthMode, type AuthMode } from "../types/auth";
-import { getActiveSession, onSessionChange, type SessionChange } from "../auth/session";
+import {
+  getActiveSession,
+  onSessionChange,
+  startSession,
+  type SessionChange,
+} from "../auth/session";
+import { getProfileName } from "../auth/profile";
 import { showSnackbar, type SnackbarVariant } from "../components/snackbar/snackbar";
 
 // Dialog state lives in the URL: `?game=<slug>` and `?auth=login|register`.
@@ -45,6 +51,10 @@ export function createApp(root: HTMLElement): void {
   const authDialog = createAuthDialog({
     onModeChange: (mode) => updateQuery({ [AUTH_PARAM]: mode }, { replace: true }),
     onRequestClose: () => closeOverlay(AUTH_PARAM),
+    onAuthenticated: (profile) => {
+      startSession(profile);
+      closeOverlay(AUTH_PARAM);
+    },
   });
   const burgerMenu = createBurgerMenu({ onOpenAuth: openAuth });
 
@@ -67,7 +77,10 @@ export function createApp(root: HTMLElement): void {
   );
   root.append(app);
 
-  onSessionChange((_, change) => {
+  onSessionChange((session, change) => {
+    if (change === "login" && session) {
+      showSnackbar(`Welcome, ${getProfileName(session)}!`, "success");
+    }
     const message = SESSION_MESSAGES[change];
     if (message) {
       showSnackbar(...message);
