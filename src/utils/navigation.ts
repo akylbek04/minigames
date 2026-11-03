@@ -2,11 +2,12 @@ import { el } from "./dom";
 import { assetUrl } from "./asset-url";
 import { navigateTo, onRouteChange } from "../router/router";
 
-export type Page = "home" | "library";
+export type Page = "home" | "library" | "profile";
 
 const PAGE_PATHS: Record<Page, string> = {
   home: "/",
   library: "/library",
+  profile: "/profile",
 };
 
 interface PageLinkOptions {

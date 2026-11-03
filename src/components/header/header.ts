@@ -19,12 +19,17 @@ export interface Header {
   setSession: (session: AppSession | undefined) => void;
 }
 
-// Name as text (never markup) next to the photo or initials.
+// Name as text (never markup) next to the photo or initials; leads to the
+// Profile page.
 function createProfile(session: AppSession): HTMLElement {
-  return el("div", { class: "header__profile" }, [
-    createUserAvatar(session, "header__avatar"),
-    el("span", { class: "header__username" }, [getProfileName(session)]),
-  ]);
+  return createPageLink(
+    { page: "profile", markActive: true },
+    { class: "header__profile", "aria-label": `${getProfileName(session)}, open your profile` },
+    [
+      createUserAvatar(session, "header__avatar"),
+      el("span", { class: "header__username" }, [getProfileName(session)]),
+    ],
+  );
 }
 
 export function createHeader({ onOpenAuth, onLogout, menuToggle }: HeaderCallbacks): Header {

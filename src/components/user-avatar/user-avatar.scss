@@ -13,3 +13,11 @@
   font-weight: var(--font-weight-bold);
   object-fit: cover;
 }
+
+// The picked preset color (avatar-random-1…5) behind a custom icon avatar.
+@for $i from 1 through 5 {
+  .user-avatar--color-#{$i} {
+    color: var(--color-on-primary);
+    background-color: var(--color-avatar-random-#{$i});
+  }
+}
