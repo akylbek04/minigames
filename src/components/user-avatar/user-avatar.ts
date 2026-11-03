@@ -1,11 +1,13 @@
 import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
 import { getInitials, getProfileName } from "../../auth/profile";
+import { loadProfile } from "../../profile/profile-store";
 import type { AuthProfile } from "../../auth/auth-service";
 import "./user-avatar.scss";
 
-// The profile photo when there is one that loads; otherwise the name's
-// initials, or a generic person icon when the name has no letters or digits.
+// The avatar the user picked on the Profile page; else the profile photo
+// when there is one that loads; otherwise the name's initials, or a generic
+// person icon when the name has no letters or digits.
 export function createUserAvatar(profile: AuthProfile, className = ""): HTMLElement {
   const classes = `user-avatar ${className}`.trim();
 
@@ -16,6 +18,14 @@ export function createUserAvatar(profile: AuthProfile, className = ""): HTMLElem
     ]);
   }
 
+  const custom = loadProfile(profile.email).avatar;
+  if (custom) {
+    return el(
+      "span",
+      { class: `${classes} user-avatar--color-${custom.color + 1}`, "aria-hidden": "true" },
+      [materialIcon(custom.icon)],
+    );
+  }
   if (!profile.avatarUrl) {
     return createFallback();
   }
