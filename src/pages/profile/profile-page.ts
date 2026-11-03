@@ -10,6 +10,7 @@ import {
   clearHistory,
   loadProfile,
   onProfileChange,
+  resetProfile,
   saveAvatar,
   type AvatarChoice,
   type ProfileData,
@@ -214,6 +215,26 @@ function createAvatarCustomizer(session: AppSession, current?: AvatarChoice): HT
   ]);
 }
 
+// Reset needs a second click: it erases counts and badges for good.
+function createSettings(session: AppSession): HTMLElement {
+  const reset = el("button", { type: "button", class: "btn btn--outline" }, ["Reset all progress"]);
+  const state: { armed?: ReturnType<typeof setTimeout> } = {};
+  reset.addEventListener("click", () => {
+    if (state.armed === undefined) {
+      reset.textContent = "Click again to erase everything";
+      state.armed = setTimeout(() => {
+        reset.textContent = "Reset all progress";
+        state.armed = undefined;
+      }, 4000);
+      return;
+    }
+    clearTimeout(state.armed);
+    resetProfile(session.email);
+    showSnackbar("Your progress was reset.", "success");
+  });
+  return el("div", { class: "profile-page__actions" }, [reset]);
+}
+
 export function createProfilePage(): ProfilePage {
   const content = el("div", { class: "profile-page__content" });
   const element = el("main", { class: "profile-page" }, [
@@ -253,6 +274,7 @@ export function createProfilePage(): ProfilePage {
         "profile-history",
         createHistory(data, () => clearHistory(session.email)),
       ),
+      createSection("Settings", "profile-settings", [createSettings(session)]),
     );
   }
 
