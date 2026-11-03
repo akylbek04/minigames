@@ -10,6 +10,7 @@ import { createNotFoundPage } from "../pages/not-found/not-found-page";
 import type { AppPage } from "../pages/app-page";
 import {
   closeOverlay,
+  getLocation,
   navigateTo,
   onRouteChange,
   openOverlay,
@@ -132,6 +133,11 @@ export function createApp(root: HTMLElement): void {
     burgerMenu.setSession(session);
     gameDetailsDialog.setSession(session);
     profilePage.setSession(session);
+    // Logout or expiry on the Profile page: back Home as a guest, not an
+    // empty page. (Opening it as a guest is handled by the route guard.)
+    if (!session && getLocation().route === "profile") {
+      navigateTo("/", { replace: true });
+    }
     if (change === "login" && session) {
       showSnackbar(`Welcome, ${getProfileName(session)}!`, "success");
     }
