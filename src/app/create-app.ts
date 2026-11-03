@@ -5,10 +5,12 @@ import { createFooter } from "../components/footer/footer";
 import { createGameDetailsDialog } from "../components/game-details-dialog/game-details-dialog";
 import { createHomePage } from "../pages/home/home-page";
 import { createLibraryPage } from "../pages/library/library-page";
+import { createProfilePage } from "../pages/profile/profile-page";
 import { createNotFoundPage } from "../pages/not-found/not-found-page";
 import type { AppPage } from "../pages/app-page";
 import {
   closeOverlay,
+  navigateTo,
   onRouteChange,
   openOverlay,
   updateQuery,
@@ -33,6 +35,7 @@ const AUTH_PARAM = "auth";
 const PAGE_TITLES: Record<Route, string> = {
   home: "MiniGames — Take a Short Break & Have Fun",
   library: "Game Library — MiniGames",
+  profile: "Your Profile — MiniGames",
   "not-found": "Page Not Found — MiniGames",
 };
 
@@ -98,9 +101,11 @@ export function createApp(root: HTMLElement): void {
   const burgerMenu = createBurgerMenu({ onOpenAuth: openAuth, onLogout: () => void logout() });
 
   // Pages are built once and swapped, so each keeps its DOM between visits.
+  const profilePage = createProfilePage();
   const pages: Record<Route, AppPage> = {
     home: createHomePage({ onOpenDetails: openGameDetails }),
     library: createLibraryPage({ onOpenDetails: openGameDetails }),
+    profile: profilePage,
     "not-found": createNotFoundPage(),
   };
 
@@ -125,6 +130,7 @@ export function createApp(root: HTMLElement): void {
     header.setSession(session);
     burgerMenu.setSession(session);
     gameDetailsDialog.setSession(session);
+    profilePage.setSession(session);
     if (change === "login" && session) {
       showSnackbar(`Welcome, ${getProfileName(session)}!`, "success");
     }
@@ -153,6 +159,13 @@ export function createApp(root: HTMLElement): void {
       notifyAlreadySignedIn();
       // Re-enters this listener with the cleaned URL, in the same entry.
       updateQuery({ [AUTH_PARAM]: undefined }, { replace: true });
+      return;
+    }
+    // The Profile page is for signed-in users: guests are told why and sent
+    // to Home with Auth open. Expiry on this page lands here too.
+    if (route === "profile" && !getActiveSession()) {
+      showSnackbar("Log in to see your profile.", "warning");
+      navigateTo("/?auth=login", { replace: true });
       return;
     }
     const page = pages[route];
