@@ -26,6 +26,7 @@ import {
   type SessionChange,
 } from "../auth/session";
 import { getProfileName } from "../auth/profile";
+import { onProfileChange } from "../profile/profile-store";
 import { showSnackbar, type SnackbarVariant } from "../components/snackbar/snackbar";
 
 // Dialog state lives in the URL: `?game=<slug>` and `?auth=login|register`.
@@ -138,6 +139,13 @@ export function createApp(root: HTMLElement): void {
     if (message) {
       showSnackbar(...message);
     }
+  });
+
+  // A new avatar shows in the header and menu right away.
+  onProfileChange(() => {
+    const session = getActiveSession();
+    header.setSession(session);
+    burgerMenu.setSession(session);
   });
 
   // The session is checked on startup, on returning to the tab and before
