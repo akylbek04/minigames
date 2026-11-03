@@ -2,12 +2,16 @@ import { el } from "../../utils/dom";
 import { materialIcon } from "../../utils/icon";
 import { formatRelativeTime } from "../../utils/format";
 import { createUserAvatar } from "../../components/user-avatar/user-avatar";
+import { showSnackbar } from "../../components/snackbar/snackbar";
 import { getProfileName } from "../../auth/profile";
 import { ACHIEVEMENTS, type ActivityType } from "../../profile/achievements";
+import { AVATAR_COLOR_COUNT, AVATAR_ICONS } from "../../profile/avatar";
 import {
   clearHistory,
   loadProfile,
   onProfileChange,
+  saveAvatar,
+  type AvatarChoice,
   type ProfileData,
 } from "../../profile/profile-store";
 import type { AppSession } from "../../auth/session";
@@ -119,6 +123,97 @@ function createHistory(data: ProfileData, onClear: () => void): HTMLElement[] {
   ];
 }
 
+// Pick an icon and a color, preview it, then save. "Use default" goes back
+// to the photo or initials.
+function createAvatarCustomizer(session: AppSession, current?: AvatarChoice): HTMLElement {
+  const draft: AvatarChoice = current ?? { icon: AVATAR_ICONS[0], color: 0 };
+  const preview = el("div", { class: "profile-page__avatar-preview" });
+  const iconGroup = el("div", {
+    class: "profile-page__choices",
+    role: "group",
+    "aria-label": "Avatar icon",
+  });
+  const colorGroup = el("div", {
+    class: "profile-page__choices",
+    role: "group",
+    "aria-label": "Avatar color",
+  });
+
+  function renderDraft(): void {
+    const draftAvatar = el(
+      "span",
+      {
+        class: `user-avatar user-avatar--color-${draft.color + 1} profile-page__avatar-large`,
+        "aria-hidden": "true",
+      },
+      [materialIcon(draft.icon)],
+    );
+    preview.replaceChildren(draftAvatar);
+    for (const button of iconGroup.querySelectorAll("button")) {
+      button.setAttribute("aria-pressed", String(button.dataset.icon === draft.icon));
+    }
+    for (const button of colorGroup.querySelectorAll("button")) {
+      button.setAttribute("aria-pressed", String(Number(button.dataset.color) === draft.color));
+    }
+  }
+
+  for (const icon of AVATAR_ICONS) {
+    const button = el(
+      "button",
+      {
+        type: "button",
+        class: "profile-page__choice",
+        "data-icon": icon,
+        "aria-label": icon.replaceAll("_", " "),
+      },
+      [materialIcon(icon)],
+    );
+    button.addEventListener("click", () => {
+      draft.icon = icon;
+      renderDraft();
+    });
+    iconGroup.append(button);
+  }
+  for (let color = 0; color < AVATAR_COLOR_COUNT; color++) {
+    const button = el(
+      "button",
+      {
+        type: "button",
+        class: `profile-page__choice profile-page__swatch user-avatar--color-${color + 1}`,
+        "data-color": String(color),
+        "aria-label": `Color ${color + 1}`,
+      },
+      [],
+    );
+    button.addEventListener("click", () => {
+      draft.color = color;
+      renderDraft();
+    });
+    colorGroup.append(button);
+  }
+
+  const save = el("button", { type: "button", class: "btn btn--filled" }, ["Save avatar"]);
+  save.addEventListener("click", () => {
+    saveAvatar(session.email, { ...draft });
+    showSnackbar("Your avatar was saved.", "success");
+  });
+  const reset = el("button", { type: "button", class: "btn btn--outline" }, ["Use default"]);
+  reset.addEventListener("click", () => {
+    saveAvatar(session.email, undefined);
+    showSnackbar("Your avatar was reset.", "success");
+  });
+
+  renderDraft();
+  return el("div", { class: "profile-page__customizer" }, [
+    preview,
+    el("div", { class: "profile-page__customizer-controls" }, [
+      iconGroup,
+      colorGroup,
+      el("div", { class: "profile-page__actions" }, [save, reset]),
+    ]),
+  ]);
+}
+
 export function createProfilePage(): ProfilePage {
   const content = el("div", { class: "profile-page__content" });
   const element = el("main", { class: "profile-page" }, [
@@ -150,6 +245,9 @@ export function createProfilePage(): ProfilePage {
       ]),
       createSection("Statistics", "profile-stats", [createStats(data)]),
       createSection("Achievements", "profile-badges", [createBadges(data)]),
+      createSection("Customize your avatar", "profile-avatar", [
+        createAvatarCustomizer(session, data.avatar),
+      ]),
       createSection(
         "Recent activity",
         "profile-history",

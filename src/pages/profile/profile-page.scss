@@ -172,3 +172,67 @@
 .profile-page__empty {
   color: var(--color-on-bg);
 }
+
+.profile-page__customizer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+
+  @include bp.tablet-up {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.profile-page__customizer-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+}
+
+.profile-page__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-1);
+}
+
+.profile-page__choice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-6);
+  height: var(--size-6);
+  color: var(--color-on-primary);
+  background-color: var(--color-surface);
+  border: var(--border-regular) solid var(--color-outline-variant);
+  border-radius: var(--corner-full);
+  cursor: pointer;
+
+  &[aria-pressed="true"] {
+    border-color: var(--color-on-primary);
+    outline: var(--focus-ring-width) solid var(--color-tertiary);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  &:hover {
+    border-color: var(--color-on-primary);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-tertiary);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+.profile-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2);
+}
+
+// Each swatch shows its preset color; the extra class beats .profile-page__choice.
+@for $i from 1 through 5 {
+  .profile-page__swatch.user-avatar--color-#{$i} {
+    background-color: var(--color-avatar-random-#{$i});
+  }
+}
