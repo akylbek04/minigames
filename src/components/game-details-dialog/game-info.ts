@@ -5,6 +5,7 @@ import { formatCompactNumber } from "../../utils/format";
 import { toggleFavorite } from "../../api/minigames-api";
 import { notifyMutationFailed } from "../feedback/request-feedback";
 import { showSnackbar } from "../snackbar/snackbar";
+import { trackActivity } from "../../profile/track";
 import type { GameDetails } from "../../types/game-details";
 import type { AppSession } from "../../auth/session";
 
@@ -46,6 +47,9 @@ function createFavoriteButton(
         result.isFavorited ? "Added to your favorites." : "Removed from your favorites.",
         "success",
       );
+      if (result.isFavorited) {
+        trackActivity(session, "favorite", game.slug);
+      }
     } catch (error) {
       notifyMutationFailed(error, {
         failed: "Couldn't update your favorites. Please try again.",
