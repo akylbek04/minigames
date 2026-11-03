@@ -3,6 +3,7 @@ import { materialIcon } from "../../utils/icon";
 import { assetUrl } from "../../utils/asset-url";
 import { closeDialogAnimated, openDialogAnimated } from "../../utils/animated-dialog";
 import { fetchGameDetails } from "../../api/minigames-api";
+import { trackActivity } from "../../profile/track";
 import { createAsyncContent } from "../feedback/async-content";
 import { createEmptyState } from "../feedback/empty-state";
 import { createSkeleton, createSkeletonGroup } from "../feedback/skeleton";
@@ -114,9 +115,17 @@ export function createGameDetailsDialog({
   });
 
   // Personalized for the signed-in user; guests get the public state.
-  function loadDetails(slug: string): void {
+  // `isOpening` is true only for a fresh open, so signing in with the dialog
+  // already open doesn't count the same visit twice.
+  function loadDetails(slug: string, isOpening = false): void {
     const email = state.session?.email;
-    void content.load((signal) => fetchGameDetails(slug, email, signal));
+    void content.load(async (signal) => {
+      const details = await fetchGameDetails(slug, email, signal);
+      if (isOpening && state.session) {
+        trackActivity(state.session, "view", slug);
+      }
+      return details;
+    });
   }
 
   // Every open starts fresh: details and the latest comments are requested
@@ -126,7 +135,7 @@ export function createGameDetailsDialog({
     state.comments = createCommentsSection({ slug, session: state.session, requireSession });
     state.comments.load();
     dialog.replaceChildren(closeButton, content.element);
-    loadDetails(slug);
+    loadDetails(slug, true);
     dialog.scrollTop = 0;
   }
 
