@@ -14,7 +14,7 @@ const router = createBrowserRouter(routes, {
 // A profile changed in another tab refreshes this one.
 watchOtherTabs();
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.querySelector("#root")!).render(
   <StrictMode>
     <SessionProvider>
       <RouterProvider router={router} />
