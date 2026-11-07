@@ -10,6 +10,7 @@ import { AVATAR_COLOR_COUNT, isAvatarIcon } from "./avatar";
 // no profile endpoints, and the app session never stores user data.
 const STORAGE_PREFIX = "minigames:akylbek04-minigames:profile:";
 export const HISTORY_LIMIT = 50;
+const ONCE_LIMIT = 1000;
 export const ACTIVITY_TYPES: readonly ActivityType[] = ["view", "favorite", "comment", "like"];
 
 export interface HistoryEntry {
@@ -28,6 +29,9 @@ export interface ProfileData extends ProfileStats {
   history: HistoryEntry[];
   // Achievement id -> unlock time.
   unlocked: Record<string, number>;
+  // "favorite:<slug>" / "like:<commentId>" already counted, so toggling an
+  // item off and on again cannot farm badges.
+  once: string[];
   avatar?: AvatarChoice;
 }
 
@@ -46,6 +50,7 @@ function emptyProfile(): ProfileData {
     games: [],
     history: [],
     unlocked: {},
+    once: [],
   };
 }
 
@@ -90,6 +95,11 @@ export function parseProfile(raw: string | undefined): ProfileData {
       )
       .slice(0, HISTORY_LIMIT);
   }
+  if (Array.isArray(value.once)) {
+    profile.once = [...new Set(value.once.filter((k): k is string => typeof k === "string"))].slice(
+      -ONCE_LIMIT,
+    );
+  }
   if (isRecord(value.unlocked)) {
     for (const [id, at] of Object.entries(value.unlocked)) {
       if (typeof at === "number" && ACHIEVEMENTS.some((a) => a.id === id)) {
@@ -130,13 +140,22 @@ function saveProfile(email: string, data: ProfileData): void {
 }
 
 // Counts one successful action and returns the achievements it unlocked.
+// Favorites and likes count once per item (itemId: the slug or comment id).
 export function recordActivity(
   email: string,
   type: ActivityType,
   slug: string,
   now = Date.now(),
+  itemId = slug,
 ): Achievement[] {
   const data = loadProfile(email);
+  if (type === "favorite" || type === "like") {
+    const key = `${type}:${itemId}`;
+    if (data.once.includes(key)) {
+      return [];
+    }
+    data.once = [...data.once, key].slice(-ONCE_LIMIT);
+  }
   data.counts[type] += 1;
   if (type === "view" && !data.games.includes(slug)) {
     data.games.push(slug);
@@ -172,4 +191,18 @@ export function clearHistory(email: string): void {
 
 export function resetProfile(email: string): void {
   saveProfile(email, emptyProfile());
+}
+
+// Another tab changed a profile: refresh this one too. Called once at startup.
+export function watchOtherTabs(): void {
+  addEventListener("storage", ({ key }) => {
+    if (!key?.startsWith(STORAGE_PREFIX)) {
+      return;
+    }
+    const email = key.slice(STORAGE_PREFIX.length);
+    const data = loadProfile(email);
+    for (const listener of listeners) {
+      listener(email, data);
+    }
+  });
 }
