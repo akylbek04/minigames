@@ -30,7 +30,7 @@ function isRouteHandle(value: unknown): value is RouteHandle {
 export function AppLayout() {
   const session = useSession();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, key: locationKey } = useLocation();
   const handles = useMatches()
     .map((match) => match.handle)
     .filter(isRouteHandle);
@@ -40,6 +40,13 @@ export function AppLayout() {
   const auth = useOverlay(AUTH_PARAM);
   const game = useOverlay(GAME_PARAM);
   const previousPath = useRef(pathname);
+
+  // Expiry is resolved on every navigation too, not only when a timer fires
+  // or the tab regains focus; the change itself reaches the UI through the
+  // session listeners.
+  useEffect(() => {
+    getActiveSession();
+  }, [locationKey]);
 
   useEffect(() => {
     if (title) {
