@@ -4,8 +4,13 @@ import type { ActivityType } from "./achievements";
 import { recordActivity } from "./profile-store";
 
 // Called after a successful action only; announces any new badge.
-export function trackActivity(session: AppSession, type: ActivityType, slug: string): void {
-  for (const { title } of recordActivity(session.email, type, slug)) {
+export function trackActivity(
+  session: AppSession,
+  type: ActivityType,
+  slug: string,
+  itemId = slug,
+): void {
+  for (const { title } of recordActivity(session.email, type, slug, Date.now(), itemId)) {
     showSnackbar(`Achievement unlocked: ${title}!`, "success");
   }
 }

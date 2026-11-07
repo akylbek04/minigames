@@ -68,7 +68,7 @@ function createLikeButton(
       const result = await toggleCommentLike(comment.commentId, session.email);
       render(result.isLikedByCurrentUser, result.likesCount);
       if (result.isLikedByCurrentUser) {
-        trackActivity(session, "like", slug);
+        trackActivity(session, "like", slug, String(comment.commentId));
       }
     } catch (error) {
       notifyMutationFailed(error, {

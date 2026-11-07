@@ -3,13 +3,16 @@ import {
   HISTORY_LIMIT,
   clearHistory,
   loadProfile,
+  onProfileChange,
   parseProfile,
   recordActivity,
   resetProfile,
   saveAvatar,
+  watchOtherTabs,
 } from "./profile-store";
 
 const EMAIL = "Ana@x.io";
+const PREFIX = "minigames:akylbek04-minigames:profile:";
 
 beforeEach(() => localStorage.clear());
 
@@ -33,6 +36,29 @@ describe("recordActivity", () => {
     recordActivity(EMAIL, "comment", "snake");
     const ids = recordActivity(EMAIL, "like", "snake").map((a) => a.id);
     expect(ids).toContain("all-rounder");
+  });
+
+  it("counts each favorited game and liked comment only once", () => {
+    recordActivity(EMAIL, "favorite", "snake");
+    expect(recordActivity(EMAIL, "favorite", "snake")).toEqual([]);
+    recordActivity(EMAIL, "like", "snake", 1, "c1");
+    recordActivity(EMAIL, "like", "snake", 2, "c1");
+    recordActivity(EMAIL, "like", "snake", 3, "c2");
+
+    const { counts, history } = loadProfile(EMAIL);
+    expect(counts).toMatchObject({ favorite: 1, like: 2 });
+    expect(history).toHaveLength(3);
+  });
+
+  it("refreshes listeners when another tab changes a profile", () => {
+    watchOtherTabs();
+    const seen: string[] = [];
+    onProfileChange((email) => {
+      seen.push(email);
+    });
+    dispatchEvent(new StorageEvent("storage", { key: `${PREFIX}ana@x.io` }));
+    dispatchEvent(new StorageEvent("storage", { key: "other" }));
+    expect(seen).toEqual(["ana@x.io"]);
   });
 
   it("keeps the newest history first and caps it", () => {

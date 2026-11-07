@@ -92,7 +92,3 @@ export const ACHIEVEMENTS: Achievement[] = [
       stats.counts.favorite > 0 && stats.counts.comment > 0 && stats.counts.like > 0,
   },
 ];
-
-export function getUnlockedIds(stats: ProfileStats): string[] {
-  return ACHIEVEMENTS.filter((achievement) => achievement.isUnlocked(stats)).map(({ id }) => id);
-}

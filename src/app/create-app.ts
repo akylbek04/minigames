@@ -27,7 +27,7 @@ import {
   type SessionChange,
 } from "../auth/session";
 import { getProfileName } from "../auth/profile";
-import { onProfileChange } from "../profile/profile-store";
+import { onProfileChange, watchOtherTabs } from "../profile/profile-store";
 import { showSnackbar, type SnackbarVariant } from "../components/snackbar/snackbar";
 
 // Dialog state lives in the URL: `?game=<slug>` and `?auth=login|register`.
@@ -148,6 +148,7 @@ export function createApp(root: HTMLElement): void {
   });
 
   // A new avatar shows in the header and menu right away.
+  watchOtherTabs();
   onProfileChange(() => {
     const session = getActiveSession();
     header.setSession(session);
