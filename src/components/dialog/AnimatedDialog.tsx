@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, type MouseEvent, type ReactNode } from "react";
 import { closeDialogAnimated, openDialogAnimated } from "../../utils/animated-dialog";
 
 interface AnimatedDialogProps {
@@ -7,7 +7,12 @@ interface AnimatedDialogProps {
   // (usually a URL change), then flips `isOpen`.
   onRequestClose: () => void;
   className: string;
+  id?: string;
   labelledBy?: string;
+  // Accessible name when there is no visible heading to point at.
+  label?: string;
+  // Every click inside the dialog, for owners that react to what was hit.
+  onClick?: (event: MouseEvent<HTMLDialogElement>) => void;
   children: ReactNode;
 }
 
@@ -17,7 +22,10 @@ export function AnimatedDialog({
   isOpen,
   onRequestClose,
   className,
+  id,
   labelledBy,
+  label,
+  onClick,
   children,
 }: AnimatedDialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -37,8 +45,10 @@ export function AnimatedDialog({
   return (
     <dialog
       ref={ref}
+      id={id}
       className={className}
       aria-labelledby={labelledBy}
+      aria-label={label}
       onCancel={(event) => {
         event.preventDefault();
         onRequestClose();
@@ -47,6 +57,7 @@ export function AnimatedDialog({
         if (event.target === event.currentTarget) {
           onRequestClose();
         }
+        onClick?.(event);
       }}
     >
       {children}
