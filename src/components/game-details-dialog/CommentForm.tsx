@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 import { postComment } from "../../api/minigames-api";
 import { getCommentAuthorName, getProfileName } from "../../auth/profile";
-import type { AppSession } from "../../auth/session";
 import { showSnackbar } from "../../hooks/snackbar-store";
+import { useRequireSession } from "../../hooks/use-require-session";
+import { useSession } from "../../hooks/use-session";
 import { trackActivity } from "../../profile/track";
 import { BusyButton } from "../busy/BusyButton";
 import { notifyMutationFailed } from "../feedback/request-notices";
@@ -14,8 +15,6 @@ const isValidText = (text: string): boolean => text.length > 0 && text.length <=
 
 interface CommentFormProps {
   slug: string;
-  session: AppSession | undefined;
-  requireSession: (reason: string) => AppSession | undefined;
   // A comment was created; the list should show the latest ones again.
   onPosted: () => void;
 }
@@ -23,17 +22,16 @@ interface CommentFormProps {
 // The textarea grows with its text up to a max height, then scrolls (CSS
 // field-sizing). Enter sends, Shift+Enter starts a new line. Open for a
 // signed-in user, locked for guests; the draft is kept when that changes.
-export function CommentForm({ slug, session, requireSession, onPosted }: CommentFormProps) {
+export function CommentForm({ slug, onPosted }: CommentFormProps) {
+  const session = useSession();
+  const requireSession = useRequireSession();
   const [text, setText] = useState("");
-  const [isSending, setSending] = useState(false);
   const isSignedIn = session !== undefined;
-  const isLocked = !isSignedIn || isSending;
 
-  async function send(): Promise<void> {
-    if (isSending) {
-      return;
-    }
-    const trimmed = text.trim();
+  // A form action: React tracks it as pending, so a second send is
+  // impossible while one runs and no flag has to be reset in a `finally`.
+  const [, send, isSending] = useActionState<void, FormData>(async (_, form) => {
+    const trimmed = String(form.get("comment")).trim();
     if (!isValidText(trimmed)) {
       showSnackbar(
         trimmed
@@ -47,8 +45,6 @@ export function CommentForm({ slug, session, requireSession, onPosted }: Comment
     if (!current) {
       return;
     }
-
-    setSending(true);
     try {
       await postComment(slug, {
         userEmail: current.email,
@@ -66,19 +62,12 @@ export function CommentForm({ slug, session, requireSession, onPosted }: Comment
         unknown:
           "We couldn't confirm whether your comment was posted. Check the comments before sending it again.",
       });
-    } finally {
-      setSending(false);
     }
-  }
+  }, undefined);
+  const isLocked = !isSignedIn || isSending;
 
   return (
-    <form
-      className="game-details__comment-form"
-      onSubmit={(event) => {
-        event.preventDefault();
-        void send();
-      }}
-    >
+    <form className="game-details__comment-form" action={send}>
       <span className="game-details__avatar game-details__avatar--self" aria-hidden="true">
         {session ? [...getProfileName(session)][0].toUpperCase() : <MaterialIcon name="person" />}
       </span>
@@ -96,7 +85,8 @@ export function CommentForm({ slug, session, requireSession, onPosted }: Comment
             return;
           }
           event.preventDefault();
-          void send();
+          const form = new FormData(event.currentTarget.form!);
+          startTransition(() => send(form));
         }}
       />
       <BusyButton

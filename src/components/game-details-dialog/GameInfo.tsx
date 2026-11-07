@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { toggleFavorite } from "../../api/minigames-api";
-import type { AppSession } from "../../auth/session";
 import { showSnackbar } from "../../hooks/snackbar-store";
+import { useRequireSession } from "../../hooks/use-require-session";
 import { trackActivity } from "../../profile/track";
 import type { GameDetails } from "../../types/game-details";
 import { formatCompactNumber } from "../../utils/format";
 import { BusyButton } from "../busy/BusyButton";
 import { notifyMutationFailed } from "../feedback/request-notices";
 import { MaterialIcon } from "../icons/MaterialIcon";
-
-type RequireSession = (reason: string) => AppSession | undefined;
 
 interface Favorite {
   game: GameDetails;
@@ -19,13 +17,8 @@ interface Favorite {
 
 // Shows only what the server said: the personalized details on open, then
 // each toggle response. Locked while a toggle is in flight, never resent.
-export function GameInfo({
-  game,
-  requireSession,
-}: {
-  game: GameDetails;
-  requireSession: RequireSession;
-}) {
+export function GameInfo({ game }: { game: GameDetails }) {
+  const requireSession = useRequireSession();
   const [answer, setAnswer] = useState<Favorite>();
   const [isPending, setPending] = useState(false);
   // A toggle answer belongs to the details it was made for; reloaded

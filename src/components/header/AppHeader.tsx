@@ -1,5 +1,5 @@
 import { getProfileName } from "../../auth/profile";
-import type { AppSession } from "../../auth/session";
+import { useSession } from "../../hooks/use-session";
 import type { AuthMode } from "../../types/auth";
 import { assetUrl } from "../../utils/asset-url";
 import { BurgerButton } from "../burger-menu/MobileMenu";
@@ -8,7 +8,6 @@ import { UserAvatar } from "../user-avatar/UserAvatar";
 import "./header.scss";
 
 interface AppHeaderProps {
-  session: AppSession | undefined;
   isMenuOpen: boolean;
   onOpenMenu: () => void;
   onOpenAuth: (mode: AuthMode) => void;
@@ -17,13 +16,8 @@ interface AppHeaderProps {
 
 // Guest controls without a session, the user's profile with one. The name is
 // text, never markup, and leads to the Profile page.
-export function AppHeader({
-  session,
-  isMenuOpen,
-  onOpenMenu,
-  onOpenAuth,
-  onLogout,
-}: AppHeaderProps) {
+export function AppHeader({ isMenuOpen, onOpenMenu, onOpenAuth, onLogout }: AppHeaderProps) {
+  const session = useSession();
   const name = session ? getProfileName(session) : "";
   return (
     <header className="header">

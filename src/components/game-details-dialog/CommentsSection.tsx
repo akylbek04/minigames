@@ -4,8 +4,9 @@ import {
   toggleCommentLike,
   type CommentsResponse,
 } from "../../api/minigames-api";
-import type { AppSession } from "../../auth/session";
 import { useAsyncResult } from "../../hooks/use-async-result";
+import { useRequireSession } from "../../hooks/use-require-session";
+import { useSession } from "../../hooks/use-session";
 import { trackActivity } from "../../profile/track";
 import type { GameComment } from "../../types/game-details";
 import { formatRelativeTime } from "../../utils/format";
@@ -16,8 +17,6 @@ import { notifyMutationFailed } from "../feedback/request-notices";
 import { Skeleton, SkeletonGroup } from "../feedback/Skeletons";
 import { MaterialIcon } from "../icons/MaterialIcon";
 import { CommentForm } from "./CommentForm";
-
-type RequireSession = (reason: string) => AppSession | undefined;
 
 // The avatar-random-1…5 color tokens.
 const AVATAR_COLOR_COUNT = 5;
@@ -37,15 +36,8 @@ interface LikeAnswer {
 // The pressed state and count only ever come from the server: the
 // personalized list on load, then each toggle response. Locked while a
 // toggle is in flight and never resent.
-function LikeButton({
-  comment,
-  slug,
-  requireSession,
-}: {
-  comment: GameComment;
-  slug: string;
-  requireSession: RequireSession;
-}) {
+function LikeButton({ comment, slug }: { comment: GameComment; slug: string }) {
+  const requireSession = useRequireSession();
   const [answer, setAnswer] = useState<LikeAnswer>();
   const [isPending, setPending] = useState(false);
   const { isLiked, likesCount } =
@@ -98,12 +90,10 @@ function LikeButton({
 function CommentItem({
   comment,
   slug,
-  requireSession,
   avatarColor,
 }: {
   comment: GameComment;
   slug: string;
-  requireSession: RequireSession;
   avatarColor: number;
 }) {
   return (
@@ -121,7 +111,7 @@ function CommentItem({
         </time>
       </header>
       <p className="game-details__comment-text">{comment.text}</p>
-      <LikeButton comment={comment} slug={slug} requireSession={requireSession} />
+      <LikeButton comment={comment} slug={slug} />
     </article>
   );
 }
@@ -154,16 +144,10 @@ function CommentsSkeleton() {
   );
 }
 
-interface CommentsSectionProps {
-  slug: string;
-  session: AppSession | undefined;
-  requireSession: RequireSession;
-}
-
 // The latest comments plus the game's total comment count, loaded on their
 // own so a comments failure never hides the rest of the game details.
-export function CommentsSection({ slug, session, requireSession }: CommentsSectionProps) {
-  const email = session?.email;
+export function CommentsSection({ slug }: { slug: string }) {
+  const email = useSession()?.email;
   const [reloads, setReloads] = useState(0);
   // A random token per commenter, remembered for as long as the comments
   // view lives, so reloads keep each person's color. Filled when comments
@@ -197,12 +181,7 @@ export function CommentsSection({ slug, session, requireSession }: CommentsSecti
       <h3 id="game-details-comments-title" className="game-details__section-title">
         {title}
       </h3>
-      <CommentForm
-        slug={slug}
-        session={session}
-        requireSession={requireSession}
-        onPosted={() => setReloads((count) => count + 1)}
-      />
+      <CommentForm slug={slug} onPosted={() => setReloads((count) => count + 1)} />
       <AsyncView
         result={result}
         renderLoading={() => <CommentsSkeleton />}
@@ -213,7 +192,6 @@ export function CommentsSection({ slug, session, requireSession }: CommentsSecti
                 <CommentItem
                   comment={comment}
                   slug={slug}
-                  requireSession={requireSession}
                   avatarColor={avatarColors.get(comment.authorName) ?? 1}
                 />
               </li>
