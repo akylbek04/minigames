@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchGameDetails } from "../../api/minigames-api";
 import type { AppSession } from "../../auth/session";
-import { useAsyncResult } from "../../hooks/use-async-result";
+import { useAsyncResult, type AsyncResult } from "../../hooks/use-async-result";
 import { useRequireSession } from "../../hooks/use-require-session";
 import { trackActivity } from "../../profile/track";
 import type { GameDetails } from "../../types/game-details";
@@ -75,6 +75,15 @@ function GameDetailsContent({ slug, session, onRequestClose }: ContentProps) {
     canShowNotFound: true,
   });
 
+  // A new session reloads the details, but what is already on screen stays
+  // (with the comment draft) until the personalized answer arrives.
+  const [lastGame, setLastGame] = useState<GameDetails>();
+  if (result.status === "ready" && result.data !== lastGame) {
+    setLastGame(result.data);
+  }
+  const shown: AsyncResult<GameDetails> =
+    lastGame && result.status === "loading" ? { status: "ready", data: lastGame } : result;
+
   return (
     <div ref={root}>
       {/* Outside the loaded content, so it can close every state. */}
@@ -87,7 +96,7 @@ function GameDetailsContent({ slug, session, onRequestClose }: ContentProps) {
         <MaterialIcon name="close" />
       </button>
       <AsyncView
-        result={result}
+        result={shown}
         className="game-details__content"
         renderLoading={() => <DetailsSkeleton />}
         renderData={(game) => (
