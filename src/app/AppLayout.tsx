@@ -3,6 +3,7 @@ import { Outlet, useLocation, useMatches, useNavigate } from "react-router";
 import { logout } from "../auth/logout";
 import { getActiveSession, startSession } from "../auth/session";
 import { AuthDialog } from "../components/auth-dialog/AuthDialog";
+import { GameDetailsDialog } from "../components/game-details-dialog/GameDetailsDialog";
 import { MobileMenu } from "../components/burger-menu/MobileMenu";
 import { AppFooter } from "../components/footer/AppFooter";
 import { AppHeader } from "../components/header/AppHeader";
@@ -13,6 +14,7 @@ import { useSession } from "../hooks/use-session";
 import { parseAuthMode, type AuthMode } from "../types/auth";
 
 export const AUTH_PARAM = "auth";
+export const GAME_PARAM = "game";
 
 export interface RouteHandle {
   title: string;
@@ -36,6 +38,7 @@ export function AppLayout() {
   const needsSession = handles.some((handle) => handle.requiresSession);
   const [isMenuOpen, setMenuOpen] = useState(false);
   const auth = useOverlay(AUTH_PARAM);
+  const game = useOverlay(GAME_PARAM);
   const previousPath = useRef(pathname);
 
   useEffect(() => {
@@ -87,6 +90,10 @@ export function AppLayout() {
     auth.open(mode);
   }
 
+  // Only one dialog at a time: Auth covers Game Details, which keeps its
+  // state and comes back when Auth closes.
+  const authMode = session ? undefined : parseAuthMode(auth.value);
+
   return (
     <div id="app">
       <AppHeader
@@ -103,8 +110,14 @@ export function AppLayout() {
         onOpenAuth={openAuth}
         onLogout={() => void logout()}
       />
+      <GameDetailsDialog
+        slug={game.value || undefined}
+        isCovered={authMode !== undefined}
+        session={session}
+        onRequestClose={game.close}
+      />
       <AuthDialog
-        mode={session ? undefined : parseAuthMode(auth.value)}
+        mode={authMode}
         onModeChange={auth.change}
         onRequestClose={auth.close}
         onAuthenticated={(profile) => {
