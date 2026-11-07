@@ -44,6 +44,24 @@ To check expiry in DevTools: Application → Local Storage → edit
 `authenticatedAt` to a value more than 5 minutes in the past, then reload or
 try a protected action (favorite, comment, like).
 
+## Profile & Achievements
+
+Signed-in users get a Profile page (`/profile`) with statistics, 10 unlockable
+badges, recent activity, an avatar customizer (8 icons × 5 colors) and
+settings (clear history, reset progress). Guests are sent to Log In.
+
+Activity is recorded after each successful action (opening a game, adding a
+favorite, posting a comment, liking a comment) and stored on this device only,
+one record per email, under the key:
+
+```
+minigames:akylbek04-minigames:profile:<email>
+```
+
+It holds counters, the distinct games opened, the last 50 history entries, badge
+unlock times and the chosen avatar. Logging out keeps it; "Reset all progress"
+on the Profile page erases it. Invalid or edited values are ignored field by field.
+
 ## Project Structure
 
 See [`src/`](./src) for the folder layout: `app`, `pages`, `components`, `styles`, `types`, `assets`.

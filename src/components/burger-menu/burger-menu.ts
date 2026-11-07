@@ -90,10 +90,14 @@ export function createBurgerMenu({ onOpenAuth, onLogout }: BurgerMenuCallbacks):
     actions.replaceChildren(
       ...(session
         ? [
-            el("div", { class: "mobile-menu__profile" }, [
-              createUserAvatar(session),
-              el("span", { class: "mobile-menu__username" }, [getProfileName(session)]),
-            ]),
+            createPageLink(
+              { page: "profile", markActive: true },
+              { class: "mobile-menu__profile" },
+              [
+                createUserAvatar(session),
+                el("span", { class: "mobile-menu__username" }, [getProfileName(session)]),
+              ],
+            ),
             logoutButton,
           ]
         : [loginButton, signUpButton]),
