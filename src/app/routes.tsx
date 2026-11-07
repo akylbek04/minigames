@@ -2,6 +2,7 @@ import { Navigate, redirect, type RouteObject } from "react-router";
 import { getActiveSession } from "../auth/session";
 import { showSnackbar } from "../hooks/snackbar-store";
 import { HomePage } from "../pages/home/HomePage";
+import { LibraryPage } from "../pages/library/LibraryPage";
 import { AppLayout, type RouteHandle } from "./AppLayout";
 
 const TITLES = {
@@ -36,7 +37,7 @@ export const routes: RouteObject[] = [
       { index: true, element: <HomePage />, handle: handle(TITLES.home) },
       { path: "home", element: <Navigate to="/" replace /> },
       { path: "index.html", element: <Navigate to="/" replace /> },
-      { path: "library", handle: handle(TITLES.library) },
+      { path: "library", element: <LibraryPage />, handle: handle(TITLES.library) },
       {
         path: "profile",
         loader: requireProfileAccess,
