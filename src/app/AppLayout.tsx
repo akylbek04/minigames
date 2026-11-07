@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { Outlet, useLocation, useMatches, useNavigate } from "react-router";
 import { logout } from "../auth/logout";
-import { getActiveSession } from "../auth/session";
+import { getActiveSession, startSession } from "../auth/session";
+import { AuthDialog } from "../components/auth-dialog/AuthDialog";
 import { MobileMenu } from "../components/burger-menu/MobileMenu";
 import { AppFooter } from "../components/footer/AppFooter";
 import { AppHeader } from "../components/header/AppHeader";
@@ -9,7 +10,7 @@ import { SnackbarRegion } from "../components/snackbar/SnackbarRegion";
 import { showSnackbar } from "../hooks/snackbar-store";
 import { useOverlay } from "../hooks/use-overlay";
 import { useSession } from "../hooks/use-session";
-import type { AuthMode } from "../types/auth";
+import { parseAuthMode, type AuthMode } from "../types/auth";
 
 export const AUTH_PARAM = "auth";
 
@@ -61,6 +62,22 @@ export function AppLayout() {
     }
   }, [session, needsSession, navigate]);
 
+  // A signed-in user never sees Auth: a URL that asks for it (typed, or
+  // reached with Back/Forward) is told why and cleaned in place. Expiry is
+  // resolved first, so an expired user counts as a guest here.
+  const dropAuth = useEffectEvent(() => {
+    if (!getActiveSession()) {
+      return;
+    }
+    showSnackbar("You're already signed in.", "info");
+    auth.drop();
+  });
+  useEffect(() => {
+    if (auth.value !== undefined) {
+      dropAuth();
+    }
+  }, [auth.value]);
+
   // Every Auth entry point is guarded by the session.
   function openAuth(mode: AuthMode): void {
     if (getActiveSession()) {
@@ -85,6 +102,15 @@ export function AppLayout() {
         onClose={() => setMenuOpen(false)}
         onOpenAuth={openAuth}
         onLogout={() => void logout()}
+      />
+      <AuthDialog
+        mode={session ? undefined : parseAuthMode(auth.value)}
+        onModeChange={auth.change}
+        onRequestClose={auth.close}
+        onAuthenticated={(profile) => {
+          startSession(profile);
+          auth.close();
+        }}
       />
       <Outlet />
       <AppFooter />
