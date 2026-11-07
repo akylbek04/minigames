@@ -1,4 +1,4 @@
-import { showSnackbar } from "../components/snackbar/snackbar";
+import { showSnackbar } from "../hooks/snackbar-store";
 import type { AppSession } from "../auth/session";
 import type { ActivityType } from "./achievements";
 import { recordActivity } from "./profile-store";
