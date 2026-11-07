@@ -41,6 +41,21 @@ describe("app session", () => {
     expect(changes).toHaveBeenCalledWith(expect.objectContaining(PROFILE), "login");
   });
 
+  it("hands a change nobody was listening to over to the first listener", async () => {
+    vi.resetModules();
+    const fresh = await import("./session");
+    store({ ...PROFILE, authenticatedAt: NOW - 6 * MINUTE });
+    expect(fresh.getActiveSession()).toBeUndefined();
+
+    const late = vi.fn<SessionListener>();
+    fresh.onSessionChange(late);
+    expect(late.mock.calls).toEqual([[undefined, "expired"]]);
+
+    const later = vi.fn<SessionListener>();
+    fresh.onSessionChange(later);
+    expect(later).not.toHaveBeenCalled();
+  });
+
   it("omits avatarUrl when the profile has none", () => {
     session.startSession(PROFILE);
     expect(JSON.parse(localStorage.getItem(KEY) ?? "")).not.toHaveProperty("avatarUrl");
