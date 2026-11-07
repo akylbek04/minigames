@@ -1,5 +1,11 @@
 import { cleanup } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach } from "vitest";
+
+// user-event patches input value setters the first time it is used. Doing it
+// before any React input renders keeps React's own value tracking intact in
+// every later test; otherwise typing only works in the first test of a file.
+userEvent.setup();
 
 // happy-dom has no Popover API and no :modal / :popover-open matching, which
 // the snackbar and sort menu rely on. These stand-ins keep the same contract:

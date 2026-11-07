@@ -11,6 +11,9 @@ interface AnimatedDialogProps {
   labelledBy?: string;
   // Accessible name when there is no visible heading to point at.
   label?: string;
+  // False locks the dialog open (also against Esc, natively) while a
+  // request is pending.
+  isDismissible?: boolean;
   // Every click inside the dialog, for owners that react to what was hit.
   onClick?: (event: MouseEvent<HTMLDialogElement>) => void;
   children: ReactNode;
@@ -25,6 +28,7 @@ export function AnimatedDialog({
   id,
   labelledBy,
   label,
+  isDismissible = true,
   onClick,
   children,
 }: AnimatedDialogProps) {
@@ -49,6 +53,7 @@ export function AnimatedDialog({
       className={className}
       aria-labelledby={labelledBy}
       aria-label={label}
+      {...(!isDismissible && { closedby: "none" })}
       onCancel={(event) => {
         event.preventDefault();
         onRequestClose();
