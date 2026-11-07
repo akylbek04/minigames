@@ -54,8 +54,12 @@ export function isSessionExpired(session: AppSession, now = Date.now()): boolean
   return now - session.authenticatedAt >= SESSION_LIFETIME;
 }
 
-export function onSessionChange(listener: SessionListener): void {
+// Returns a function that removes the listener again.
+export function onSessionChange(listener: SessionListener): () => void {
   listeners.push(listener);
+  return () => {
+    listeners.splice(listeners.indexOf(listener), 1);
+  };
 }
 
 function notify(session: AppSession | undefined, change: SessionChange): void {
