@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { postComment } from "../../api/minigames-api";
 import { getCommentAuthorName, getProfileName } from "../../auth/profile";
-import type { AppSession } from "../../auth/session";
 import { showSnackbar } from "../../hooks/snackbar-store";
+import { useRequireSession } from "../../hooks/use-require-session";
+import { useSession } from "../../hooks/use-session";
 import { trackActivity } from "../../profile/track";
 import { BusyButton } from "../busy/BusyButton";
 import { notifyMutationFailed } from "../feedback/request-notices";
@@ -14,8 +15,6 @@ const isValidText = (text: string): boolean => text.length > 0 && text.length <=
 
 interface CommentFormProps {
   slug: string;
-  session: AppSession | undefined;
-  requireSession: (reason: string) => AppSession | undefined;
   // A comment was created; the list should show the latest ones again.
   onPosted: () => void;
 }
@@ -23,7 +22,9 @@ interface CommentFormProps {
 // The textarea grows with its text up to a max height, then scrolls (CSS
 // field-sizing). Enter sends, Shift+Enter starts a new line. Open for a
 // signed-in user, locked for guests; the draft is kept when that changes.
-export function CommentForm({ slug, session, requireSession, onPosted }: CommentFormProps) {
+export function CommentForm({ slug, onPosted }: CommentFormProps) {
+  const session = useSession();
+  const requireSession = useRequireSession();
   const [text, setText] = useState("");
   const [isSending, setSending] = useState(false);
   const isSignedIn = session !== undefined;

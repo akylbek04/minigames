@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchGameDetails } from "../../api/minigames-api";
-import type { AppSession } from "../../auth/session";
 import { useAsyncResult, type AsyncResult } from "../../hooks/use-async-result";
-import { useRequireSession } from "../../hooks/use-require-session";
+import { useSession } from "../../hooks/use-session";
 import { trackActivity } from "../../profile/track";
 import type { GameDetails } from "../../types/game-details";
 import { assetUrl } from "../../utils/asset-url";
@@ -40,14 +39,13 @@ function DetailsSkeleton() {
 
 interface ContentProps {
   slug: string;
-  session: AppSession | undefined;
   onRequestClose: () => void;
 }
 
 // One opening of a game. The dialog gives it a new key for every fresh
 // open, so details, favorites, likes and the comment draft all start over.
-function GameDetailsContent({ slug, session, onRequestClose }: ContentProps) {
-  const requireSession = useRequireSession();
+function GameDetailsContent({ slug, onRequestClose }: ContentProps) {
+  const session = useSession();
   const root = useRef<HTMLDivElement>(null);
   // The view counts for the user who opened the game, once: signing in with
   // the dialog already open doesn't count the same visit.
@@ -105,9 +103,9 @@ function GameDetailsContent({ slug, session, onRequestClose }: ContentProps) {
               <img src={assetUrl(game.heroImage)} alt="" className="game-details__hero-image" />
             </div>
             <div className="game-details__body">
-              <GameInfo game={game} requireSession={requireSession} />
+              <GameInfo game={game} />
               <TopRecords records={game.topRecords} />
-              <CommentsSection slug={slug} session={session} requireSession={requireSession} />
+              <CommentsSection slug={slug} />
             </div>
           </div>
         )}
@@ -132,17 +130,11 @@ interface GameDetailsDialogProps {
   slug: string | undefined;
   // Auth is shown instead: the dialog hides but keeps its state.
   isCovered: boolean;
-  session: AppSession | undefined;
   // The dialog never closes itself: it asks for the URL to drop the game.
   onRequestClose: () => void;
 }
 
-export function GameDetailsDialog({
-  slug,
-  isCovered,
-  session,
-  onRequestClose,
-}: GameDetailsDialogProps) {
+export function GameDetailsDialog({ slug, isCovered, onRequestClose }: GameDetailsDialogProps) {
   // The content stays while the dialog plays its closing animation; every
   // fresh open (a new slug, or the same one after closing) gets a new id.
   const [shown, setShown] = useState<{ slug: string; opening: number; isOpen: boolean }>();
@@ -161,12 +153,7 @@ export function GameDetailsDialog({
       onRequestClose={onRequestClose}
     >
       {shown && (
-        <GameDetailsContent
-          key={shown.opening}
-          slug={shown.slug}
-          session={session}
-          onRequestClose={onRequestClose}
-        />
+        <GameDetailsContent key={shown.opening} slug={shown.slug} onRequestClose={onRequestClose} />
       )}
     </AnimatedDialog>
   );

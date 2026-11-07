@@ -1,5 +1,5 @@
 import { getProfileName } from "../../auth/profile";
-import type { AppSession } from "../../auth/session";
+import { useSession } from "../../hooks/use-session";
 import type { AuthMode } from "../../types/auth";
 import { assetUrl } from "../../utils/asset-url";
 import { AnimatedDialog } from "../dialog/AnimatedDialog";
@@ -29,14 +29,14 @@ export function BurgerButton({ isOpen, onOpen }: { isOpen: boolean; onOpen: () =
 }
 
 interface MobileMenuProps {
-  session: AppSession | undefined;
   isOpen: boolean;
   onClose: () => void;
   onOpenAuth: (mode: AuthMode) => void;
   onLogout: () => void;
 }
 
-export function MobileMenu({ session, isOpen, onClose, onOpenAuth, onLogout }: MobileMenuProps) {
+export function MobileMenu({ isOpen, onClose, onOpenAuth, onLogout }: MobileMenuProps) {
+  const session = useSession();
   // Each action first reveals the page behind the menu, then runs.
   const andClose = (action: () => void) => () => {
     onClose();
