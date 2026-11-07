@@ -16,7 +16,7 @@ import { useFormField } from "../../hooks/use-form-field";
 import type { AuthMode } from "../../types/auth";
 import { icons } from "../icons/icons";
 import { InlineIcon } from "../icons/InlineIcon";
-import { MaterialIcon } from "../icons/MaterialIcon";
+import { BusyButton } from "../busy/BusyButton";
 import { AuthField } from "./AuthField";
 
 export type AuthControl = "submit" | "google";
@@ -28,24 +28,6 @@ export interface PanelProps {
   busyControl: AuthControl | undefined;
   onSwitch: (mode: AuthMode) => void;
   onAuthRequest: (request: () => Promise<AuthProfile>, control: AuthControl) => void;
-}
-
-function BusyButton({
-  isBusy,
-  className,
-  children,
-  ...props
-}: {
-  isBusy: boolean;
-  className: string;
-  children: ReactNode;
-} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button {...props} className={`${className}${isBusy ? " is-busy" : ""}`} aria-busy={isBusy}>
-      {isBusy && <MaterialIcon name="progress_activity" className="busy-spinner" />}
-      {children}
-    </button>
-  );
 }
 
 // Fades in on mount; a fresh panel each time (see AuthDialog's key), so
