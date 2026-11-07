@@ -3,6 +3,7 @@ import { getActiveSession } from "../auth/session";
 import { showSnackbar } from "../hooks/snackbar-store";
 import { HomePage } from "../pages/home/HomePage";
 import { LibraryPage } from "../pages/library/LibraryPage";
+import { NotFoundPage } from "../pages/not-found/NotFoundPage";
 import { ProfilePage } from "../pages/profile/ProfilePage";
 import { AppLayout, type RouteHandle } from "./AppLayout";
 
@@ -45,7 +46,7 @@ export const routes: RouteObject[] = [
         loader: requireProfileAccess,
         handle: handle(TITLES.profile, true),
       },
-      { path: "*", handle: handle(TITLES.notFound) },
+      { path: "*", element: <NotFoundPage />, handle: handle(TITLES.notFound) },
     ],
   },
 ];

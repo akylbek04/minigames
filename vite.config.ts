@@ -27,9 +27,9 @@ export default defineConfig({
         "src/**/*.test.{ts,tsx}",
         // Test-only setup and fixtures, never shipped to the browser.
         "src/test/**",
-        // Bootstrap only: imports global styles and calls createApp() and
-        // startRouter(); all app wiring lives in app/create-app.ts.
-        "src/app/index.ts",
+        // Bootstrap only: mounts the router and providers; all app wiring
+        // lives in app/routes.tsx and app/AppLayout.tsx.
+        "src/main.tsx",
         // Ambient type declarations, no runtime code.
         "src/**/*.d.ts",
       ],
