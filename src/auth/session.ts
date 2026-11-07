@@ -109,6 +109,14 @@ async function endSessionQuietly(change: "expired" | "invalid"): Promise<void> {
   }
 }
 
+// Forgets all in-memory session state without touching storage or Firebase
+// (used by tests between runs).
+export function resetSessionState(): void {
+  clearTimeout(state.expiryTimer);
+  state.isActive = false;
+  missed.length = 0;
+}
+
 export function startSession(profile: AuthProfile, now = Date.now()): AppSession {
   const session: AppSession = {
     displayName: profile.displayName,

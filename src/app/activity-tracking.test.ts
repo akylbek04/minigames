@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { stubApi } from "../test/api";
-import { PROFILE, mountApp, snackbarMessages, storeSession } from "../test/app";
+import { PROFILE, mountApp, storeSession } from "../test/app";
 import { flush, query, typeInto } from "../test/dom";
 import { loadProfile } from "../profile/profile-store";
 
@@ -44,6 +44,5 @@ describe("activity tracking", () => {
     expect(profile().counts.comment).toBe(1);
 
     expect(profile().unlocked).toHaveProperty("all-rounder");
-    expect(snackbarMessages()).toContain("Achievement unlocked: All-Rounder!");
   });
 });

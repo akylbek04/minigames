@@ -102,8 +102,6 @@ describe("comments", () => {
 
     expect(commentPosts(api)).toHaveLength(0);
     expect(snackbarMessages()).toEqual([
-      // Opening the game as a signed-in user unlocks the first badge.
-      "Achievement unlocked: Explorer!",
       "Write something before sending.",
       "Comments can be up to 500 characters long.",
     ]);

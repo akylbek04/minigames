@@ -1,6 +1,7 @@
 import { cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach } from "vitest";
+import { clearSnackbars } from "../hooks/snackbar-store";
 
 // user-event patches input value setters the first time it is used. Doing it
 // before any React input renders keeps React's own value tracking intact in
@@ -56,6 +57,7 @@ for (const target of listenerTargets) {
 afterEach(() => {
   // Unmount React trees first; the globals-less vitest skips its auto-cleanup.
   cleanup();
+  clearSnackbars();
   for (const [target, ...args] of addedListeners.splice(0)) {
     target.removeEventListener(...args);
   }

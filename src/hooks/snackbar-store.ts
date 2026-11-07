@@ -49,6 +49,11 @@ export function showSnackbar(message: string, variant: SnackbarVariant = "info")
   setTimeout(() => dismissSnackbar(id), AUTO_DISMISS_DELAY);
 }
 
+// Drops every snackbar at once (used by tests between runs).
+export function clearSnackbars(): void {
+  setItems([]);
+}
+
 function subscribe(listener: () => void): () => void {
   listeners.add(listener);
   return () => listeners.delete(listener);
