@@ -1,6 +1,7 @@
 import { Navigate, redirect, type RouteObject } from "react-router";
 import { getActiveSession } from "../auth/session";
 import { showSnackbar } from "../hooks/snackbar-store";
+import { HomePage } from "../pages/home/HomePage";
 import { AppLayout, type RouteHandle } from "./AppLayout";
 
 const TITLES = {
@@ -32,7 +33,7 @@ export const routes: RouteObject[] = [
     element: <AppLayout />,
     HydrateFallback: () => <></>,
     children: [
-      { index: true, handle: handle(TITLES.home) },
+      { index: true, element: <HomePage />, handle: handle(TITLES.home) },
       { path: "home", element: <Navigate to="/" replace /> },
       { path: "index.html", element: <Navigate to="/" replace /> },
       { path: "library", handle: handle(TITLES.library) },
