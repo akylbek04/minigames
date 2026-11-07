@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 import { postComment } from "../../api/minigames-api";
 import { getCommentAuthorName, getProfileName } from "../../auth/profile";
 import { showSnackbar } from "../../hooks/snackbar-store";
@@ -26,15 +26,12 @@ export function CommentForm({ slug, onPosted }: CommentFormProps) {
   const session = useSession();
   const requireSession = useRequireSession();
   const [text, setText] = useState("");
-  const [isSending, setSending] = useState(false);
   const isSignedIn = session !== undefined;
-  const isLocked = !isSignedIn || isSending;
 
-  async function send(): Promise<void> {
-    if (isSending) {
-      return;
-    }
-    const trimmed = text.trim();
+  // A form action: React tracks it as pending, so a second send is
+  // impossible while one runs and no flag has to be reset in a `finally`.
+  const [, send, isSending] = useActionState<void, FormData>(async (_, form) => {
+    const trimmed = String(form.get("comment")).trim();
     if (!isValidText(trimmed)) {
       showSnackbar(
         trimmed
@@ -48,8 +45,6 @@ export function CommentForm({ slug, onPosted }: CommentFormProps) {
     if (!current) {
       return;
     }
-
-    setSending(true);
     try {
       await postComment(slug, {
         userEmail: current.email,
@@ -67,19 +62,12 @@ export function CommentForm({ slug, onPosted }: CommentFormProps) {
         unknown:
           "We couldn't confirm whether your comment was posted. Check the comments before sending it again.",
       });
-    } finally {
-      setSending(false);
     }
-  }
+  }, undefined);
+  const isLocked = !isSignedIn || isSending;
 
   return (
-    <form
-      className="game-details__comment-form"
-      onSubmit={(event) => {
-        event.preventDefault();
-        void send();
-      }}
-    >
+    <form className="game-details__comment-form" action={send}>
       <span className="game-details__avatar game-details__avatar--self" aria-hidden="true">
         {session ? [...getProfileName(session)][0].toUpperCase() : <MaterialIcon name="person" />}
       </span>
@@ -97,7 +85,8 @@ export function CommentForm({ slug, onPosted }: CommentFormProps) {
             return;
           }
           event.preventDefault();
-          void send();
+          const form = new FormData(event.currentTarget.form!);
+          startTransition(() => send(form));
         }}
       />
       <BusyButton
