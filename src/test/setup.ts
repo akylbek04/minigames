@@ -1,3 +1,4 @@
+import { cleanup } from "@testing-library/react";
 import { afterEach } from "vitest";
 
 // happy-dom has no Popover API and no :modal / :popover-open matching, which
@@ -47,6 +48,8 @@ for (const target of listenerTargets) {
 }
 
 afterEach(() => {
+  // Unmount React trees first; the globals-less vitest skips its auto-cleanup.
+  cleanup();
   for (const [target, ...args] of addedListeners.splice(0)) {
     target.removeEventListener(...args);
   }
