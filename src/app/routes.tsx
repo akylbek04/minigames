@@ -3,6 +3,7 @@ import { getActiveSession } from "../auth/session";
 import { showSnackbar } from "../hooks/snackbar-store";
 import { HomePage } from "../pages/home/HomePage";
 import { LibraryPage } from "../pages/library/LibraryPage";
+import { ProfilePage } from "../pages/profile/ProfilePage";
 import { AppLayout, type RouteHandle } from "./AppLayout";
 
 const TITLES = {
@@ -40,6 +41,7 @@ export const routes: RouteObject[] = [
       { path: "library", element: <LibraryPage />, handle: handle(TITLES.library) },
       {
         path: "profile",
+        element: <ProfilePage />,
         loader: requireProfileAccess,
         handle: handle(TITLES.profile, true),
       },
