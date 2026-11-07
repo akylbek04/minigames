@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { signInWithEmail } from "../auth/auth-service";
 import { getActiveSession } from "../auth/session";
 import { renderApp } from "../test/render-app";
+import { stubApi } from "../test/api";
 import { storeSession } from "../test/app";
 
 vi.mock("../auth/auth-service", async (importOriginal) => ({
@@ -20,6 +21,7 @@ const isShown = (dialog: HTMLDialogElement): boolean =>
 describe("auth dialog in the app", () => {
   beforeEach(() => {
     vi.mocked(signInWithEmail).mockReset();
+    stubApi();
   });
 
   it("opens from a URL for guests", () => {

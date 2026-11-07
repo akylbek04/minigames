@@ -2,6 +2,7 @@ import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderApp } from "../test/render-app";
+import { stubApi } from "../test/api";
 import { SESSION_KEY, storeSession } from "../test/app";
 
 vi.mock("../auth/firebase", () => ({ firebaseAuth: {} }));
@@ -11,7 +12,10 @@ const link = (name: string, scope: HTMLElement = document.body) =>
   within(scope).getByRole("link", { name });
 
 describe("app shell", () => {
-  beforeEach(() => localStorage.removeItem(SESSION_KEY));
+  beforeEach(() => {
+    localStorage.removeItem(SESSION_KEY);
+    stubApi();
+  });
 
   it("sets the title for each page and marks the active link", async () => {
     const { router } = renderApp("/library");
@@ -26,9 +30,19 @@ describe("app shell", () => {
     expect(document.title).toBe("MiniGames — Take a Short Break & Have Fun");
   });
 
-  it("names unknown paths as not found", () => {
-    renderApp("/nope");
+  it("names unknown paths as not found and leads back home", async () => {
+    const { router } = renderApp("/no/such/page");
     expect(document.title).toBe("Page Not Found — MiniGames");
+    expect(document.querySelector(".not-found-page__path")?.textContent).toBe("/no/such/page");
+
+    await userEvent.click(screen.getByRole("button", { name: "Return to Home Page" }));
+    expect(router.state.location.pathname).toBe("/");
+    expect(document.querySelector("main")?.className).toBe("home-page");
+  });
+
+  it("still renders a deep link with a malformed escape", () => {
+    renderApp("/%E0%A4%A");
+    expect(screen.getByRole("heading", { name: "Page not found" })).toBeTruthy();
   });
 
   it("offers Log In and Sign Up to guests, opening Auth through the URL", async () => {
