@@ -6,6 +6,8 @@ export interface SnackbarItem {
   id: number;
   message: string;
   variant: SnackbarVariant;
+  // Playing its exit animation; removed afterwards with removeSnackbar.
+  isLeaving: boolean;
 }
 
 const AUTO_DISMISS_DELAY = 5000;
@@ -22,7 +24,12 @@ function setItems(next: readonly SnackbarItem[]): void {
   }
 }
 
+// Starts the exit animation; the region removes the item when it ends.
 export function dismissSnackbar(id: number): void {
+  setItems(state.items.map((item) => (item.id === id ? { ...item, isLeaving: true } : item)));
+}
+
+export function removeSnackbar(id: number): void {
   setItems(state.items.filter((item) => item.id !== id));
 }
 
@@ -30,7 +37,15 @@ export function dismissSnackbar(id: number): void {
 // its own and only the newest few stay on screen.
 export function showSnackbar(message: string, variant: SnackbarVariant = "info"): void {
   const id = state.nextId++;
-  setItems([...state.items, { id, message, variant }].slice(-MAX_VISIBLE));
+  const next = [...state.items, { id, message, variant, isLeaving: false }];
+  // Only the newest few stay: older ones start leaving.
+  const overflow = new Set(
+    next
+      .filter((item) => !item.isLeaving)
+      .slice(0, -MAX_VISIBLE)
+      .map((item) => item.id),
+  );
+  setItems(next.map((item) => (overflow.has(item.id) ? { ...item, isLeaving: true } : item)));
   setTimeout(() => dismissSnackbar(id), AUTO_DISMISS_DELAY);
 }
 

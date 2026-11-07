@@ -2,7 +2,7 @@ import { act, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startSession } from "../auth/session";
 import { recordActivity } from "../profile/profile-store";
-import { dismissSnackbar, showSnackbar, useSnackbars } from "./snackbar-store";
+import { dismissSnackbar, removeSnackbar, showSnackbar, useSnackbars } from "./snackbar-store";
 import { useProfile } from "./use-profile";
 import { SessionProvider, useSession } from "./use-session";
 
@@ -20,18 +20,28 @@ describe("useSnackbars", () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => vi.useRealTimers());
 
-  it("shows the newest three, dismisses on demand and after 5 seconds", () => {
+  it("keeps the newest three, then dismisses and removes on demand", () => {
     const { result } = renderHook(() => useSnackbars());
+    const staying = () =>
+      result.current.filter((item) => !item.isLeaving).map((item) => item.message);
     act(() => {
       for (const message of ["a", "b", "c", "d"]) showSnackbar(message, "info");
     });
-    expect(result.current.map((item) => item.message)).toEqual(["b", "c", "d"]);
+    expect(staying()).toEqual(["b", "c", "d"]);
 
-    act(() => dismissSnackbar(result.current[0].id));
-    expect(result.current.map((item) => item.message)).toEqual(["c", "d"]);
+    act(() => dismissSnackbar(result.current[1].id));
+    expect(staying()).toEqual(["c", "d"]);
+    expect(result.current).toHaveLength(4);
 
+    act(() => removeSnackbar(result.current[0].id));
+    expect(result.current).toHaveLength(3);
+  });
+
+  it("starts leaving by itself after 5 seconds", () => {
+    const { result } = renderHook(() => useSnackbars());
+    act(() => showSnackbar("later"));
     act(() => void vi.advanceTimersByTime(5000));
-    expect(result.current).toEqual([]);
+    expect(result.current.find((item) => item.message === "later")?.isLeaving).toBe(true);
   });
 });
 
