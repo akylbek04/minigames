@@ -12,6 +12,7 @@ import { createAsyncContent } from "../feedback/async-content";
 import { createEmptyState } from "../feedback/empty-state";
 import { createSkeleton, createSkeletonGroup } from "../feedback/skeleton";
 import { createCommentForm } from "./comment-form";
+import { trackActivity } from "../../profile/track";
 import type { GameComment } from "../../types/game-details";
 import type { AppSession } from "../../auth/session";
 
@@ -39,7 +40,11 @@ type RequireSession = (reason: string) => AppSession | undefined;
 // The pressed state and count only ever come from the server: the
 // personalized list on load, then each toggle response. Locked while a
 // toggle is in flight and never resent.
-function createLikeButton(comment: GameComment, requireSession: RequireSession): HTMLButtonElement {
+function createLikeButton(
+  comment: GameComment,
+  slug: string,
+  requireSession: RequireSession,
+): HTMLButtonElement {
   const count = el("span", {});
   const button = el("button", { type: "button", class: "game-details__like" }, [
     materialIcon("favorite", "game-details__like-icon"),
@@ -62,6 +67,9 @@ function createLikeButton(comment: GameComment, requireSession: RequireSession):
     try {
       const result = await toggleCommentLike(comment.commentId, session.email);
       render(result.isLikedByCurrentUser, result.likesCount);
+      if (result.isLikedByCurrentUser) {
+        trackActivity(session, "like", slug, String(comment.commentId));
+      }
     } catch (error) {
       notifyMutationFailed(error, {
         failed: "Couldn't update the like. Please try again.",
@@ -80,6 +88,7 @@ function createLikeButton(comment: GameComment, requireSession: RequireSession):
 
 function createComment(
   comment: GameComment,
+  slug: string,
   requireSession: RequireSession,
   avatarColor: number,
 ): HTMLElement {
@@ -99,7 +108,7 @@ function createComment(
       ]),
     ]),
     el("p", { class: "game-details__comment-text" }, [comment.text]),
-    createLikeButton(comment, requireSession),
+    createLikeButton(comment, slug, requireSession),
   ]);
 }
 
@@ -168,7 +177,7 @@ export function createCommentsSection({
         { class: "game-details__comments" },
         data.map((comment) =>
           el("li", {}, [
-            createComment(comment, requireSession, avatarColorFor(comment.authorName)),
+            createComment(comment, slug, requireSession, avatarColorFor(comment.authorName)),
           ]),
         ),
       ),

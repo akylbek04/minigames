@@ -1,6 +1,6 @@
 import { assetUrl } from "../utils/asset-url";
 
-export type Route = "home" | "library" | "not-found";
+export type Route = "home" | "library" | "profile" | "not-found";
 
 export interface RouterLocation {
   route: Route;
@@ -21,6 +21,7 @@ const ROUTES: Record<string, Route> = {
   home: "home",
   "index.html": "home",
   library: "library",
+  profile: "profile",
 };
 
 // Path inside the app without the deployment base and slashes:

@@ -5,6 +5,7 @@ import { postComment } from "../../api/minigames-api";
 import { getCommentAuthorName, getProfileName } from "../../auth/profile";
 import { notifyMutationFailed } from "../feedback/request-feedback";
 import { showSnackbar } from "../snackbar/snackbar";
+import { trackActivity } from "../../profile/track";
 import type { AppSession } from "../../auth/session";
 
 export const COMMENT_MAX_LENGTH = 500;
@@ -97,6 +98,7 @@ export function createCommentForm({
       });
       textarea.value = "";
       showSnackbar("Your comment was posted.", "success");
+      trackActivity(session, "comment", slug);
       onPosted();
     } catch (error) {
       // The draft stays in the textarea either way; nothing is resent.

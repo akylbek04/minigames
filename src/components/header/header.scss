@@ -118,6 +118,8 @@
 
 .header__profile {
   display: flex;
+  color: inherit;
+  text-decoration: none;
   align-items: center;
   gap: var(--size-1);
   min-width: 0;

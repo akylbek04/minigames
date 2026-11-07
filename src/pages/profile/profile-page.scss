@@ -1,0 +1,238 @@
+@use "../../styles/breakpoints" as bp;
+@use "../../styles/mixins" as mix;
+
+.profile-page__inner {
+  @include mix.container;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+  padding-block: var(--size-3) var(--size-5);
+  color: var(--color-on-primary);
+
+  @include bp.desktop-up {
+    padding-block: var(--size-5);
+  }
+}
+
+.profile-page__title {
+  font-size: var(--font-size-display-small);
+  font-weight: var(--font-weight-extra-bold);
+
+  @include bp.tablet-up {
+    font-size: var(--font-size-display-medium);
+  }
+}
+
+.profile-page__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4);
+}
+
+.profile-page__hero {
+  display: flex;
+  align-items: center;
+  gap: var(--size-3);
+}
+
+.profile-page__avatar-large {
+  width: var(--size-10);
+  height: var(--size-10);
+  font-size: var(--font-size-headline-large);
+
+  .material-symbols-outlined {
+    font-size: var(--size-5);
+  }
+}
+
+.profile-page__name {
+  font-size: var(--font-size-headline-medium);
+  font-weight: var(--font-weight-bold);
+  overflow-wrap: anywhere;
+}
+
+.profile-page__email,
+.profile-page__summary {
+  color: var(--color-on-bg);
+  font-size: var(--font-size-body-small);
+  overflow-wrap: anywhere;
+}
+
+.profile-page__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+}
+
+.profile-page__section-title {
+  font-size: var(--font-size-headline-small);
+  font-weight: var(--font-weight-bold);
+}
+
+.profile-page__stats,
+.profile-page__badges,
+.profile-page__history {
+  display: grid;
+  gap: var(--size-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.profile-page__stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include bp.desktop-up {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.profile-page__stat,
+.profile-page__badge,
+.profile-page__history-item {
+  background-color: var(--color-surface);
+  border: var(--border-regular) solid var(--color-on-primary);
+  border-radius: var(--corner-medium);
+  box-shadow: var(--shadow-level-1);
+}
+
+.profile-page__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--size-05);
+  padding: var(--size-2);
+}
+
+.profile-page__stat-value {
+  font-size: var(--font-size-display-small);
+  font-weight: var(--font-weight-extra-bold);
+}
+
+.profile-page__stat-label {
+  color: var(--color-on-bg);
+  font-size: var(--font-size-label-large);
+}
+
+.profile-page__badges {
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--size-12) + var(--size-10)), 1fr));
+}
+
+.profile-page__badge {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-05);
+  padding: var(--size-2);
+
+  &--locked {
+    color: var(--color-on-bg-low);
+    background-color: var(--color-secondary);
+    box-shadow: none;
+    opacity: 0.8;
+  }
+}
+
+.profile-page__badge-icon {
+  align-self: flex-start;
+  padding: var(--size-1);
+  background-color: var(--color-primary);
+  border-radius: var(--corner-full);
+}
+
+.profile-page__badge--locked .profile-page__badge-icon {
+  background-color: var(--color-outline);
+}
+
+.profile-page__badge-title {
+  font-size: var(--font-size-body-medium);
+  font-weight: var(--font-weight-bold);
+}
+
+.profile-page__badge-text,
+.profile-page__badge-status {
+  font-size: var(--font-size-label-large);
+}
+
+.profile-page__badge-status {
+  margin-top: auto;
+  font-weight: var(--font-weight-semi-bold);
+}
+
+.profile-page__history-item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--size-1);
+  padding: var(--size-1) var(--size-2);
+  font-size: var(--font-size-body-small);
+  box-shadow: none;
+}
+
+.profile-page__empty {
+  color: var(--color-on-bg);
+}
+
+.profile-page__customizer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+
+  @include bp.tablet-up {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.profile-page__customizer-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+}
+
+.profile-page__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-1);
+}
+
+.profile-page__choice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-6);
+  height: var(--size-6);
+  color: var(--color-on-primary);
+  background-color: var(--color-surface);
+  border: var(--border-regular) solid var(--color-outline-variant);
+  border-radius: var(--corner-full);
+  cursor: pointer;
+
+  &[aria-pressed="true"] {
+    border-color: var(--color-on-primary);
+    outline: var(--focus-ring-width) solid var(--color-tertiary);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  &:hover {
+    border-color: var(--color-on-primary);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-tertiary);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+.profile-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2);
+}
+
+// Each swatch shows its preset color; the extra class beats .profile-page__choice.
+@for $i from 1 through 5 {
+  .profile-page__swatch.user-avatar--color-#{$i} {
+    background-color: var(--color-avatar-random-#{$i});
+  }
+}
