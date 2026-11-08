@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { FormField } from "../../hooks/use-form-field";
 import { MaterialIcon } from "../icons/MaterialIcon";
 
 interface AuthFieldProps {
@@ -8,12 +9,9 @@ interface AuthFieldProps {
   placeholder: string;
   autoComplete: string;
   iconName: string;
-  value: string;
-  // Shown under the input once the user has typed in it or left it.
-  error: string | undefined;
+  // Its error shows under the input once the user has typed in it or left it.
+  field: FormField;
   hasPasswordToggle?: boolean;
-  onChange: (value: string) => void;
-  onTouch: () => void;
 }
 
 export function AuthField({
@@ -23,12 +21,10 @@ export function AuthField({
   placeholder,
   autoComplete,
   iconName,
-  value,
-  error,
+  field,
   hasPasswordToggle = false,
-  onChange,
-  onTouch,
 }: AuthFieldProps) {
+  const { value, error, setValue, touch } = field;
   const [isPasswordShown, setPasswordShown] = useState(false);
   const errorId = `${id}-error`;
 
@@ -51,10 +47,10 @@ export function AuthField({
           aria-describedby={errorId}
           aria-invalid={error !== undefined}
           onChange={(event) => {
-            onChange(event.target.value);
-            onTouch();
+            setValue(event.target.value);
+            touch();
           }}
-          onBlur={onTouch}
+          onBlur={touch}
         />
         {hasPasswordToggle && (
           <button

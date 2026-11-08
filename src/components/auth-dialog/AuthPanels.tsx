@@ -102,10 +102,7 @@ export function LoginPanel({ isPending, busyControl, onSwitch, onAuthRequest }: 
           placeholder="e.g. alex@minigames.com"
           autoComplete="email"
           iconName="mail"
-          value={email.value}
-          error={email.error}
-          onChange={email.setValue}
-          onTouch={email.touch}
+          field={email}
         />
         <AuthField
           id="login-password"
@@ -115,10 +112,7 @@ export function LoginPanel({ isPending, busyControl, onSwitch, onAuthRequest }: 
           autoComplete="current-password"
           iconName="lock"
           hasPasswordToggle
-          value={password.value}
-          error={password.error}
-          onChange={password.setValue}
-          onTouch={password.touch}
+          field={password}
         />
         <button type="button" className="auth-dialog__forgot">
           Forgot Password?
@@ -183,10 +177,7 @@ export function RegisterPanel({ isPending, busyControl, onSwitch, onAuthRequest 
           placeholder="e.g. CozyGamer_99"
           autoComplete="username"
           iconName="person"
-          value={username.value}
-          error={username.error}
-          onChange={username.setValue}
-          onTouch={username.touch}
+          field={username}
         />
         <AuthField
           id="register-email"
@@ -195,10 +186,7 @@ export function RegisterPanel({ isPending, busyControl, onSwitch, onAuthRequest 
           placeholder="your.email@domain.com"
           autoComplete="email"
           iconName="mail"
-          value={email.value}
-          error={email.error}
-          onChange={email.setValue}
-          onTouch={email.touch}
+          field={email}
         />
         <AuthField
           id="register-password"
@@ -207,10 +195,7 @@ export function RegisterPanel({ isPending, busyControl, onSwitch, onAuthRequest 
           placeholder="Min. 6 characters"
           autoComplete="new-password"
           iconName="lock"
-          value={password.value}
-          error={password.error}
-          onChange={password.setValue}
-          onTouch={password.touch}
+          field={password}
         />
         <AuthField
           id="register-confirm-password"
@@ -219,10 +204,7 @@ export function RegisterPanel({ isPending, busyControl, onSwitch, onAuthRequest 
           placeholder="Repeat your password"
           autoComplete="new-password"
           iconName="lock"
-          value={confirmation.value}
-          error={confirmation.error}
-          onChange={confirmation.setValue}
-          onTouch={confirmation.touch}
+          field={confirmation}
         />
         <BusyButton
           type="submit"
