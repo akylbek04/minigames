@@ -38,8 +38,12 @@ export interface ProfileData extends ProfileStats {
 type ProfileListener = (email: string, data: ProfileData) => void;
 const listeners: ProfileListener[] = [];
 
-export function onProfileChange(listener: ProfileListener): void {
+// Returns a function that removes the listener again.
+export function onProfileChange(listener: ProfileListener): () => void {
   listeners.push(listener);
+  return () => {
+    listeners.splice(listeners.indexOf(listener), 1);
+  };
 }
 
 const keyFor = (email: string): string => STORAGE_PREFIX + email.trim().toLowerCase();

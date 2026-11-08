@@ -2,16 +2,17 @@
 
 A responsive web app for discovering and playing casual mini-games, built as the RS School qualifying-stage project.
 
-Home and Library pages, Auth and Game Details dialogs, implemented with TypeScript, HTML, and SCSS only — no frameworks, no UI libraries.
+Home, Library and Profile pages, Auth and Game Details dialogs. Story 6 is a migration of the original vanilla TypeScript app (stories 1–5) to React with TypeScript; the behavior, styles and tests carry over.
 
 ## Tech Stack
 
 - TypeScript
+- React 19 + React Router 7 (data router, `createBrowserRouter`)
 - Vite
-- Sass
+- Sass (design tokens, no CSS framework or UI library)
 - ESLint + Prettier + Husky
 - Firebase Authentication (email/password and Google)
-- Vitest + happy-dom (unit tests, v8 coverage)
+- Vitest + happy-dom + React Testing Library (unit and integration tests, v8 coverage)
 
 ## Getting Started
 
@@ -64,4 +65,12 @@ on the Profile page erases it. Invalid or edited values are ignored field by fie
 
 ## Project Structure
 
-See [`src/`](./src) for the folder layout: `app`, `pages`, `components`, `styles`, `types`, `assets`.
+- `src/main.tsx`: entry. Creates the browser router (with the `/minigames/` base) and mounts the providers.
+- `src/app/`: `routes.tsx` (route table, page titles, the `/profile` guard) and `AppLayout.tsx` (header, menu, footer, dialogs, snackbars).
+- `src/pages/`: `HomePage`, `LibraryPage`, `ProfilePage`, `NotFoundPage`.
+- `src/components/`: UI pieces (PascalCase `.tsx`), each with its SCSS.
+- `src/hooks/`: `useSession`, `useProfile`, `useOverlay` (dialog state in the URL), `useAsyncResult`, the snackbar store.
+- `src/api/`, `src/auth/`, `src/profile/`: framework-free logic (HTTP client, Firebase and the app session, profile store and achievements).
+- `src/styles/`, `src/types/`, `src/assets/`.
+
+The URL is the source of truth: `?game=<slug>` and `?auth=login|register` open the dialogs, and the Library query (`category`, `sort`, `page`) drives its one API request.

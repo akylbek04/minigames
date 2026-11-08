@@ -16,6 +16,10 @@ export type SessionChange = "login" | "restore" | "logout" | "expired" | "invali
 type SessionListener = (session: AppSession | undefined, change: SessionChange) => void;
 
 const listeners: SessionListener[] = [];
+// Changes that happened while nobody listened (a startup check running
+// before the UI subscribes) are handed to the first listener, so their
+// messages are never lost.
+const missed: [AppSession | undefined, SessionChange][] = [];
 const state: { isActive: boolean; expiryTimer?: ReturnType<typeof setTimeout> } = {
   isActive: false,
 };
@@ -54,11 +58,22 @@ export function isSessionExpired(session: AppSession, now = Date.now()): boolean
   return now - session.authenticatedAt >= SESSION_LIFETIME;
 }
 
-export function onSessionChange(listener: SessionListener): void {
+// Returns a function that removes the listener again.
+export function onSessionChange(listener: SessionListener): () => void {
   listeners.push(listener);
+  for (const [session, change] of missed.splice(0)) {
+    listener(session, change);
+  }
+  return () => {
+    listeners.splice(listeners.indexOf(listener), 1);
+  };
 }
 
 function notify(session: AppSession | undefined, change: SessionChange): void {
+  if (listeners.length === 0) {
+    missed.push([session, change]);
+    return;
+  }
   for (const listener of listeners) {
     listener(session, change);
   }
@@ -92,6 +107,14 @@ async function endSessionQuietly(change: "expired" | "invalid"): Promise<void> {
   } catch {
     // Nothing to undo: see above.
   }
+}
+
+// Forgets all in-memory session state without touching storage or Firebase
+// (used by tests between runs).
+export function resetSessionState(): void {
+  clearTimeout(state.expiryTimer);
+  state.isActive = false;
+  missed.length = 0;
 }
 
 export function startSession(profile: AuthProfile, now = Date.now()): AppSession {

@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import unicorn from "eslint-plugin-unicorn";
 import prettier from "eslint-config-prettier";
+import reactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
 
 export default tseslint.config(
@@ -9,6 +10,7 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   unicorn.configs.recommended,
+  reactHooks.configs.flat.recommended,
   prettier,
   {
     languageOptions: {
@@ -20,7 +22,7 @@ export default tseslint.config(
     rules: {
       "@typescript-eslint/no-explicit-any": "error",
       "unicorn/prevent-abbreviations": "off",
-      "unicorn/filename-case": ["error", { case: "kebabCase" }],
+      "unicorn/filename-case": ["error", { cases: { kebabCase: true, pascalCase: true } }],
       // short, conventional names (el, attrs, props...) read fine in small DOM helpers
       "unicorn/name-replacements": "off",
       // nested el() calls are the whole point of a hyperscript-style DOM builder
