@@ -5,6 +5,7 @@ import { HomePage } from "../pages/home/HomePage";
 import { LibraryPage } from "../pages/library/LibraryPage";
 import { NotFoundPage } from "../pages/not-found/NotFoundPage";
 import { ProfilePage } from "../pages/profile/ProfilePage";
+import { ErrorPage } from "../pages/status/ErrorPage";
 import { AppLayout, type RouteHandle } from "./AppLayout";
 
 const TITLES = {
@@ -36,17 +37,23 @@ export const routes: RouteObject[] = [
     element: <AppLayout />,
     HydrateFallback: () => <></>,
     children: [
-      { index: true, element: <HomePage />, handle: handle(TITLES.home) },
-      { path: "home", element: <Navigate to="/" replace /> },
-      { path: "index.html", element: <Navigate to="/" replace /> },
-      { path: "library", element: <LibraryPage />, handle: handle(TITLES.library) },
       {
-        path: "profile",
-        element: <ProfilePage />,
-        loader: requireProfileAccess,
-        handle: handle(TITLES.profile, true),
+        // A pathless route: a page that throws keeps the header and footer.
+        errorElement: <ErrorPage />,
+        children: [
+          { index: true, element: <HomePage />, handle: handle(TITLES.home) },
+          { path: "home", element: <Navigate to="/" replace /> },
+          { path: "index.html", element: <Navigate to="/" replace /> },
+          { path: "library", element: <LibraryPage />, handle: handle(TITLES.library) },
+          {
+            path: "profile",
+            element: <ProfilePage />,
+            loader: requireProfileAccess,
+            handle: handle(TITLES.profile, true),
+          },
+          { path: "*", element: <NotFoundPage />, handle: handle(TITLES.notFound) },
+        ],
       },
-      { path: "*", element: <NotFoundPage />, handle: handle(TITLES.notFound) },
     ],
   },
 ];

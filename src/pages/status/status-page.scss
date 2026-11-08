@@ -1,7 +1,7 @@
 @use "../../styles/breakpoints" as bp;
 @use "../../styles/mixins" as mix;
 
-.not-found-page__inner {
+.status-page__inner {
   @include mix.container;
 
   display: flex;
@@ -16,7 +16,7 @@
   }
 }
 
-.not-found-page__code {
+.status-page__code {
   color: var(--color-primary);
   font-size: var(--size-12);
   font-weight: var(--font-weight-extra-bold);
@@ -28,7 +28,7 @@
   }
 }
 
-.not-found-page__title {
+.status-page__title {
   color: var(--color-on-primary);
   font-size: var(--font-size-display-small);
   font-weight: var(--font-weight-extra-bold);
@@ -38,12 +38,12 @@
   }
 }
 
-.not-found-page__message {
+.status-page__message {
   max-width: var(--auth-dialog-width);
   margin-bottom: var(--size-2);
 }
 
-.not-found-page__path {
+.status-page__path {
   padding: 0 var(--size-05);
   color: var(--color-on-primary);
   background-color: var(--color-surface);
