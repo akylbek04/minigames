@@ -37,7 +37,9 @@ export const routes: RouteObject[] = [
           { path: "library", element: <LibraryPage /> },
           {
             path: "profile",
-            // Its own bundle: only signed-in users ever load the Profile code.
+            // Its own bundle: Home and Library visitors never load the Profile code.
+            // The guard below runs in parallel with this download, so a guest who
+            // opens /profile still fetches it before being redirected.
             lazy: async () => {
               const { ProfilePage } = await import("../pages/profile/ProfilePage");
               return { Component: ProfilePage };
