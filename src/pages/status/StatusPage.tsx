@@ -17,6 +17,7 @@ export function StatusPage({
   const navigate = useNavigate();
   return (
     <main className="status-page">
+      <title>{`${title} — MiniGames`}</title>
       <div className="status-page__inner">
         <p className="status-page__code" aria-hidden="true">
           {code}

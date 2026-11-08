@@ -82,6 +82,7 @@ export function LibraryPage() {
 
   return (
     <main className="library-page">
+      <title>Game Library — MiniGames</title>
       <div className="library-page__inner">
         <div className="library-page__intro">
           <h1 className="library-page__title">Game Library</h1>

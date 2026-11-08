@@ -10,6 +10,7 @@ export function HomePage() {
   const game = useOverlay("game");
   return (
     <main className="home-page">
+      <title>MiniGames — Take a Short Break &amp; Have Fun</title>
       <HeroSection />
       <GameCarousel onOpenDetails={game.open} />
       <LeaderboardSection />

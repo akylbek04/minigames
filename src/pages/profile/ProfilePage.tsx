@@ -274,6 +274,7 @@ export function ProfilePage() {
   const data = useProfile(session?.email);
   return (
     <main className="profile-page">
+      <title>Your Profile — MiniGames</title>
       <div className="profile-page__inner">
         <h1 className="profile-page__title">Your profile</h1>
         {session && data && <ProfileContent session={session} data={data} />}

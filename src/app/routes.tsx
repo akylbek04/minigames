@@ -8,17 +8,8 @@ import { ProfilePage } from "../pages/profile/ProfilePage";
 import { ErrorPage } from "../pages/status/ErrorPage";
 import { AppLayout, type RouteHandle } from "./AppLayout";
 
-const TITLES = {
-  home: "MiniGames — Take a Short Break & Have Fun",
-  library: "Game Library — MiniGames",
-  profile: "Your Profile — MiniGames",
-  notFound: "Page Not Found — MiniGames",
-} satisfies Record<string, string>;
-
-const handle = (title: string, requiresSession = false): RouteHandle => ({
-  title,
-  requiresSession,
-});
+// Pages only a signed-in user can see (see AppLayout).
+const signedInOnly: RouteHandle = { requiresSession: true };
 
 // The Profile page is for signed-in users: guests are told why and sent Home
 // with Auth open. Expiry is resolved by getActiveSession first, so an
@@ -41,17 +32,17 @@ export const routes: RouteObject[] = [
         // A pathless route: a page that throws keeps the header and footer.
         errorElement: <ErrorPage />,
         children: [
-          { index: true, element: <HomePage />, handle: handle(TITLES.home) },
+          { index: true, element: <HomePage /> },
           { path: "home", element: <Navigate to="/" replace /> },
           { path: "index.html", element: <Navigate to="/" replace /> },
-          { path: "library", element: <LibraryPage />, handle: handle(TITLES.library) },
+          { path: "library", element: <LibraryPage /> },
           {
             path: "profile",
             element: <ProfilePage />,
             loader: requireProfileAccess,
-            handle: handle(TITLES.profile, true),
+            handle: signedInOnly,
           },
-          { path: "*", element: <NotFoundPage />, handle: handle(TITLES.notFound) },
+          { path: "*", element: <NotFoundPage /> },
         ],
       },
     ],

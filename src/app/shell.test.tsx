@@ -32,7 +32,7 @@ describe("app shell", () => {
 
   it("names unknown paths as not found and leads back home", async () => {
     const { router } = renderApp("/no/such/page");
-    expect(document.title).toBe("Page Not Found — MiniGames");
+    expect(document.title).toBe("Page not found — MiniGames");
     expect(document.querySelector(".status-page__path")?.textContent).toBe("/no/such/page");
 
     await userEvent.click(screen.getByRole("button", { name: "Return to Home Page" }));
