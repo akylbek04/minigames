@@ -4,7 +4,6 @@ import { showSnackbar } from "../hooks/snackbar-store";
 import { HomePage } from "../pages/home/HomePage";
 import { LibraryPage } from "../pages/library/LibraryPage";
 import { NotFoundPage } from "../pages/not-found/NotFoundPage";
-import { ProfilePage } from "../pages/profile/ProfilePage";
 import { ErrorPage } from "../pages/status/ErrorPage";
 import { AppLayout, type RouteHandle } from "./AppLayout";
 
@@ -38,7 +37,11 @@ export const routes: RouteObject[] = [
           { path: "library", element: <LibraryPage /> },
           {
             path: "profile",
-            element: <ProfilePage />,
+            // Its own bundle: only signed-in users ever load the Profile code.
+            lazy: async () => {
+              const { ProfilePage } = await import("../pages/profile/ProfilePage");
+              return { Component: ProfilePage };
+            },
             loader: requireProfileAccess,
             handle: signedInOnly,
           },
