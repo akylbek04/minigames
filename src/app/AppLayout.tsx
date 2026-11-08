@@ -104,14 +104,12 @@ export function AppLayout() {
   return (
     <div id="app">
       <AppHeader
-        session={session}
         isMenuOpen={isMenuOpen}
         onOpenMenu={() => setMenuOpen(true)}
         onOpenAuth={openAuth}
         onLogout={() => void logout()}
       />
       <MobileMenu
-        session={session}
         isOpen={isMenuOpen}
         onClose={() => setMenuOpen(false)}
         onOpenAuth={openAuth}
@@ -120,7 +118,6 @@ export function AppLayout() {
       <GameDetailsDialog
         slug={game.value || undefined}
         isCovered={authMode !== undefined}
-        session={session}
         onRequestClose={game.close}
       />
       <AuthDialog
