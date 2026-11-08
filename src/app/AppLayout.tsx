@@ -17,13 +17,12 @@ export const AUTH_PARAM = "auth";
 export const GAME_PARAM = "game";
 
 export interface RouteHandle {
-  title: string;
   // Pages only a signed-in user can see: ending the session sends them Home.
-  requiresSession?: boolean;
+  requiresSession: boolean;
 }
 
 function isRouteHandle(value: unknown): value is RouteHandle {
-  return typeof value === "object" && value !== null && "title" in value;
+  return typeof value === "object" && value !== null && "requiresSession" in value;
 }
 
 // Header, footer, menu and snackbars around whichever page the URL names.
@@ -31,11 +30,10 @@ export function AppLayout() {
   const session = useSession();
   const navigate = useNavigate();
   const { pathname, key: locationKey } = useLocation();
-  const handles = useMatches()
+  const needsSession = useMatches()
     .map((match) => match.handle)
-    .filter(isRouteHandle);
-  const title = handles.at(-1)?.title;
-  const needsSession = handles.some((handle) => handle.requiresSession);
+    .filter(isRouteHandle)
+    .some((handle) => handle.requiresSession);
   const [isMenuOpen, setMenuOpen] = useState(false);
   const auth = useOverlay(AUTH_PARAM);
   const game = useOverlay(GAME_PARAM);
@@ -47,12 +45,6 @@ export function AppLayout() {
   useEffect(() => {
     getActiveSession();
   }, [locationKey]);
-
-  useEffect(() => {
-    if (title) {
-      document.title = title;
-    }
-  }, [title]);
 
   // Only a real page change scrolls up; opening a dialog or paging the
   // Library keeps the reader where they are.
