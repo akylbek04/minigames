@@ -17,54 +17,11 @@ import {
 } from "../../profile/profile-store";
 import { formatRelativeTime } from "../../utils/format";
 import { Badges } from "./Badges";
+import { History } from "./History";
 import { Section } from "./Section";
+import { Settings } from "./Settings";
 import { Stats } from "./Stats";
 import "./profile-page.scss";
-
-const HISTORY_VERBS: Record<ActivityType, string> = {
-  view: "Opened",
-  favorite: "Added to favorites",
-  comment: "Commented on",
-  like: "Liked a comment on",
-};
-
-// How long "Reset all progress" waits for its confirming second click.
-const RESET_CONFIRM_DELAY = 4000;
-
-// "tiny-glade" -> "Tiny Glade": the API gives a slug, the history needs a name.
-function slugToTitle(slug: string): string {
-  return slug
-    .split("-")
-    .filter(Boolean)
-    .map((word) => word[0].toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-function History({ data, email }: { data: ProfileData; email: string }) {
-  return data.history.length === 0 ? (
-    <p className="profile-page__empty">
-      Nothing here yet. Open a game from the Library to start your history.
-    </p>
-  ) : (
-    <>
-      <ul className="profile-page__history">
-        {data.history.map(({ type, slug, at }, index) => (
-          <li key={`${index}-${at}`} className="profile-page__history-item">
-            <span>
-              {HISTORY_VERBS[type]} <strong>{slugToTitle(slug)}</strong>
-            </span>
-            <time dateTime={new Date(at).toISOString()}>
-              {formatRelativeTime(new Date(at).toISOString())}
-            </time>
-          </li>
-        ))}
-      </ul>
-      <button type="button" className="btn btn--outline" onClick={() => clearHistory(email)}>
-        Clear history
-      </button>
-    </>
-  );
-}
 
 // Pick an icon and a color, preview it, then save. "Use default" goes back
 // to the photo or initials.
@@ -133,33 +90,6 @@ function AvatarCustomizer({ email, current }: { email: string; current?: AvatarC
           </button>
         </div>
       </div>
-    </div>
-  );
-}
-
-// Reset needs a second click: it erases counts and badges for good.
-function Settings({ email }: { email: string }) {
-  const [isArmed, setArmed] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(timer.current), []);
-
-  function reset(): void {
-    if (!isArmed) {
-      setArmed(true);
-      timer.current = setTimeout(() => setArmed(false), RESET_CONFIRM_DELAY);
-      return;
-    }
-    clearTimeout(timer.current);
-    setArmed(false);
-    resetProfile(email);
-    showSnackbar("Your progress was reset.", "success");
-  }
-
-  return (
-    <div className="profile-page__actions">
-      <button type="button" className="btn btn--outline" onClick={reset}>
-        {isArmed ? "Click again to erase everything" : "Reset all progress"}
-      </button>
     </div>
   );
 }
