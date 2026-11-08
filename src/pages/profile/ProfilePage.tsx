@@ -16,14 +16,10 @@ import {
   type ProfileData,
 } from "../../profile/profile-store";
 import { formatRelativeTime } from "../../utils/format";
+import { Badges } from "./Badges";
+import { Section } from "./Section";
+import { Stats } from "./Stats";
 import "./profile-page.scss";
-
-const STAT_LABELS: [ActivityType | "games", string, string][] = [
-  ["games", "Games opened", "videogame_asset"],
-  ["favorite", "Favorites", "favorite"],
-  ["comment", "Comments", "chat_bubble"],
-  ["like", "Likes given", "thumb_up"],
-];
 
 const HISTORY_VERBS: Record<ActivityType, string> = {
   view: "Opened",
@@ -42,68 +38,6 @@ function slugToTitle(slug: string): string {
     .filter(Boolean)
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join(" ");
-}
-
-function Section({
-  title,
-  id,
-  children,
-}: {
-  title: string;
-  id: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="profile-page__section" aria-labelledby={id}>
-      <h2 className="profile-page__section-title" id={id}>
-        {title}
-      </h2>
-      {children}
-    </section>
-  );
-}
-
-function Stats({ data }: { data: ProfileData }) {
-  return (
-    <ul className="profile-page__stats">
-      {STAT_LABELS.map(([key, label, icon]) => (
-        <li key={key} className="profile-page__stat">
-          <MaterialIcon name={icon} className="profile-page__stat-icon" />
-          <span className="profile-page__stat-value">
-            {key === "games" ? data.games.length : data.counts[key]}
-          </span>
-          <span className="profile-page__stat-label">{label}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function Badges({ data }: { data: ProfileData }) {
-  return (
-    <ul className="profile-page__badges">
-      {ACHIEVEMENTS.map(({ id, title, description, icon }) => {
-        const unlockedAt = data.unlocked[id] as number | undefined;
-        const isUnlocked = unlockedAt !== undefined;
-        return (
-          <li
-            key={id}
-            className={`profile-page__badge${isUnlocked ? "" : " profile-page__badge--locked"}`}
-            data-achievement={id}
-          >
-            <MaterialIcon name={isUnlocked ? icon : "lock"} className="profile-page__badge-icon" />
-            <h3 className="profile-page__badge-title">{title}</h3>
-            <p className="profile-page__badge-text">{description}</p>
-            <p className="profile-page__badge-status">
-              {isUnlocked
-                ? `Unlocked ${formatRelativeTime(new Date(unlockedAt).toISOString())}`
-                : "Locked"}
-            </p>
-          </li>
-        );
-      })}
-    </ul>
-  );
 }
 
 function History({ data, email }: { data: ProfileData; email: string }) {
